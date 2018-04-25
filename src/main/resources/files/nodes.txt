@@ -1,0 +1,7 @@
+1	1	person	name	Bob	age	23	profession	Student
+2	2	person	doctorate	name	Alice	age	45	profession	Dentist
+3	1	person	name	James	age	27	profession	Analytical	chemist
+4	2	person	doctorate	name	Jerome	age	25	profession	Advocate
+5	1	person	name	Lisa	age	46	profession	Consultant
+6	1	person	name	Susan	age	23	profession	Airline cabin crew
+7	1	person	name	Dave	age	44	profession	Interpreter
