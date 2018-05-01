@@ -65,9 +65,7 @@ public class Menu {
             case 1:
                 System.out.println("OPT 1 selected");
                 MetisAdapter metisAdapter = new MetisAdapter();
-                metisAdapter.beginExport("/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/graph_example.txt.part.3",
-                        "/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/nodes.txt",
-                        "/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/edges.txt",
+                metisAdapter.beginExport(System.getProperty("user.dir") + "/src/main/resources/files/graph_example.txt.part.3",
                         GenericConstants.NUM_GRAPH_PARTITIONS);
                 break;
             case 2:

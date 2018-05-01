@@ -1,12 +1,15 @@
 package adapter;
 
+import Application.MetadataManager;
 import constants.GenericConstants;
+import utils.HadoopUtils;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 /**
  * Created by Carla Urrea Blázquez on 22/04/2018.
@@ -44,10 +47,8 @@ public class MetisAdapter {
 		mapBorderNodes = new HashMap<String, Integer>();
 	}
 
-	public void beginExport(String fileNameMetisOutput, String fileNameGraphNodes, String fileNameGraphEdges, int partition) {
-		this.fileNameGraphNodes = fileNameGraphNodes;
+	public void beginExport(String fileNameMetisOutput, int partition) {
 		this.fileNameMetisOutput = fileNameMetisOutput;
-		this.fileNameGraphEdges = fileNameGraphEdges;
 
 		bwNodes = new ArrayList<BufferedWriter>();
 		bwEdges = new ArrayList<BufferedWriter>();
@@ -83,7 +84,8 @@ public class MetisAdapter {
 
 		try {
 			readerMetisOutput = new BufferedReader(new FileReader(fileNameMetisOutput));
-			readerGraphNodes = new BufferedReader(new FileReader(fileNameGraphNodes));
+			//readerGraphNodes = new BufferedReader(new FileReader(fileNameGraphNodes));
+			readerGraphNodes = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathNodesFile());
 
 
 			while ((lineMetisOutput = readerMetisOutput.readLine()) != null) {
@@ -125,7 +127,8 @@ public class MetisAdapter {
 
 
 		try {
-			readerGraphEdges = new BufferedReader(new FileReader(fileNameGraphEdges));
+			//readerGraphEdges = new BufferedReader(new FileReader(fileNameGraphEdges));
+			readerGraphEdges = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathEdgesFile());
 
 			while((lineGraphEdges = readerGraphEdges.readLine()) != null) {
 				partsEgde = lineGraphEdges.split("\\t");

@@ -16,6 +16,7 @@ import java.io.IOException;
  *
  * Actually, the config file must include this format:
  * 	 ___________________________________________________________________
+ * 	| Default FS
  * 	| path (in HDFS) of the file that include the node's information
  * 	| path (in HDFS) of the file that include the edge's information
  * 	| Total number of SlaveNodes in the system
@@ -37,6 +38,9 @@ public class ParserConf {
 		MMInformation mmInformation = new MMInformation();
 		int numSlavesNodes;
 		String slaveIP;
+
+		// Read default FS
+		mmInformation.setDefaultFS(brConfFile.readLine());
 
 		// Read nodes information file in HDFS
 		mmInformation.setHDFSPathNodesFile(brConfFile.readLine());

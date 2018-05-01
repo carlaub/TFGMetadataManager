@@ -1,4 +1,5 @@
 import Application.MetadataManager;
+import constants.ErrorsConstants;
 import model.MMInformation;
 import utils.Menu;
 import utils.ParserConf;
@@ -26,7 +27,8 @@ public class Main {
             if (mmInformation != null) {
                 metadataManager.setMMInformation(mmInformation);
             } else {
-
+                // Error parsing configuration file
+                System.out.println(ErrorsConstants.errConfigurationFileParser);
             }
         } catch (IOException e) {
             e.printStackTrace();

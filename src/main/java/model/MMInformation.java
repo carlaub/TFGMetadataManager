@@ -13,6 +13,7 @@ import java.util.List;
  * read graph information from Hadoop files etc.
  */
 public class MMInformation {
+	private String defaultFS;
 	private String HDFSPathNodesFile;
 	private String HDFSPathEdgesFile;
 	private int numberSlaves;
@@ -48,6 +49,14 @@ public class MMInformation {
 
 	public void addSlaveIP(String IP) {
 		if (slavesIP != null) slavesIP.add(IP);
+	}
+
+	public String getDefaultFS() {
+		return defaultFS;
+	}
+
+	public void setDefaultFS(String defaultFS) {
+		this.defaultFS = defaultFS;
 	}
 
 	/**

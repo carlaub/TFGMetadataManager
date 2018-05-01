@@ -6,6 +6,9 @@ package constants;
  * ErrorsConstans.java
  */
 public class ErrorsConstants {
+    // Menu
     public static final String errMenuInputFormat = "[ERROR] Input format invalid";
     public static final String errMenuOptRange = "[ERROR] Option invalid";
+    // Parser Configuration Fie
+    public static final String errConfigurationFileParser = "[ERROR] Unable to parser MetadataManager configuraiton file";
 }
