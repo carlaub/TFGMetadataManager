@@ -2,6 +2,7 @@ package utils;
 
 import adapter.MetisAdapter;
 import constants.ErrorsConstants;
+import constants.GenericConstants;
 
 import java.util.Scanner;
 
@@ -65,7 +66,9 @@ public class Menu {
                 System.out.println("OPT 1 selected");
                 MetisAdapter metisAdapter = new MetisAdapter();
                 metisAdapter.beginExport("/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/graph_example.txt.part.3",
-                        "/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/nodes.txt");
+                        "/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/nodes.txt",
+                        "/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/edges.txt",
+                        GenericConstants.NUM_GRAPH_PARTITIONS);
                 break;
             case 2:
                 System.out.println("OPT 2 selected");

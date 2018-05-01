@@ -8,11 +8,10 @@ package constants;
 public class GenericConstants {
     public static final int NUM_GRAPH_PARTITIONS = 3;
 
-    public static final String FILE_NAME_NODES_PARTITION_1 = "nodes_part_1.txt";
-    public static final String FILE_NAME_NODES_PARTITION_2 = "nodes_part_2.txt";
-    public static final String FILE_NAME_NODES_PARTITION_3 = "nodes_part_3.txt";
-    public static final String FILE_NAME_EDGES_PARTITION_1 = "edges_part_1.txt";
-    public static final String FILE_NAME_EDGES_PARTITION_2 = "edges_part_2.txt";
-    public static final String FILE_NAME_EDGES_PARTITION_3 = "edges_part_3.txt";
+    public static final String FILE_NAME_NODES_PARTITION_BASE = "nodes_part_";
+
+
+    public static final String FILE_NAME_EDGES_PARTITION_BASE = "edges_part_";
+
 
 }

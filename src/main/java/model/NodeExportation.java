@@ -2,6 +2,8 @@ package model;
 
 /**
  * Created by Carla Urrea Blázquez on 25/04/2018.
+ *
+ * NodeExportation.java
  */
 public class NodeExportation {
 
