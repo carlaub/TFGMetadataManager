@@ -42,7 +42,7 @@ public class HadoopUtils {
 
 		configuration.set("fs.defaultFS", MetadataManager.getInstance().getMMInformation().getDefaultFS());
 		try {
-			FileSystem fs = FileSystem.get(configuration);
+			fs = FileSystem.get(configuration);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
