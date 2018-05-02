@@ -3,6 +3,7 @@ package utils;
 import Application.MetadataManager;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
@@ -10,6 +11,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 
 import java.io.BufferedReader;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -46,6 +48,8 @@ public class HadoopUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		writeHDFSFile();
 	}
 
 	/**
@@ -65,5 +69,20 @@ public class HadoopUtils {
 		}
 
 		return null;
+	}
+
+	public void writeHDFSFile() {
+		Path path = new Path("/user/hadoop/hola.txt");
+		try {
+			if (fs.exists(path)) {
+				fs.delete(path, true);			
+			}
+			FSDataOutputStream fsout = fs.create(path);
+			BufferedOutputStream bos = new BufferedOutputStream(fsout);
+			bos.write("Works! :)".getBytes("UTF-8"));
+			bos.close();
+		} catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
