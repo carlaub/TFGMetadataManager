@@ -1,4 +1,4 @@
-import Application.MetadataManager;
+import application.MetadataManager;
 import constants.ErrorsConstants;
 import model.MMInformation;
 import utils.Menu;

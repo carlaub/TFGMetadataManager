@@ -14,8 +14,10 @@ import java.util.List;
  */
 public class MMInformation {
 	private String defaultFS;
+	private String HDFSWorkingDirectory;
 	private String HDFSPathNodesFile;
 	private String HDFSPathEdgesFile;
+	private int numberPartitions;
 	private int numberSlaves;
 	private List<String> slavesIP;
 
@@ -57,6 +59,22 @@ public class MMInformation {
 
 	public void setDefaultFS(String defaultFS) {
 		this.defaultFS = defaultFS;
+	}
+
+	public String getHDFSWorkingDirectory() {
+		return HDFSWorkingDirectory;
+	}
+
+	public void setHDFSWorkingDirectory(String HDFSWorkingDirectory) {
+		this.HDFSWorkingDirectory = HDFSWorkingDirectory;
+	}
+
+	public int getNumberPartitions() {
+		return numberPartitions;
+	}
+
+	public void setNumberPartitions(int numberPartitions) {
+		this.numberPartitions = numberPartitions;
 	}
 
 	/**

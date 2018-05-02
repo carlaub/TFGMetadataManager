@@ -1,4 +1,4 @@
-package Application;
+package application;
 
 /**
  * Created by Carla Urrea Blázquez on 01/05/2018.

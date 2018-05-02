@@ -15,12 +15,16 @@ import java.io.IOException;
  * This class is a parser for the config file of the MetadataManager
  *
  * Actually, the config file must include this format:
- * 	 ___________________________________________________________________
- * 	| Default FS
- * 	| path (in HDFS) of the file that include the node's information
- * 	| path (in HDFS) of the file that include the edge's information
- * 	| Total number of SlaveNodes in the system
- *
+ * 	 _______________________________________________________________________________________________
+ * 	| 																								|
+ * 	| Default FS																					|
+ * 	| Working directory HDFS (Where files like "nodes information partition n" will be located)		|
+ * 	| path (in HDFS) of the file that include the node's information								|
+ * 	| path (in HDFS) of the file that include the edge's information								|
+ * 	| Number of graph partitions 																	|
+ * 	| Total number of SlaveNodes in the system														|
+ * 	| IPs @ of slaves nodes																			|
+ *	|_______________________________________________________________________________________________|
  */
 public class ParserConf {
 	BufferedReader brConfFile;
@@ -41,6 +45,9 @@ public class ParserConf {
 
 		// Read default FS
 		mmInformation.setDefaultFS(brConfFile.readLine());
+
+		// Working directory HDFS
+		mmInformation.setHDFSWorkingDirectory(brConfFile.readLine());
 
 		// Read nodes information file in HDFS
 		mmInformation.setHDFSPathNodesFile(brConfFile.readLine());

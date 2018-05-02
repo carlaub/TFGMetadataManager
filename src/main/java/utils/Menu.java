@@ -1,6 +1,7 @@
 package utils;
 
 import adapter.MetisAdapter;
+import application.MetadataManager;
 import constants.ErrorsConstants;
 import constants.GenericConstants;
 
@@ -66,7 +67,7 @@ public class Menu {
                 System.out.println("OPT 1 selected");
                 MetisAdapter metisAdapter = new MetisAdapter();
                 metisAdapter.beginExport(System.getProperty("user.dir") + "/src/main/resources/files/graph_example.txt.part.3",
-                        GenericConstants.NUM_GRAPH_PARTITIONS);
+                        MetadataManager.getInstance().getMMInformation().getNumberPartitions());
                 break;
             case 2:
                 System.out.println("OPT 2 selected");

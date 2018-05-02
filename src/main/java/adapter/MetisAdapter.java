@@ -1,6 +1,6 @@
 package adapter;
 
-import Application.MetadataManager;
+import application.MetadataManager;
 import constants.GenericConstants;
 import utils.HadoopUtils;
 
@@ -14,17 +14,17 @@ import java.util.Map;
 /**
  * Created by Carla Urrea Blázquez on 22/04/2018.
  * MetisAdapter.java
- *
+ * <p>
  * Import the output file of METIS to the format defined and use by BatchInserter with the nodes information and edges.
  * This class need 3 main files to work properly:
  * -> Output file of METIS: each line corresponds to a number, the value indicates the partition where the node must be located.
  * -> Nodes file: file that contains, in txt format, all the nodes that form the graph
  * -> Edges file: file that contains, in txt format, all the relations between the nodes in the graph
- *
+ * <p>
  * The output expected after this process is: (Where n == number of graph partitions)
  * -> n nodes files, one per partition
  * -> n edges files, one per partition
- *
+ * <p>
  * maxNodeId is used to assign an id to the new BORDER NODES created to manage the relations broken
  * during the partition process
  */
@@ -34,11 +34,14 @@ public class MetisAdapter {
 	private Map<String, Integer> mapBorderNodes; // key = partition1 (1) cncat partition2 (2) = 12
 
 	private String fileNameMetisOutput;
-	private String fileNameGraphNodes;
-	private String fileNameGraphEdges;
 
-	private List<BufferedWriter> bwNodes;
-	private List<BufferedWriter> bwEdges;
+/*
+	private List<BufferedWriter> bosNodes;
+	private List<BufferedWriter> bosEdges;*/
+
+	private List<BufferedOutputStream> bosNodes;
+	private List<BufferedOutputStream> bosEdges;
+
 
 	private int maxNodeId = 0;
 
@@ -50,15 +53,21 @@ public class MetisAdapter {
 	public void beginExport(String fileNameMetisOutput, int partition) {
 		this.fileNameMetisOutput = fileNameMetisOutput;
 
-		bwNodes = new ArrayList<BufferedWriter>();
-		bwEdges = new ArrayList<BufferedWriter>();
+	/*	bosNodes = new ArrayList<BufferedWriter>();
+		bosEdges = new ArrayList<BufferedWriter>();*/
+
+		bosNodes = new ArrayList<BufferedOutputStream>();
+		bosEdges = new ArrayList<BufferedOutputStream>();
 
 		for (int i = 0; i < partition; i++) {
 			try {
-				BufferedWriter bwNodesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt"));
-				BufferedWriter bwEdgesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + i + ".txt"));
-				bwNodes.add(bwNodesPart);
-				bwEdges.add(bwEdgesPart);
+//				BufferedWriter bwNodesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt"));
+//				BufferedWriter bwEdgesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + i + ".txt"));
+				BufferedOutputStream bwNodesPart = HadoopUtils.getInstance().createHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt");
+				BufferedOutputStream bwEdgesPart = HadoopUtils.getInstance().createHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + i + ".txt");
+
+				bosNodes.add(bwNodesPart);
+				bosEdges.add(bwEdgesPart);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -97,7 +106,7 @@ public class MetisAdapter {
 
 					mapGraphNodes.put(nodeId, partitionNumber);
 
-					if (nodeId > maxNodeId ) maxNodeId = nodeId;
+					if (nodeId > maxNodeId) maxNodeId = nodeId;
 
 					writeNodeInPartFile(lineGraphNode, partitionNumber);
 
@@ -116,7 +125,7 @@ public class MetisAdapter {
 	/**
 	 * Process the edge file and distribute the information in sub-files, one for each partition
 	 */
-    private void processEdgeFile() {
+	private void processEdgeFile() {
 		BufferedReader readerGraphEdges;
 		String lineGraphEdges;
 		String[] partsEgde;
@@ -130,7 +139,7 @@ public class MetisAdapter {
 			//readerGraphEdges = new BufferedReader(new FileReader(fileNameGraphEdges));
 			readerGraphEdges = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathEdgesFile());
 
-			while((lineGraphEdges = readerGraphEdges.readLine()) != null) {
+			while ((lineGraphEdges = readerGraphEdges.readLine()) != null) {
 				partsEgde = lineGraphEdges.split("\\t");
 				idNodeFrom = Integer.valueOf(partsEgde[0]);
 				idNodeTo = Integer.valueOf(partsEgde[1]);
@@ -139,7 +148,7 @@ public class MetisAdapter {
 				partitionFrom = mapGraphNodes.get(idNodeFrom);
 				partitionTo = mapGraphNodes.get(idNodeTo);
 
-				System.out.println("orig: " + idNodeFrom + "(" + partitionFrom + ") " + " dest: " + idNodeTo+ "(" + partitionTo + ") ");
+				System.out.println("orig: " + idNodeFrom + "(" + partitionFrom + ") " + " dest: " + idNodeTo + "(" + partitionTo + ") ");
 
 				if (partitionFrom == partitionTo) {
 					// Nodes belong to the SAME partition, the relation hasn't been broken. Add the edge information
@@ -178,7 +187,7 @@ public class MetisAdapter {
 			// There isn't any boarder node connecting these two partitions
 			// Insert new node information into node files of the two partitions
 			maxNodeId++;
-			idBoarderNode =  maxNodeId;
+			idBoarderNode = maxNodeId;
 			System.out.println("Create border node.... " + idBoarderNode);
 
 			writeNodeInPartFile(idBoarderNode + "	1	border	destination partition " + partitionTo, partitionFrom);
@@ -202,7 +211,8 @@ public class MetisAdapter {
 
 	private void writeNodeInPartFile(String lineGraphNode, int partition) {
 		try {
-			bwNodes.get(partition).write(lineGraphNode + "\n");
+//			bosNodes.get(partition).write(lineGraphNode + "\n");
+			HadoopUtils.getInstance().writeHDFSFile(bosNodes.get(partition), lineGraphNode + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -210,7 +220,8 @@ public class MetisAdapter {
 
 	private void writeEdgeInPartFile(String lineGraphEdege, int partition) {
 		try {
-			bwEdges.get(partition).write(lineGraphEdege + "\n");
+//			bosEdges.get(partition).write(lineGraphEdege + "\n");
+			HadoopUtils.getInstance().writeHDFSFile(bosEdges.get(partition), lineGraphEdege + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -226,7 +237,7 @@ public class MetisAdapter {
 	}
 
 	private void closeResources() {
-		for (BufferedWriter bw : bwNodes) {
+		for (BufferedOutputStream bw : bosNodes) {
 			try {
 				bw.close();
 			} catch (IOException e) {
@@ -234,7 +245,7 @@ public class MetisAdapter {
 			}
 		}
 
-		for (BufferedWriter bw : bwEdges) {
+		for (BufferedOutputStream bw : bosEdges) {
 			try {
 				bw.close();
 			} catch (IOException e) {

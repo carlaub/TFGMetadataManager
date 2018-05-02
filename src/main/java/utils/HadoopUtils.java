@@ -1,19 +1,13 @@
 package utils;
 
-import Application.MetadataManager;
+import application.MetadataManager;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.io.IOUtils;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.DistributedFileSystem;
 
-import java.io.BufferedReader;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 /**
  * Created by Carla Urrea Blázquez on 26/04/2018.
@@ -48,8 +42,6 @@ public class HadoopUtils {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		writeHDFSFile();
 	}
 
 	/**
@@ -69,6 +61,28 @@ public class HadoopUtils {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Create new file in the working directory of HDFS. If the file exists, it is delete and re-create.
+	 * @param fileName name of the file
+	 * @return Buffered Output; "null" if the process was unsuccessful
+	 * @throws IOException
+	 */
+	public BufferedOutputStream createHDFSFile(String fileName) throws IOException {
+		Path path = new Path(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + fileName);
+		if (fs.exists(path)) {
+			fs.delete(path, true);
+		}
+
+		FSDataOutputStream fsout = fs.create(path);
+		if (fsout == null) return null;
+
+		return new BufferedOutputStream(fsout);
+	}
+
+	public void writeHDFSFile(BufferedOutputStream bos, String content) throws IOException {
+		bos.write(content.getBytes("UTF-8"));
 	}
 
 	public void writeHDFSFile() {
