@@ -55,6 +55,9 @@ public class ParserConf {
 		// Read edged information file in HDFS
 		mmInformation.setHDFSPathEdgesFile(brConfFile.readLine());
 
+		// Read partitions number
+		mmInformation.setNumberPartitions(Integer.valueOf(brConfFile.readLine()));
+
 		// Read slaves nodes count
 		numSlavesNodes = Integer.valueOf(brConfFile.readLine());
 		mmInformation.setNumberSlaves(numSlavesNodes);
