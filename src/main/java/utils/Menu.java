@@ -4,6 +4,7 @@ import adapter.MetisAdapter;
 import application.MetadataManager;
 import constants.ErrorsConstants;
 import constants.GenericConstants;
+import network.MMServer;
 
 import java.util.Scanner;
 
@@ -17,7 +18,8 @@ public class Menu {
     public static final String OPT1 = "1.- Export METIS output to BatchInserter format";
     public static final String OPT2 = "2.- Start DB on nodes";
     public static final String OPT3 = "3.- Introduce QUERY";
-    public static final int NUM_OPT = 3;
+    public static final String OPT4 = "4.- Exit";
+    public static final int NUM_OPT = 4;
 
     /**
      * Show menu
@@ -30,6 +32,7 @@ public class Menu {
         System.out.println(OPT1);
         System.out.println(OPT2);
         System.out.println(OPT3);
+        System.out.println(OPT4);
 
         System.out.println("\n\nIntroduce option: ");
 
@@ -44,7 +47,6 @@ public class Menu {
     private static void processOption(String lineRead) {
         int opt;
 
-        System.out.println("Line: " + lineRead);
         if (!Checker.checkPositiveNumber(lineRead)) {
             System.out.println(ErrorsConstants.errMenuInputFormat);
             showMenu();
@@ -71,11 +73,18 @@ public class Menu {
                 break;
             case 2:
                 System.out.println("OPT 2 selected");
+                MMServer.getInstance().sendStartDB();
                 break;
             case 3:
                 System.out.println("OPT 3 selected");
                 break;
+            case 4:
+                MMServer.getInstance().sendStopDB();
+                System.exit(0);
+                break;
             default:
         }
+
+        showMenu();
     }
 }

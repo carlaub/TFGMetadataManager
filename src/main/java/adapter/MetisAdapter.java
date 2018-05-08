@@ -237,6 +237,7 @@ public class MetisAdapter {
 	}
 
 	private void closeResources() {
+
 		for (BufferedOutputStream bw : bosNodes) {
 			try {
 				bw.close();

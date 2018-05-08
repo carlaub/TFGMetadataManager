@@ -1,6 +1,7 @@
 import application.MetadataManager;
 import constants.ErrorsConstants;
 import model.MMInformation;
+import network.MMServer;
 import utils.Menu;
 import utils.ParserConf;
 
@@ -33,6 +34,10 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        MMServer mmServer = MMServer.getInstance();
+        mmServer.waitConnections();
+
         Menu.showMenu();
     }
 }
