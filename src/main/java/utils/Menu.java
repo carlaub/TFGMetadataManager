@@ -80,6 +80,7 @@ public class Menu {
                 break;
             case 4:
                 MMServer.getInstance().sendStopDB();
+                HadoopUtils.getInstance().closeResources();
                 System.exit(0);
                 break;
             default:

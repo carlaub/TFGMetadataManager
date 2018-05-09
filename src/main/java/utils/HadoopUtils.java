@@ -99,4 +99,12 @@ public class HadoopUtils {
 			e.printStackTrace();
 		}
 	}
+
+	public void closeResources() {
+		try {
+			if (fs != null) fs.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
