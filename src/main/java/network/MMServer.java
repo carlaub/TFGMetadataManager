@@ -2,7 +2,6 @@ package network;
 
 import application.MetadataManager;
 import constants.GenericConstants;
-import sun.jvm.hotspot.oops.Metadata;
 
 import java.io.*;
 import java.net.DatagramPacket;
