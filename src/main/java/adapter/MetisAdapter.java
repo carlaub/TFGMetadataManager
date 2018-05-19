@@ -190,7 +190,7 @@ public class MetisAdapter {
 			idBoarderNode = maxNodeId;
 			System.out.println("Create border node.... " + idBoarderNode);
 
-			writeNodeInPartFile(idBoarderNode + "	1	border	destination partition " + partitionTo, partitionFrom);
+			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + partitionTo, partitionFrom);
 			mapBorderNodes.put(keyBoarderMap, idBoarderNode);
 		}
 
