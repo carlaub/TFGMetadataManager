@@ -51,6 +51,7 @@ public class Neo4JImport {
 //		}
 
 		graphDb.shutdown();
+		System.out.println("FINISH");
 
 
 		return true;
@@ -120,8 +121,16 @@ public class Neo4JImport {
 			return true;
 		}*/
 		Node n;
-		n = graphDb.createNode(labels);
-		n.setProperty("age", 22);
+
+		try ( Transaction tx = graphDb.beginTx() )
+		{
+			// Database operations go here
+			n = graphDb.createNode(labels);
+			n.setProperty("age", 22);
+
+			tx.success();
+		}
+
 
 		return false;
 	}
