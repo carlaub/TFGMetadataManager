@@ -126,7 +126,7 @@ public class Neo4JImport {
 		{
 			// Database operations go here
 			n = graphDb.createNode();
-			n.setProperty("age", 22);
+			n.setProperty("age", "Hello ");
 
 			tx.success();
 		}
