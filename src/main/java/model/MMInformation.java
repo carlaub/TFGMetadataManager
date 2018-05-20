@@ -20,6 +20,7 @@ public class MMInformation {
 	private int numberPartitions;
 	private int numberSlaves;
 	private List<String> slavesIP;
+	private String neo4jDBPath;
 
 	public MMInformation() {
 		slavesIP = new ArrayList<String>();
@@ -86,5 +87,13 @@ public class MMInformation {
 	public String getSlaveIP(int slaveNum) {
 		if (slavesIP == null || slaveNum < 0 || slaveNum > slavesIP.size()) return null;
 		return slavesIP.get(slaveNum - 1);
+	}
+
+	public String getNeo4jDBPath() {
+		return neo4jDBPath;
+	}
+
+	public void setNeo4jDBPath(String neo4jDBPath) {
+		this.neo4jDBPath = neo4jDBPath;
 	}
 }

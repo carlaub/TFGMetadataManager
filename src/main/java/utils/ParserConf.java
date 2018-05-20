@@ -66,6 +66,10 @@ public class ParserConf {
 		for (int i = 0; i < numSlavesNodes; i++) {
 			mmInformation.addSlaveIP(brConfFile.readLine());
 		}
+
+		//Neo4j DB path
+		mmInformation.setNeo4jDBPath(brConfFile.readLine());
+
 		printConfigurationInformation(mmInformation);
 
 		return mmInformation;

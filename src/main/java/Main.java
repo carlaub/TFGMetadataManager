@@ -1,5 +1,6 @@
+import adapter.Neo4JImport;
 import application.MetadataManager;
-import constants.ErrorsConstants;
+import constants.ErrorConstants;
 import model.MMInformation;
 import network.MMServer;
 import utils.Menu;
@@ -29,13 +30,15 @@ public class Main {
                 metadataManager.setMMInformation(mmInformation);
             } else {
                 // Error parsing configuration file
-                System.out.println(ErrorsConstants.errConfigurationFileParser);
+                System.out.println(ErrorConstants.errConfigurationFileParser);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         MMServer mmServer = MMServer.getInstance();
+        Neo4JImport neo4JImport = new Neo4JImport();
+        neo4JImport.startPartitionDBImport();
         mmServer.waitConnections();
 
         Menu.showMenu();

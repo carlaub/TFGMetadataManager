@@ -2,8 +2,7 @@ package utils;
 
 import adapter.MetisAdapter;
 import application.MetadataManager;
-import constants.ErrorsConstants;
-import constants.GenericConstants;
+import constants.ErrorConstants;
 import network.MMServer;
 
 import java.util.Scanner;
@@ -48,7 +47,7 @@ public class Menu {
         int opt;
 
         if (!Checker.checkPositiveNumber(lineRead)) {
-            System.out.println(ErrorsConstants.errMenuInputFormat);
+            System.out.println(ErrorConstants.errMenuInputFormat);
             showMenu();
             return;
         }
@@ -59,7 +58,7 @@ public class Menu {
 
         if (opt > NUM_OPT) {
             // Option out of range
-            System.out.println(ErrorsConstants.errMenuOptRange);
+            System.out.println(ErrorConstants.errMenuOptRange);
             showMenu();
         }
 
