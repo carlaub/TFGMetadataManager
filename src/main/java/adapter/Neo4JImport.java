@@ -61,7 +61,7 @@ public class Neo4JImport {
 
 		//NEO4J BATCHINSERTER Configuration
 		//batchInserter = BatchInserters.inserter(new File(MetadataManager.getInstance().getMMInformation().getNeo4jDBPath()));
-		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(MetadataManager.getInstance().getMMInformation().getNeo4jDBPath()));
+		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(MetadataManager.getInstance().getMMInformation().getNeo4jDBPath() + "test.db"));
 		if (graphDb != null) {
 			registerShutdownHook(graphDb);
 			return true;
