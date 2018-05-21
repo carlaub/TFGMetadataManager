@@ -24,10 +24,10 @@ import java.util.Map;
  */
 public class Neo4JImport {
 	private GraphDatabaseService graphDb;
-	Map<Integer, Long> nodeCache;
+	Map<Integer, Node> nodeCache;
 
 	public Neo4JImport() {
-		nodeCache = new HashMap<Integer, Long>();
+		nodeCache = new HashMap<Integer, Node>();
 	}
 
 	public boolean startPartitionDBImport() {
@@ -43,10 +43,10 @@ public class Neo4JImport {
 		}
 
 		// Process partition file of edges
-//		if (!processEdgesPartitionFile()) {
-//			System.out.println(ErrorConstants.ERR_PARSE_NODE_PARTITION_FILE);
-//			return false;
-//		}
+		if (!processEdgesPartitionFile()) {
+			System.out.println(ErrorConstants.ERR_PARSE_NODE_PARTITION_FILE);
+			return false;
+		}
 
 		graphDb.shutdown();
 		System.out.println("FINISH");
@@ -123,13 +123,12 @@ public class Neo4JImport {
 		try ( Transaction tx = graphDb.beginTx() )
 		{
 			// Database operations go here
-			n = graphDb.createNode();
-			n.setProperty("hola", 22);
+			n = graphDb.createNode(labels);
 
 			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-//				n.setProperty(entry.getKey(), entry.getValue());
+				n.setProperty(entry.getKey(), entry.getValue());
 			}
-
+			nodeCache.put(id, n);
 			System.out.println("Node created");
 
 			tx.success();
@@ -181,7 +180,12 @@ public class Neo4JImport {
 		}
 
 		// Relationship properties processing
-//		batchInserter.createRelationship(nodeCache.get(fromNode), nodeCache.get(toNode), type, properties);
+		Relationship relationShip;
+		relationShip = nodeCache.get(fromNode).createRelationshipTo(nodeCache.get(toNode), type);
+
+		for (Map.Entry<String, Object> entry : properties.entrySet()) {
+			relationShip.setProperty(entry.getKey(), entry.getValue());
+		}
 	}
 
 	private boolean processEdgesPartitionFile() {
