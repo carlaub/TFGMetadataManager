@@ -123,7 +123,7 @@ public class Neo4JImport {
 		try ( Transaction tx = graphDb.beginTx() )
 		{
 			// Database operations go here
-			n = graphDb.createNode(labels);
+			n = graphDb.createNode();
 
 			for (Map.Entry<String, Object> entry : properties.entrySet()) {
 				n.setProperty(entry.getKey(), entry.getValue());
