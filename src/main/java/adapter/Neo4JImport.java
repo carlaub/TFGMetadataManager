@@ -124,9 +124,10 @@ public class Neo4JImport {
 		{
 			// Database operations go here
 			n = graphDb.createNode();
+			n.setProperty("hola", 22);
 
 			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-				n.setProperty(entry.getKey(), entry.getValue());
+//				n.setProperty(entry.getKey(), entry.getValue());
 			}
 
 			System.out.println("Node created");
