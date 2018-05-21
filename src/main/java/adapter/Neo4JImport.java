@@ -120,8 +120,7 @@ public class Neo4JImport {
 		}*/
 		Node n;
 
-		try ( Transaction tx = graphDb.beginTx() )
-		{
+		try ( Transaction tx = graphDb.beginTx() ) {
 			// Database operations go here
 			n = graphDb.createNode(labels);
 
@@ -179,12 +178,16 @@ public class Neo4JImport {
 			properties.put(parts[i], parts[i + 1]);
 		}
 
-		// Relationship properties processing
-		Relationship relationShip;
-		relationShip = nodeCache.get(fromNode).createRelationshipTo(nodeCache.get(toNode), type);
+		try ( Transaction tx = graphDb.beginTx() ) {
+			// Relationship properties processing
+			Relationship relationShip;
+			relationShip = nodeCache.get(fromNode).createRelationshipTo(nodeCache.get(toNode), type);
 
-		for (Map.Entry<String, Object> entry : properties.entrySet()) {
-			relationShip.setProperty(entry.getKey(), entry.getValue());
+			for (Map.Entry<String, Object> entry : properties.entrySet()) {
+				relationShip.setProperty(entry.getKey(), entry.getValue());
+			}
+
+			tx.success();
 		}
 	}
 
