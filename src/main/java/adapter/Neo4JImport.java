@@ -6,8 +6,6 @@ import constants.ErrorConstants;
 import constants.GenericConstants;
 import org.neo4j.graphdb.*;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.unsafe.batchinsert.BatchInserter;
-import org.neo4j.unsafe.batchinsert.BatchInserters;
 import utils.HadoopUtils;
 
 import java.io.BufferedReader;
@@ -125,9 +123,13 @@ public class Neo4JImport {
 		try ( Transaction tx = graphDb.beginTx() )
 		{
 			// Database operations go here
-			n = graphDb.createNode();
+			n = graphDb.createNode(labels);
+
+			for (Map.Entry<String, Object> entry : properties.entrySet()) {
+				n.setProperty(entry.getKey(), entry.getValue());
+			}
+
 			System.out.println("Node created");
-			n.setProperty("age", "Hello ");
 
 			tx.success();
 		}
