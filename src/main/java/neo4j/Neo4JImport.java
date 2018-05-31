@@ -1,15 +1,14 @@
-package adapter;
+package neo4j;
 
 
 import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
+import constants.MsgConstants;
 import org.neo4j.graphdb.*;
-import org.neo4j.graphdb.factory.GraphDatabaseFactory;
 import utils.HadoopUtils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,12 +26,12 @@ public class Neo4JImport {
 	Map<Integer, Node> nodeCache;
 
 	public Neo4JImport() {
-		nodeCache = new HashMap<Integer, Node>();
+		nodeCache = new HashMap<>();
 	}
 
 	public boolean startPartitionDBImport() {
 		// Init Neo4j batchinserter
-		if (!initBatchInserter()) {
+		if (!getNeo4jDB()) {
 			System.out.println(ErrorConstants.ERR_INIT_BATCHINSERTER);
 		}
 
@@ -48,24 +47,14 @@ public class Neo4JImport {
 			return false;
 		}
 
-		graphDb.shutdown();
-		System.out.println("FINISH");
-
+		System.out.println(MsgConstants.MSG_FIN_IMPORT_NEO4J);
 
 		return true;
 	}
 
-	private boolean initBatchInserter() {
-
-		//NEO4J BATCHINSERTER Configuration
-		//batchInserter = BatchInserters.inserter(new File(MetadataManager.getInstance().getMMInformation().getNeo4jDBPath()));
-		graphDb = new GraphDatabaseFactory().newEmbeddedDatabase(new File(MetadataManager.getInstance().getMMInformation().getNeo4jDBPath() + "test.db"));
-		if (graphDb != null) {
-			registerShutdownHook(graphDb);
-			return true;
-		}
-
-		return false;
+	private boolean getNeo4jDB() {
+		graphDb = GraphDatabase.getInstance().getDataBaseGraphService();
+		return graphDb != null;
 	}
 
 	/**
@@ -74,11 +63,10 @@ public class Neo4JImport {
 	 * @param line
 	 * @return
 	 */
-	private boolean createNode(String line) {
+	private void createNode(String line) {
 		int labelsNum;
 		int index = 0;
 		int id;
-		long neo4jId;
 		Label[] labels;
 
 		String[] parts = line.split("\t");
@@ -90,7 +78,7 @@ public class Neo4JImport {
 
 		int totalParts = parts.length;
 
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 		id = Integer.parseInt(parts[index]);
 		index ++;
 		properties.put("id", id);
@@ -111,13 +99,6 @@ public class Neo4JImport {
 			index += 2;
 		}
 
-//		neo4jId = batchInserter.createNode(properties, labels);
-		/*
-		System.out.println("-> NODE ID: " + neo4jId);
-		if (neo4jId >= 0) {
-			nodeCache.put(id, neo4jId);
-			return true;
-		}*/
 		Node n;
 
 		try ( Transaction tx = graphDb.beginTx() ) {
@@ -128,13 +109,9 @@ public class Neo4JImport {
 				n.setProperty(entry.getKey(), entry.getValue());
 			}
 			nodeCache.put(id, n);
-			System.out.println("Node created");
 
 			tx.success();
 		}
-
-
-		return false;
 	}
 
 	private boolean processNodesPartitionFile() {
@@ -143,7 +120,7 @@ public class Neo4JImport {
 
 		if (br == null) return false;
 
-		System.out.println("READING FILE: " + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + "\n\n");
+		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + "\n\n");
 		try {
 			while((line = br.readLine()) != null) {
 				System.out.println(line);
@@ -159,11 +136,10 @@ public class Neo4JImport {
 	}
 
 	private void createRelation(String line) {
-		int index = 0;
 		int fromNode;
 		int toNode;
 
-		Map<String, Object> properties = new HashMap<String, Object>();
+		Map<String, Object> properties = new HashMap<>();
 
 		String[] parts = line.split("\t");
 		int numParts = parts.length;
@@ -197,7 +173,7 @@ public class Neo4JImport {
 
 		if (br == null) return false;
 
-		System.out.println("READING FILE: " + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + "\n\n");
+		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + "\n\n");
 		try {
 			while((line = br.readLine()) != null) {
 				System.out.println(line);
@@ -210,20 +186,5 @@ public class Neo4JImport {
 		}
 
 		return true;
-	}
-
-	private static void registerShutdownHook( final GraphDatabaseService graphDb )
-	{
-		// Registers a shutdown hook for the Neo4j instance so that it
-		// shuts down nicely when the VM exits (even if you "Ctrl-C" the
-		// running application).
-		Runtime.getRuntime().addShutdownHook( new Thread()
-		{
-			@Override
-			public void run()
-			{
-				graphDb.shutdown();
-			}
-		} );
 	}
 }

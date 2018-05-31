@@ -7,11 +7,11 @@ package constants;
  */
 public class ErrorConstants {
     // Menu
-    public static final String errMenuInputFormat = "[ERROR] Input format invalid";
-    public static final String errMenuOptRange = "[ERROR] Option invalid";
+    public static final String ERR_MENU_INPUT_FORMAT = "[ERROR] Input format invalid";
+    public static final String ERR_MENU_OPT_RANGE = "[ERROR] Option invalid";
 
     // Parser Configuration Fie
-    public static final String errConfigurationFileParser = "[ERROR] Unable to parser MetadataManager configuraiton file";
+    public static final String ERR_CONF_FILE_PARSER = "[ERROR] Unable to parser MetadataManager configuraiton file";
 
     // Neo4j Import
     public static final String ERR_PARSE_NODE_PARTITION_FILE = "[ERROR] Error reading node partition file from HDFS";

@@ -198,12 +198,15 @@ public class MetisAdapter {
 
 		partsEdgeInformation = edgeInformation.split("\\t");
 		// We know that the second camp is the node desitnation ID. This node is replaced by the ID of the boarder node
+		String originalNodeId = partsEdgeInformation[1];
 		partsEdgeInformation[1] = String.valueOf(idBoarderNode);
 
 		newEdgeInformation = "";
 		for (String part : partsEdgeInformation) {
 			newEdgeInformation = newEdgeInformation + part + "\t";
 		}
+		// Add the ID of the original destination node located in a different partition
+		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + originalNodeId;
 
 		// Write the relation (between partition node and boarder node) in the edges file of the partition
 		writeEdgeInPartFile(newEdgeInformation, partitionFrom);
@@ -211,7 +214,6 @@ public class MetisAdapter {
 
 	private void writeNodeInPartFile(String lineGraphNode, int partition) {
 		try {
-//			bosNodes.get(partition).write(lineGraphNode + "\n");
 			HadoopUtils.getInstance().writeHDFSFile(bosNodes.get(partition), lineGraphNode + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -220,7 +222,6 @@ public class MetisAdapter {
 
 	private void writeEdgeInPartFile(String lineGraphEdege, int partition) {
 		try {
-//			bosEdges.get(partition).write(lineGraphEdege + "\n");
 			HadoopUtils.getInstance().writeHDFSFile(bosEdges.get(partition), lineGraphEdege + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();

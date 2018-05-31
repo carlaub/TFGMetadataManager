@@ -1,4 +1,4 @@
-import adapter.Neo4JImport;
+import neo4j.Neo4JImport;
 import application.MetadataManager;
 import constants.ErrorConstants;
 import model.MMInformation;
@@ -30,7 +30,7 @@ public class Main {
                 metadataManager.setMMInformation(mmInformation);
             } else {
                 // Error parsing configuration file
-                System.out.println(ErrorConstants.errConfigurationFileParser);
+                System.out.println(ErrorConstants.ERR_CONF_FILE_PARSER);
             }
         } catch (IOException e) {
             e.printStackTrace();

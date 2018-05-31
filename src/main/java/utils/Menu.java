@@ -3,6 +3,7 @@ package utils;
 import adapter.MetisAdapter;
 import application.MetadataManager;
 import constants.ErrorConstants;
+import neo4j.GraphDatabase;
 import network.MMServer;
 
 import java.util.Scanner;
@@ -47,7 +48,7 @@ public class Menu {
         int opt;
 
         if (!Checker.checkPositiveNumber(lineRead)) {
-            System.out.println(ErrorConstants.errMenuInputFormat);
+            System.out.println(ErrorConstants.ERR_MENU_INPUT_FORMAT);
             showMenu();
             return;
         }
@@ -58,7 +59,7 @@ public class Menu {
 
         if (opt > NUM_OPT) {
             // Option out of range
-            System.out.println(ErrorConstants.errMenuOptRange);
+            System.out.println(ErrorConstants.ERR_MENU_OPT_RANGE);
             showMenu();
         }
 
@@ -80,6 +81,7 @@ public class Menu {
             case 4:
                 MMServer.getInstance().sendStopDB();
                 HadoopUtils.getInstance().closeResources();
+                GraphDatabase.getInstance().shutdown();
                 System.exit(0);
                 break;
             default:
