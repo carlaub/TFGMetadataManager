@@ -3,6 +3,7 @@ package utils;
 import adapter.MetisAdapter;
 import application.MetadataManager;
 import constants.ErrorConstants;
+import controllers.MMController;
 import neo4j.GraphDatabase;
 import network.MMServer;
 
@@ -15,18 +16,23 @@ import java.util.Scanner;
  */
 
 public class Menu {
-    public static final String OPT1 = "1.- Export METIS output to BatchInserter format";
-    public static final String OPT2 = "2.- Start DB on nodes";
-    public static final String OPT3 = "3.- Introduce QUERY";
-    public static final String OPT4 = "4.- Exit";
-    public static final int NUM_OPT = 4;
+    private static final String OPT1 = "1.- Export METIS output to Metadata Manager format";
+    private static final String OPT2 = "2.- Create the database in the nodes";
+    private static final String OPT3 = "3.- Introduce QUERY";
+    private static final String OPT4 = "4.- Exit";
+    private static final int NUM_OPT = 4;
+
+    private MMController mmController;
+
+    public Menu() {
+        this.mmController = new MMController();
+    }
 
     /**
      * Show menu
      */
-    public static void showMenu() {
+    public void showMenu() {
         Scanner scan = new Scanner(System.in);
-        String lineRead;
 
         System.out.println("-- MENU --\n ");
         System.out.println(OPT1);
@@ -41,10 +47,10 @@ public class Menu {
     }
 
     /**
-     * Process the option readed. If the option is valid, do the specific routine
+     * Process the option read. If the option is valid, do the specific routine
      * @param lineRead line read from keyboard
      */
-    private static void processOption(String lineRead) {
+    private void processOption(String lineRead) {
         int opt;
 
         if (!Checker.checkPositiveNumber(lineRead)) {
@@ -66,23 +72,16 @@ public class Menu {
         // Option OK
         switch(opt) {
             case 1:
-                System.out.println("OPT 1 selected");
-                MetisAdapter metisAdapter = new MetisAdapter();
-                metisAdapter.beginExport(System.getProperty("user.dir") + "/src/main/resources/files/graph_example.txt.part.3",
-                        MetadataManager.getInstance().getMMInformation().getNumberPartitions());
+                mmController.exportMetisFormat();
                 break;
             case 2:
-                System.out.println("OPT 2 selected");
-                MMServer.getInstance().sendStartDB();
+                mmController.createGraphDBInTheNodes();
                 break;
             case 3:
-                System.out.println("OPT 3 selected");
+                // TODO: Query parser
                 break;
             case 4:
-                MMServer.getInstance().sendStopDB();
-                HadoopUtils.getInstance().closeResources();
-                GraphDatabase.getInstance().shutdown();
-                System.exit(0);
+                mmController.shutdownSystem();
                 break;
             default:
         }

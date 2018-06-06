@@ -2,6 +2,7 @@ package network;
 
 import application.MetadataManager;
 import constants.GenericConstants;
+import constants.MsgConstants;
 
 import java.io.*;
 import java.net.DatagramPacket;
@@ -36,6 +37,9 @@ public class MMServer {
 			e.printStackTrace();
 		}
 		request = new DatagramPacket(buff, buff.length);
+
+		// Wait node's connections to the MetadataManager Server
+		waitConnections();
 	}
 
 	/**
@@ -46,6 +50,7 @@ public class MMServer {
 		int SNConnected = 0;
 		int totalSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
 
+		System.out.println(MsgConstants.MSG_MMSERVER_WAIT_CON);
 		// Read requests
 		try {
 			while (SNConnected < totalSN) {

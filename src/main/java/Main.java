@@ -21,7 +21,6 @@ public class Main {
         // Create application singleton object
         MetadataManager metadataManager = MetadataManager.getInstance();
 
-        System.out.println(System.getProperty("user.dir"));
         // Read MetadataManager configuration file
         ParserConf parserConf = new ParserConf();
         try {
@@ -36,11 +35,8 @@ public class Main {
             e.printStackTrace();
         }
 
-        MMServer mmServer = MMServer.getInstance();
-        Neo4JImport neo4JImport = new Neo4JImport();
-        neo4JImport.startPartitionDBImport();
-        mmServer.waitConnections();
-
-        Menu.showMenu();
+        // Show the menu
+        Menu menu = new Menu();
+        menu.showMenu();
     }
 }
