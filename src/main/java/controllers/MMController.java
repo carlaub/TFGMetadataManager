@@ -4,6 +4,7 @@ import adapter.MetisAdapter;
 import application.MetadataManager;
 import neo4j.GraphDatabase;
 import neo4j.Neo4JImport;
+import neo4j.QueryExecutor;
 import network.MMServer;
 import utils.HadoopUtils;
 
@@ -62,5 +63,12 @@ public class MMController {
 		HadoopUtils.getInstance().closeResources();
 		GraphDatabase.getInstance().shutdown();
 		System.exit(0);
+	}
+
+	/**
+	 *
+	 */
+	public void executeQuery(String query) {
+		QueryExecutor.getInstace().processQuery(query);
 	}
 }

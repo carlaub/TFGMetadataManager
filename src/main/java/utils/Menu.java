@@ -3,9 +3,11 @@ package utils;
 import adapter.MetisAdapter;
 import application.MetadataManager;
 import constants.ErrorConstants;
+import constants.MsgConstants;
 import controllers.MMController;
 import neo4j.GraphDatabase;
 import network.MMServer;
+import scala.reflect.internal.pickling.UnPickler;
 
 import java.util.Scanner;
 
@@ -16,13 +18,11 @@ import java.util.Scanner;
  */
 
 public class Menu {
-    private static final String OPT1 = "1.- Export METIS output to Metadata Manager format";
-    private static final String OPT2 = "2.- Create the database in the nodes";
-    private static final String OPT3 = "3.- Introduce QUERY";
-    private static final String OPT4 = "4.- Exit";
+
     private static final int NUM_OPT = 4;
 
     private MMController mmController;
+    private Scanner scan;
 
     public Menu() {
         this.mmController = new MMController();
@@ -32,15 +32,15 @@ public class Menu {
      * Show menu
      */
     public void showMenu() {
-        Scanner scan = new Scanner(System.in);
+        scan = new Scanner(System.in);
 
-        System.out.println("-- MENU --\n ");
-        System.out.println(OPT1);
-        System.out.println(OPT2);
-        System.out.println(OPT3);
-        System.out.println(OPT4);
+        System.out.println(MsgConstants.MSG_MENU_TITLE);
+        System.out.println(MsgConstants.MSG_MENU_OPT1);
+        System.out.println(MsgConstants.MSG_MENU_OPT2);
+        System.out.println(MsgConstants.MSG_MENU_OPT3);
+        System.out.println(MsgConstants.MSG_MENU_OPT4);
 
-        System.out.println("\n\nIntroduce option: ");
+        System.out.println(MsgConstants.MSG_SEL_OPT);
 
         processOption(scan.nextLine());
 
@@ -78,7 +78,8 @@ public class Menu {
                 mmController.createGraphDBInTheNodes();
                 break;
             case 3:
-                // TODO: Query parser
+                System.out.println(MsgConstants.MSG_INT_QUERY);
+                mmController.executeQuery(readInput());
                 break;
             case 4:
                 mmController.shutdownSystem();
@@ -87,5 +88,10 @@ public class Menu {
         }
 
         showMenu();
+    }
+
+    private String readInput() {
+        // TODO: Añadir comprobaciones
+        return scan.nextLine();
     }
 }
