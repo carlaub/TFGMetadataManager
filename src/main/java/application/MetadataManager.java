@@ -1,8 +1,12 @@
 package application;
 
 import network.SlaveNodeObject;
+import relationsTable.RelationshipsTable;
+import twoLeveTree.TwoLevelTree;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 01/05/2018.
@@ -18,14 +22,17 @@ public class MetadataManager {
 	private model.MMInformation MMInformation;
 	private ArrayList<SlaveNodeObject> snConnected;
 
+	// ---- Data structures ----
+	private Map<Integer, Integer> mapGraphNodes; // 1 - Structure that holds the relation nodeId -> partition where is located
+	private Map<String, Integer> mapBoarderNodes; // 2 - Each key is composed by [idLocalPartition concat idForeignPartition], the value is the edge node's id
+	private RelationshipsTable relationshipsTable; // 3 - Hash table that contains, for each border node, a list with all the relationships that it has. Node boarder id is the key.
+
 	public MetadataManager() {
 		snConnected = new ArrayList<SlaveNodeObject>();
 	}
 
 	public static MetadataManager getInstance() {
-		if (instance == null) {
-			instance = new MetadataManager();
-		}
+		if (instance == null) instance = new MetadataManager();
 
 		return instance;
 	}
@@ -45,5 +52,20 @@ public class MetadataManager {
 	public SlaveNodeObject getSNConnected(int id) {
 		if (id > snConnected.size()) return null;
 		return snConnected.get(id - 1);
+	}
+
+	public Map<Integer, Integer> getMapGraphNodes() {
+		if (mapGraphNodes == null) mapGraphNodes = new HashMap<>();
+		return mapGraphNodes;
+	}
+
+	public Map<String, Integer> getMapBoarderNodes() {
+		if (mapBoarderNodes == null) mapBoarderNodes = new HashMap<>();
+		return mapBoarderNodes;
+	}
+
+	public RelationshipsTable getRelationshipsTable() {
+		if (relationshipsTable == null) relationshipsTable = new RelationshipsTable();
+		return relationshipsTable;
 	}
 }

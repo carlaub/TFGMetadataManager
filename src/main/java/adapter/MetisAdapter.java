@@ -2,11 +2,11 @@ package adapter;
 
 import application.MetadataManager;
 import constants.GenericConstants;
-import utils.HadoopUtils;
+import relationsTable.Relationship;
+import relationsTable.RelationshipsTable;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,42 +30,44 @@ import java.util.Map;
  */
 public class MetisAdapter {
 
-	private Map<Integer, Integer> mapGraphNodes;
-	private Map<String, Integer> mapBorderNodes; // key = partition1 (1) cncat partition2 (2) = 12
+	private Map<Integer, Integer> mapGraphNodes; // 1
+	private Map<String, Integer> mapBorderNodes; // 2 key = partition1 (1) cncat partition2 (2) = 12
+	private RelationshipsTable relationshipsTable;
 
 	private String fileNameMetisOutput;
 
-/*
 	private List<BufferedWriter> bosNodes;
-	private List<BufferedWriter> bosEdges;*/
+	private List<BufferedWriter> bosEdges;
 
-	private List<BufferedOutputStream> bosNodes;
-	private List<BufferedOutputStream> bosEdges;
+/*	private List<BufferedOutputStream> bosNodes;
+	private List<BufferedOutputStream> bosEdges;*/
 
 
 	private int maxNodeId = 0;
 
 	public MetisAdapter() {
-		mapGraphNodes = new HashMap<Integer, Integer>();
-		mapBorderNodes = new HashMap<String, Integer>();
+		mapGraphNodes = MetadataManager.getInstance().getMapGraphNodes();
+		mapBorderNodes = MetadataManager.getInstance().getMapBoarderNodes();
+		relationshipsTable = MetadataManager.getInstance().getRelationshipsTable();
+
 	}
 
 	public void beginExport(String fileNameMetisOutput, int partition) {
 		this.fileNameMetisOutput = fileNameMetisOutput;
 
-	/*	bosNodes = new ArrayList<BufferedWriter>();
-		bosEdges = new ArrayList<BufferedWriter>();*/
+		bosNodes = new ArrayList<BufferedWriter>();
+		bosEdges = new ArrayList<BufferedWriter>();
 
-		bosNodes = new ArrayList<BufferedOutputStream>();
-		bosEdges = new ArrayList<BufferedOutputStream>();
+		/*bosNodes = new ArrayList<BufferedOutputStream>();
+		bosEdges = new ArrayList<BufferedOutputStream>();*/
 
 		for (int i = 0; i < partition; i++) {
 			try {
-//				BufferedWriter bwNodesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt"));
-//				BufferedWriter bwEdgesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + i + ".txt"));
-				BufferedOutputStream bwNodesPart = HadoopUtils.getInstance().createHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt");
+				BufferedWriter bwNodesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt"));
+				BufferedWriter bwEdgesPart = new BufferedWriter(new FileWriter(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + i + ".txt"));
+				/*BufferedOutputStream bwNodesPart = HadoopUtils.getInstance().createHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + i + ".txt");
 				BufferedOutputStream bwEdgesPart = HadoopUtils.getInstance().createHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + i + ".txt");
-
+*/
 				bosNodes.add(bwNodesPart);
 				bosEdges.add(bwEdgesPart);
 			} catch (IOException e) {
@@ -93,8 +95,8 @@ public class MetisAdapter {
 
 		try {
 			readerMetisOutput = new BufferedReader(new FileReader(fileNameMetisOutput));
-			//readerGraphNodes = new BufferedReader(new FileReader(fileNameGraphNodes));
-			readerGraphNodes = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathNodesFile());
+			readerGraphNodes = new BufferedReader(new FileReader("/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/nodes.txt"));
+//			readerGraphNodes = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathNodesFile());
 
 
 			while ((lineMetisOutput = readerMetisOutput.readLine()) != null) {
@@ -136,8 +138,8 @@ public class MetisAdapter {
 
 
 		try {
-			//readerGraphEdges = new BufferedReader(new FileReader(fileNameGraphEdges));
-			readerGraphEdges = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathEdgesFile());
+			readerGraphEdges = new BufferedReader(new FileReader("/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/edges.txt"));
+//			readerGraphEdges = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathEdgesFile());
 
 			while ((lineGraphEdges = readerGraphEdges.readLine()) != null) {
 				partsEgde = lineGraphEdges.split("\\t");
@@ -158,29 +160,34 @@ public class MetisAdapter {
 
 					// The relation between nodes has been broken. We need to add the border node into nodes files of
 					// of the two different partitions
-					//TODO: Creation border nodes to control relations broken
-					addRelationWithBoarderNode(partitionFrom, partitionTo, lineGraphEdges);
 
+					addRelationWithBoarderNode(partitionFrom, partitionTo, lineGraphEdges, true);
+//					addRelationWithBoarderNodeDestination(partitionFrom, partitionTo, lineGraphEdges);
+					addRelationWithBoarderNode(partitionTo, partitionFrom, lineGraphEdges, false);
 				}
-
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-
 	}
 
-	private void addRelationWithBoarderNode(int partitionFrom, int partitionTo, String edgeInformation) {
+	/**
+	 *
+	 * @param localPartition
+	 * @param foreignPartition
+	 * @param edgeInformation
+	 * @param relationDirection If the boarder node will be the origin or destination node [true N -> B] ; [false B -> N]
+	 */
+	private void addRelationWithBoarderNode(int localPartition, int foreignPartition, String edgeInformation, boolean relationDirection) {
 		String keyBoarderMap;
 		String[] partsEdgeInformation;
 		Integer idBoarderNode;
 		String newEdgeInformation;
 
 		// Check if the first partition have or not a border node for the specific partition
-		keyBoarderMap = String.valueOf(partitionFrom) + String.valueOf(partitionTo);
+		keyBoarderMap = String.valueOf(localPartition) + String.valueOf(foreignPartition);
 		idBoarderNode = mapBorderNodes.get(keyBoarderMap);
 
 		if (idBoarderNode == null) {
@@ -190,31 +197,86 @@ public class MetisAdapter {
 			idBoarderNode = maxNodeId;
 			System.out.println("Create border node.... " + idBoarderNode);
 
-			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + partitionTo, partitionFrom);
+			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + foreignPartition, localPartition);
 			mapBorderNodes.put(keyBoarderMap, idBoarderNode);
+
+			mapGraphNodes.put(idBoarderNode, localPartition);
 		}
 
 		System.out.println("ID BOARDER " + idBoarderNode);
 
 		partsEdgeInformation = edgeInformation.split("\\t");
-		// We know that the second camp is the node desitnation ID. This node is replaced by the ID of the boarder node
-		String originalNodeId = partsEdgeInformation[1];
-		partsEdgeInformation[1] = String.valueOf(idBoarderNode);
+
+		String origNodeId = partsEdgeInformation[0];
+		String destNodeId = partsEdgeInformation[1];
+
+		// Insert the border node's relation in the relationshipsTable
+		relationshipsTable.addRelation(idBoarderNode, new Relationship(Integer.parseInt(origNodeId), Integer.parseInt(destNodeId)));
+
+		// Depending on the relation, the destination/origin node is replaced by the border node's id
+		if (relationDirection) {
+			partsEdgeInformation[1] = String.valueOf(idBoarderNode);
+		} else {
+			partsEdgeInformation[0] = String.valueOf(idBoarderNode);
+		}
 
 		newEdgeInformation = "";
 		for (String part : partsEdgeInformation) {
 			newEdgeInformation = newEdgeInformation + part + "\t";
 		}
 		// Add the ID of the original destination node located in a different partition
-		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + originalNodeId;
+		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + destNodeId;
 
 		// Write the relation (between partition node and boarder node) in the edges file of the partition
-		writeEdgeInPartFile(newEdgeInformation, partitionFrom);
+		writeEdgeInPartFile(newEdgeInformation, localPartition);
 	}
+
+/*	private void addRelationWithBoarderNodeDestination(int partitionFrom, int partitionTo, String edgeInformation) {
+		String keyBoarderMap;
+		String[] partsEdgeInformation;
+		Integer idBoarderNode;
+		String newEdgeInformation;
+
+		// Check if the destination partition have or not a border node for the origin partition
+		keyBoarderMap = String.valueOf(partitionTo) + String.valueOf(partitionFrom);
+		idBoarderNode = mapBorderNodes.get(keyBoarderMap);
+
+		if (idBoarderNode == null) {
+			// There isn't any boarder node connecting these two partitions
+			// Insert new node information into node files of the two partitions
+			maxNodeId++;
+			idBoarderNode = maxNodeId;
+			System.out.println("Create border node.... " + idBoarderNode);
+
+			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + partitionFrom, partitionTo);
+			mapBorderNodes.put(keyBoarderMap, idBoarderNode);
+
+			mapGraphNodes.put(nodeId, partitionNumber);
+
+		}
+
+		System.out.println("ID BOARDER " + idBoarderNode);
+
+		partsEdgeInformation = edgeInformation.split("\\t");
+		// We know that the second camp is the node destination ID. This node is replaced by the ID of the boarder node
+		String originalNodeFromId = partsEdgeInformation[0];
+		partsEdgeInformation[0] = String.valueOf(idBoarderNode);
+
+		newEdgeInformation = "";
+		for (String part : partsEdgeInformation) {
+			newEdgeInformation = newEdgeInformation + part + "\t";
+		}
+		// Add the ID of the original destination node located in a different partition
+		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + originalNodeFromId;
+
+		// Write the relation (between partition node and boarder node) in the edges file of the partition
+		writeEdgeInPartFile(newEdgeInformation, partitionTo);
+	}*/
 
 	private void writeNodeInPartFile(String lineGraphNode, int partition) {
 		try {
-			HadoopUtils.getInstance().writeHDFSFile(bosNodes.get(partition), lineGraphNode + "\n");
+//			HadoopUtils.getInstance().writeHDFSFile(bosNodes.get(partition), lineGraphNode + "\n");
+			bosNodes.get(partition).write(lineGraphNode + "\n");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -222,7 +284,9 @@ public class MetisAdapter {
 
 	private void writeEdgeInPartFile(String lineGraphEdege, int partition) {
 		try {
-			HadoopUtils.getInstance().writeHDFSFile(bosEdges.get(partition), lineGraphEdege + "\n");
+//			HadoopUtils.getInstance().writeHDFSFile(bosEdges.get(partition), lineGraphEdege + "\n");
+			bosEdges.get(partition).write(lineGraphEdege + "\n");
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -239,7 +303,23 @@ public class MetisAdapter {
 
 	private void closeResources() {
 
-		for (BufferedOutputStream bw : bosNodes) {
+//		for (BufferedOutputStream bw : bosNodes) {
+//			try {
+//				bw.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//
+//		for (BufferedOutputStream bw : bosEdges) {
+//			try {
+//				bw.close();
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//		}
+
+		for ( BufferedWriter bw : bosNodes) {
 			try {
 				bw.close();
 			} catch (IOException e) {
@@ -247,7 +327,7 @@ public class MetisAdapter {
 			}
 		}
 
-		for (BufferedOutputStream bw : bosEdges) {
+		for (BufferedWriter bw : bosEdges) {
 			try {
 				bw.close();
 			} catch (IOException e) {

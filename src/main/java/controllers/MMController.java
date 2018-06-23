@@ -40,6 +40,9 @@ public class MMController {
 		metisAdapter.beginExport(System.getProperty("user.dir") + "/src/main/resources/files/graph_example.txt.part.3",
 				MetadataManager.getInstance().getMMInformation().getNumberPartitions());
 
+		// TODO: Borrar debug
+		MetadataManager.getInstance().getRelationshipsTable().print();
+
 	}
 
 	/**

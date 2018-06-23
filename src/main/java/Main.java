@@ -1,3 +1,4 @@
+import controllers.MMController;
 import neo4j.Neo4JImport;
 import application.MetadataManager;
 import constants.ErrorConstants;
@@ -34,6 +35,10 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        MMController mmController = new MMController();
+        mmController.exportMetisFormat();
+        System.out.println("Debug creacion ficheros de particiones");
 
         // Show the menu
         Menu menu = new Menu();
