@@ -44,9 +44,8 @@ public class MMServer {
 		}
 		request = new DatagramPacket(buff, buff.length);
 
-		//TODO: Descomentar
 		// Wait node's connections to the MetadataManager Server
-//		waitConnections();
+		waitConnections();
 	}
 
 	/**

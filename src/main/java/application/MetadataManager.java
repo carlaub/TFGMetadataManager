@@ -2,7 +2,6 @@ package application;
 
 import network.SlaveNodeObject;
 import relationsTable.RelationshipsTable;
-import twoLeveTree.TwoLevelTree;
 
 import java.util.ArrayList;
 import java.util.HashMap;
