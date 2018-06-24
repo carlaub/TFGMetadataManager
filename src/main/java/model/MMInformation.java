@@ -21,6 +21,7 @@ public class MMInformation {
 	private int numberSlaves;
 	private List<String> slavesIP;
 	private String neo4jDBPath;
+	private String queriesFile;
 
 	public MMInformation() {
 		slavesIP = new ArrayList<String>();
@@ -95,5 +96,13 @@ public class MMInformation {
 
 	public void setNeo4jDBPath(String neo4jDBPath) {
 		this.neo4jDBPath = neo4jDBPath;
+	}
+
+	public String getQueriesFile() {
+		return queriesFile;
+	}
+
+	public void setQueriesFile(String queriesFile) {
+		this.queriesFile = queriesFile;
 	}
 }

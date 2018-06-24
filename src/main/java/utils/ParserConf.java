@@ -67,8 +67,11 @@ public class ParserConf {
 			mmInformation.addSlaveIP(brConfFile.readLine());
 		}
 
-		//Neo4j DB path
+		// Neo4j DB path
 		mmInformation.setNeo4jDBPath(brConfFile.readLine());
+
+		// Queries filename
+		mmInformation.setQueriesFile(brConfFile.readLine());
 
 		printConfigurationInformation(mmInformation);
 

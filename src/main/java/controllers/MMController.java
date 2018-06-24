@@ -6,6 +6,7 @@ import neo4j.GraphDatabase;
 import neo4j.Neo4JImport;
 import neo4j.QueryExecutor;
 import network.MMServer;
+import parser.SyntacticAnalyzer;
 import utils.HadoopUtils;
 
 /**
@@ -56,6 +57,10 @@ public class MMController {
 		// Send to SlaveNode the order to start the import and create the graph partition based on the files located in
 		// Hadoop
 		mmServer.sendStartDB();
+	}
+
+	public void queriesFileExecution() {
+		SyntacticAnalyzer.getInstance().program();
 	}
 
 	/**

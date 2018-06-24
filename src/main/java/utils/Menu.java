@@ -78,8 +78,9 @@ public class Menu {
                 mmController.createGraphDBInTheNodes();
                 break;
             case 3:
-                System.out.println(MsgConstants.MSG_INT_QUERY);
-                mmController.executeQuery(readInput());
+                System.out.println(MsgConstants.MSG_PROC_QUERIES);
+                mmController.queriesFileExecution();
+                System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
                 break;
             case 4:
                 mmController.shutdownSystem();

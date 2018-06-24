@@ -29,7 +29,7 @@ public class Main {
             if (mmInformation != null) {
                 metadataManager.setMMInformation(mmInformation);
             } else {
-                // Error parsing configuration file
+                // ParserError parsing configuration file
                 System.out.println(ErrorConstants.ERR_CONF_FILE_PARSER);
             }
         } catch (IOException e) {

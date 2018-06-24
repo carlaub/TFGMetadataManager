@@ -10,7 +10,7 @@ import java.io.Serializable;
 public class Msg implements Serializable {
 
 	private int code;
-	private String data;
+	private Object data;
 
 	public Msg(int code, String data) {
 		this.code = code;
@@ -25,11 +25,13 @@ public class Msg implements Serializable {
 		this.code = code;
 	}
 
-	public String getData() {
-		return data;
+	public String getDataAsString() {
+		return data.toString();
 	}
 
 	public void setData(String data) {
 		this.data = data;
 	}
+
+	public Object getData() { return data; }
 }
