@@ -10,6 +10,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 05/05/2018.
@@ -116,7 +117,7 @@ public class MMServer {
 	 * @param query:    Query in string format which will be execute in the slave node
 	 * @return Neo4J Result obj
 	 */
-	public Result sendQuery(int SNDestId, String query) {
+	public void sendQuery(int SNDestId, String query) {
 		boolean sent;
 		ObjectInputStream ois;
 		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query);
@@ -125,15 +126,17 @@ public class MMServer {
 			Msg msg = waitResponseFromSlaveNode(SNDestId);
 
 			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
-				Result result = (Result) msg.getData();
+				List<Map<String, Object>> result = (List<Map<String, Object>>) msg.getData();
 
 				System.out.println("QUERY RECIBIDA");
-				System.out.println(result.resultAsString());
-				return result;
+				for (Map<String, Object> row : result) {
+					System.out.println(row.get("id").toString());
+				}
+//				return result;
 			}
 		}
 
-		return null;
+//		return null;
 	}
 
 
