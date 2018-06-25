@@ -128,7 +128,7 @@ public class MMServer {
 			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
 				List<Map<String, Object>> result = (List<Map<String, Object>>) msg.getData();
 
-				System.out.println("QUERY RECIBIDA");
+				System.out.println("QUERY RECIBIDA. List length: " + result.size());
 				for (Map<String, Object> row : result) {
 					System.out.println(row.get("id").toString());
 				}

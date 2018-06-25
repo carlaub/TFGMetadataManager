@@ -36,10 +36,6 @@ public class Main {
             e.printStackTrace();
         }
 
-        MMController mmController = new MMController();
-        mmController.exportMetisFormat();
-        System.out.println("Debug creacion ficheros de particiones");
-
         // Show the menu
         Menu menu = new Menu();
         menu.showMenu();
