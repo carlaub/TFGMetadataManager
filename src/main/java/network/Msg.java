@@ -12,7 +12,7 @@ public class Msg implements Serializable {
 	private int code;
 	private Object data;
 
-	public Msg(int code, String data) {
+	public Msg(int code, Object data) {
 		this.code = code;
 		this.data = data;
 	}
