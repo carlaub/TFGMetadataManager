@@ -1,3 +1,6 @@
 BEGIN
 MATCH (n) RETURN n
 END
+BEGIN
+MATCH (n) WHERE n.name = 'James' RETURN n
+END

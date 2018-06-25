@@ -44,6 +44,7 @@ public class SyntacticAnalyzer {
 
 			//TODO: Logica y tratamiento de la query para saber a que nodo/nodos enviar o cambiar parametro
 			mmServer.sendQuery(1, strQuery);
+			mmServer.sendQuery(2, strQuery);
 
 			strQuery = "";
 		}

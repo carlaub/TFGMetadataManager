@@ -128,6 +128,7 @@ public class MMServer {
 				Result result = (Result) msg.getData();
 
 				System.out.println("QUERY RECIBIDA");
+				System.out.println(result.resultAsString());
 				return result;
 			}
 		}
