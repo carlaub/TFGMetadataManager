@@ -2,6 +2,7 @@ package network;
 
 import application.MetadataManager;
 import constants.MsgConstants;
+import neo4j.ResultEntity;
 import org.neo4j.graphdb.Result;
 
 import java.io.*;
@@ -9,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -119,18 +121,22 @@ public class MMServer {
 	 */
 	public void sendQuery(int SNDestId, String query) {
 		boolean sent;
-		ObjectInputStream ois;
 		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query);
 
 		if (sent) {
 			Msg msg = waitResponseFromSlaveNode(SNDestId);
 
 			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
-				List<Map<String, Object>> result = (List<Map<String, Object>>) msg.getData();
+				List<ResultEntity> results = (List<ResultEntity>) msg.getData();
 
-				System.out.println("QUERY RECIBIDA. List length: " + result.size());
-				for (Map<String, Object> row : result) {
-					System.out.println(row.get("id").toString());
+				System.out.println("QUERY RECIBIDA. List length: " + results.size());
+				for (ResultEntity result : results) {
+					Iterator it = result.getProperties().entrySet().iterator();
+					while(it.hasNext()) {
+						Map.Entry entry = (Map.Entry)it.next();
+						System.out.println("- " + entry.getKey() + ": " + entry.getValue());
+					}
+					System.out.println("\n");
 				}
 //				return result;
 			}
