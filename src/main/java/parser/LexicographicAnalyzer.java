@@ -12,6 +12,8 @@ import java.util.Scanner;
  * LexicographicAnalyzer.java
  */
 public class LexicographicAnalyzer {
+	private static final String GENERIC_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=\'\"";
+
 	private static LexicographicAnalyzer instance;
 	private Scanner scnQueries;
 	private String line;
@@ -61,36 +63,86 @@ public class LexicographicAnalyzer {
 						}
 						state = 0;
 
-//					} else if ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(character) != -1) {
-//						state = 1;
-//					} else if ("0123456789".indexOf(character) != -1) {
-//						state = 2;
-//					} else {
-//						// Unknown character
-//						ParserError.showCharError(character);
-
-					} else {
+					} else if (GENERIC_CHARS.indexOf(character) != -1) {
 						state = 1;
+					} else if ("()[]{}.,:-<>".indexOf(character) != -1) {
+						state = 2;
+					} else {
+						// Unknown character
+						ParserError.showCharError(character);
+
 					}
 					break;
 
 				case 1:
 					do {
+
+						if ((character == '\'') || (character == '\"')) {
+							// Word/sentence between quotes ["] or [']
+							do {
+								lexema = lexema + character;
+								nChar++;
+								character = line.charAt(nChar);
+							} while((character != '\'') && (character != '\"'));
+							character = line.charAt(nChar);
+						}
+
 						lexema = lexema + character;
 						nChar++;
 						character = line.charAt(nChar);
-					} while ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789".indexOf(character) != -1);
+
+
+
+					} while (GENERIC_CHARS.indexOf(character) != -1);
 
 					if (lexema.equalsIgnoreCase("BEGIN")) {
 						return new Token(Type.BEGIN, lexema);
 					} else if (lexema.equalsIgnoreCase("END")) {
 						return new Token(Type.END, lexema);
-
+					} else if (lexema.equalsIgnoreCase("MATCH")) {
+						return new Token(Type.MATCH, lexema);
+					} else if (lexema.equalsIgnoreCase("WHERE")) {
+						return new Token(Type.WHERE, lexema);
+					} else if (lexema.equalsIgnoreCase("RETURN")) {
+						return new Token(Type.RETURN, lexema);
+					} else if (lexema.equals("-")) {
+						return new Token(Type.DASH, lexema);
+					} else if (lexema.equals("<")) {
+						return new Token(Type.LT, lexema);
+					} else if (lexema.equals(">")) {
+						return new Token(Type.GT, lexema);
 					}
-					return new Token(lexema);
+
+					return new Token(Type.TXT, lexema);
 
 				case 2:
-					break;
+					lexema = lexema + character;
+					nChar ++;
+					if (character == '(') {
+						return new Token(Type.OPAREN, lexema);
+					} else if (character == ')') {
+						return new Token(Type.CPAREN, lexema);
+					} else if (character == '[') {
+						return new Token(Type.OBRACKET, lexema);
+					} else if (character == ']') {
+						return new Token(Type.CBRACKET, lexema);
+					} else if (character == '{') {
+						return new Token(Type.OBRACE, lexema);
+					} else if (character == '}') {
+						return new Token(Type.CBRACE, lexema);
+					} else if (character == '.') {
+						return new Token(Type.DOT, lexema);
+					} else if (character == ',') {
+						return new Token(Type.COMA, lexema);
+					} else if (character == ':') {
+						return new Token(Type.COLON, lexema);
+					} else if (character == '-') {
+						return new Token(Type.DASH, lexema);
+					} else if (character == '>') {
+						return new Token(Type.GT, lexema);
+					} else if (character == '<') {
+						return new Token(Type.LT, lexema);
+					}
 			}
 		}
 

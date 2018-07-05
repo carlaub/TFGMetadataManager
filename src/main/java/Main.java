@@ -1,3 +1,4 @@
+import constants.MsgConstants;
 import controllers.MMController;
 import neo4j.Neo4JImport;
 import application.MetadataManager;
@@ -35,6 +36,11 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        System.out.println(MsgConstants.MSG_PROC_QUERIES);
+        MMController mmController = new MMController();
+        mmController.queriesFileExecution();
+        System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
 
         // Show the menu
         Menu menu = new Menu();

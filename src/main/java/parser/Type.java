@@ -9,6 +9,14 @@ public enum Type {
 	// Property types
 	INTEGER, FLOAT, STRING, BOOLEAN, DATE,
 
+	TXT,
+
 	// Control queries's file reserved keywords to encapsulate each query
-	BEGIN, END, EOF
+	BEGIN, END, EOF,
+
+	// Clauses
+	MATCH, WHERE, RETURN,
+
+	// Operators
+	OPAREN, CPAREN, OBRACE, CBRACE, COMA, DOT, COLON, OBRACKET, CBRACKET, DASH, LT, GT, QUOTE
 }

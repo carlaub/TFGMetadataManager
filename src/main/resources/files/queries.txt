@@ -4,3 +4,12 @@ END
 BEGIN
 MATCH (n) WHERE n.name = 'James' RETURN n
 END
+BEGIN
+MATCH (p:person:doctorate { name:"Homer Flinstone", age: 24 })
+RETURN p
+END
+BEGIN
+MATCH (n: doctorate)<-[:KNOWS]-(b)
+WHERE n.id=12, n.name='Pepito Juan'
+RETURN b
+END

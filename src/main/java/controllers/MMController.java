@@ -72,11 +72,4 @@ public class MMController {
 		GraphDatabase.getInstance().shutdown();
 		System.exit(0);
 	}
-
-	/**
-	 *
-	 */
-	public void executeQuery(String query) {
-		QueryExecutor.getInstace().processQuery(query);
-	}
 }
