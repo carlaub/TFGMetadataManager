@@ -11,5 +11,8 @@ public class GenericConstants {
     public static final String FILE_NAME_EDGES_PARTITION_BASE = "edges_part_";
 
     // Metadata Manager Slave Node
-    public static final int SLAVE_NODE_ID = 0;
+    public static final int MM_SLAVE_NODE_ID = 0;
+
+    // Border node property
+    public static final String BORDER_NODE_LABEL = "border";
 }

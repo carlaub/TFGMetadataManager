@@ -1,5 +1,6 @@
 package parser;
 
+import controllers.QueriesController;
 import network.MMServer;
 import queryStructure.QSCondition;
 import queryStructure.QSNode;
@@ -67,6 +68,9 @@ public class SyntacticAnalyzer {
 
 			lookahead = lex.getToken();
 			if (queryStructure != null) System.out.println("\nQuery: " + queryStructure.toString() + "\n");
+
+			QueriesController queriesController = new QueriesController();
+			queriesController.manageNewQuery(queryStructure);
 
 			//TODO: Logica y tratamiento de la query para saber a que nodo/nodos enviar o cambiar parametro
 //			mmServer.sendQuery(1, strQuery);

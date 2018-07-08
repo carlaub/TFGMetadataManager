@@ -2,17 +2,16 @@ package network;
 
 import application.MetadataManager;
 import constants.MsgConstants;
+import controllers.QueriesController;
 import neo4j.ResultEntity;
-import org.neo4j.graphdb.Result;
+import queryStructure.QueryStructure;
 
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 05/05/2018.
@@ -35,6 +34,7 @@ public class MMServer {
 	}
 
 	private MMServer() {
+
 		buff = new byte[65535];
 		try {
 			dSockets = new ArrayList<>();
@@ -120,7 +120,7 @@ public class MMServer {
 	 * @param query:    Query in string format which will be execute in the slave node
 	 * @return Neo4J Result obj
 	 */
-	public void sendQuery(int SNDestId, String query) {
+	public void sendQuery(int SNDestId, String query, QueriesController queriesController) {
 		boolean sent;
 		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query);
 
@@ -129,21 +129,22 @@ public class MMServer {
 
 			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
 				List<ResultEntity> results = (List<ResultEntity>) msg.getData();
-
-				System.out.println("QUERY RECIBIDA. List length: " + results.size());
-				for (ResultEntity result : results) {
-					Iterator it = result.getProperties().entrySet().iterator();
-					while(it.hasNext()) {
-						Map.Entry entry = (Map.Entry)it.next();
-						System.out.println("- " + entry.getKey() + ": " + entry.getValue());
-					}
-					System.out.println("\n");
-				}
-//				return result;
+				queriesController.processQueryResults(results);
 			}
 		}
+	}
 
-//		return null;
+	/**
+	 * Send query to all nodes. Queries without relation in the match clause.
+	 */
+	public void sendQueryBroadcast(QueryStructure queryStructure, QueriesController queriesController) {
+		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
+		String queryString = queryStructure.toString();
+		boolean status;
+
+		for (int i = 0; i < numSN; i++) {
+			sendQuery(i + 1, queryString, queriesController);
+		}
 	}
 
 

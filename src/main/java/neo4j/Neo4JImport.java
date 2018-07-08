@@ -116,11 +116,11 @@ public class Neo4JImport {
 
 	private boolean processNodesPartitionFile() {
 		String line;
-		BufferedReader br = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + ".txt");
+		BufferedReader br = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + ".txt");
 
 		if (br == null) return false;
 
-		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + "\n\n");
+		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + "\n\n");
 		try {
 			while((line = br.readLine()) != null) {
 				System.out.println(line);
@@ -169,11 +169,11 @@ public class Neo4JImport {
 
 	private boolean processEdgesPartitionFile() {
 		String line;
-		BufferedReader br = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + ".txt");
+		BufferedReader br = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + ".txt");
 
 		if (br == null) return false;
 
-		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.SLAVE_NODE_ID + "\n\n");
+		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + "\n\n");
 		try {
 			while((line = br.readLine()) != null) {
 				System.out.println(line);

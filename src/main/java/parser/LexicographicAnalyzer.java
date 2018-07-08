@@ -34,8 +34,10 @@ public class LexicographicAnalyzer {
 		}
 
 		if (scnQueries.hasNext()) {
-			line = scnQueries.nextLine();
-			line = line + '\n';
+			do {
+				line = scnQueries.nextLine();
+				line = line + '\n';
+			} while (line.charAt(0) == '#' && scnQueries.hasNext());
 		} else {
 			line = "\n";
 		}
@@ -56,8 +58,10 @@ public class LexicographicAnalyzer {
 					} else if (character == '\n') {
 						nChar = 0;
 						if (scnQueries.hasNext()) {
-							line = scnQueries.nextLine();
-							line = line + '\n';
+							do {
+								line = scnQueries.nextLine();
+								line = line + '\n';
+							} while (line.charAt(0) == '#' && scnQueries.hasNext());
 						} else {
 							return new Token(Type.EOF, "EOF");
 						}

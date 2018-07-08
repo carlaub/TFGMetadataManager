@@ -44,6 +44,24 @@ public class QueryStructure {
 		return false;
 	}
 
+	/**
+	 * Return the root node id from the match clause
+	 * @return root node id
+	 */
+	public int getRootNodeId() {
+		if (queryStructure.containsKey(Type.MATCH)) {
+			List<QSEntity> list = queryStructure.get(Type.MATCH);
+
+			for (QSEntity entity : list) {
+				if (entity instanceof QSNode && (((QSNode) entity).getProperties().containsKey("id"))) {
+					return Integer.valueOf(((QSNode) entity).getProperties().get("id"));
+				}
+			}
+		}
+
+		return -1;
+	}
+
 
 	/**
 	 * Convert the query structure to string. Util to execute the Graph Database Service's "execute" function.

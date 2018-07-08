@@ -1,5 +1,7 @@
 package neo4j;
 
+import constants.GenericConstants;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,5 +31,15 @@ public class ResultNode extends ResultEntity implements Serializable {
 
 	public void setLabels(List<String> labels) {
 		this.labels = labels;
+	}
+
+	public boolean isBorderNode() {
+		for (String label : labels) {
+			if (label.equalsIgnoreCase(GenericConstants.BORDER_NODE_LABEL)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

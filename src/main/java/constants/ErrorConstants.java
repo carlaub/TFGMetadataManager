@@ -18,4 +18,6 @@ public class ErrorConstants {
     public static final String ERR_PARSE_EDGE_PARTITION_FILE = "[ERROR] Error reading edge partition file from HDFS";
     public static final String ERR_INIT_BATCHINSERTER = "[ERROR] Error initializing Neo4j Batchinserter";
 
+    // Queries
+    public static final String ERR_QUERY_ROOT_NODE_ID = "[ERROR] Query's main node must include its id";
 }

@@ -1,9 +1,14 @@
 package neo4j;
 
-import org.neo4j.graphdb.GraphDatabaseService;
-import org.neo4j.graphdb.Result;
-import org.neo4j.graphdb.Transaction;
+import application.MetadataManager;
+import constants.ErrorConstants;
+import constants.GenericConstants;
+import network.MMServer;
+import org.neo4j.graphdb.*;
 import queryStructure.QueryStructure;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Carla Urrea Blázquez on 06/06/2018.
@@ -11,41 +16,56 @@ import queryStructure.QueryStructure;
  * QueryExecutor.java
  */
 public class QueryExecutor {
-	private static QueryExecutor instance;
 	private GraphDatabaseService graphDatabaseService;
 
-	public static QueryExecutor getInstace() {
-		if (instance == null) instance = new QueryExecutor();
-		return instance;
-	}
-
-	private QueryExecutor() {
+	public QueryExecutor() {
 		graphDatabaseService = GraphDatabase.getInstance().getDataBaseGraphService();
 	}
 
-	public void processQuery(QueryStructure queryStructure) {
-//		try (Transaction q = graphDatabaseService.beginTx();
-//			 Result result = graphDatabaseService.execute(queryStructure.toString())) {
-//			System.out.println(result.resultAsString());
-//
-//
-//
-//			// Important to avoid unwanted behaviour, such as leaking transactions
-//			result.close();
-//		}
-		// If the query hasn't a relation, it must be sent to all partitions
+	public List<ResultEntity> processQuery(String query) {
+		try (Transaction q = graphDatabaseService.beginTx();
+			 Result result = graphDatabaseService.execute(query)) {
 
-	}
+			List<ResultEntity> list = new ArrayList<>();
 
-	/**
-	 * Process query with relation. If the nodes are related, the "path" must be followed using the border nodes
-	 * @param queryStructure
-	 */
-	private void queryWithRelation(QueryStructure queryStructure) {
+			System.out.println("HAS NEXT: " + result.hasNext());
 
-	}
+			while (result.hasNext()) {
 
-	private void queryBroadcast(QueryStructure queryStructure) {
+				Node node = (Node)result.next().get("n");
+				if (node != null) {
+					ResultNode resultNode = new ResultNode();
 
+					Iterable<String> properties = node.getPropertyKeys();
+					Iterable<Label> labels = node.getLabels();
+
+					for (String propertyKey : properties) resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
+
+					for (Label label : labels) resultNode.addLabel(label.name());
+
+					list.add(resultNode);
+				} else {
+					// Is Relation
+					Relationship relationship = (Relationship) result.next().get("r");
+
+					if (relationship != null) {
+						ResultRelation resultRelation = new ResultRelation();
+
+						Iterable<String> properties = relationship.getPropertyKeys();
+
+						for (String propertyKey : properties) {
+							resultRelation.addProperty(propertyKey, relationship.getProperty(propertyKey));
+						}
+
+						list.add(resultRelation);
+					}
+				}
+			}
+
+			// Important to avoid unwanted behaviour, such as leaking transactions
+			result.close();
+
+			return list;
+		}
 	}
 }
