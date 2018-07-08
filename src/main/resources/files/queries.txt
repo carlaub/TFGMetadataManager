@@ -20,6 +20,6 @@ RETURN n
 END
 
 BEGIN
-MATCH (n: Person {id: 4})
+MATCH (n {id: 4})
 RETURN n
 END

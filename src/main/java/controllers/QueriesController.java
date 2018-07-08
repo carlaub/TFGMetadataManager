@@ -86,18 +86,18 @@ public class QueriesController {
 					if (!labels.isEmpty()) {
 						int listSize = labels.size();
 
-						System.out.println("{ ");
+						System.out.print("{ ");
 						for (int i = 0; i < listSize - 1; i++) {
-							System.out.println(labels.get(i) + ": ");
+							System.out.print(labels.get(i) + ": ");
 						}
-						System.out.println(labels.get(listSize - 1) + " }");
+						System.out.print(labels.get(listSize - 1) + " }");
 					}
 
 					// Properties
 					it = result.getProperties().entrySet().iterator();
 					while(it.hasNext()) {
 						Map.Entry entry = (Map.Entry)it.next();
-						System.out.println("- " + entry.getKey() + ": " + entry.getValue());
+						System.out.print(", " + entry.getKey() + ": " + entry.getValue());
 					}
 					System.out.println("\n");
 //				}
