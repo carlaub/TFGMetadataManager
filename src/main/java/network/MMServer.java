@@ -49,7 +49,7 @@ public class MMServer {
 
 		// Wait node's connections to the MetadataManager Server
 		// TODO: Descomentar
-//		waitConnections();
+		waitConnections();
 	}
 
 	/**
