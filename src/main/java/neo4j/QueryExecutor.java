@@ -3,6 +3,7 @@ package neo4j;
 import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
+import controllers.QueriesController;
 import network.MMServer;
 import org.neo4j.graphdb.*;
 import queryStructure.QueryStructure;
@@ -22,7 +23,7 @@ public class QueryExecutor {
 		graphDatabaseService = GraphDatabase.getInstance().getDataBaseGraphService();
 	}
 
-	public List<ResultEntity> processQuery(String query) {
+	public List<ResultEntity> processQuery(String query, QueriesController queriesController) {
 		try (Transaction q = graphDatabaseService.beginTx();
 			 Result result = graphDatabaseService.execute(query)) {
 
@@ -61,6 +62,8 @@ public class QueryExecutor {
 					}
 				}
 			}
+
+			queriesController.processQueryResults(list);
 
 			// Important to avoid unwanted behaviour, such as leaking transactions
 			result.close();

@@ -46,7 +46,7 @@ public class QueriesController {
 
 				if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
 					// Root node is inside MetadataManager's Neo4j instance
-					queryExecutor.processQuery(queryString);
+					queryExecutor.processQuery(queryString, this);
 				} else {
 					// Root node is in the slave node with id "partitionID"
 					mmServer.sendQuery(partitionID, queryString, this);
@@ -57,6 +57,7 @@ public class QueriesController {
 		} else {
 			// CASE 2: Query's MATCH clause has not a relation
 			mmServer.sendQueryBroadcast(queryStructure, this);
+			queryExecutor.processQuery(queryStructure.toString(), this);
 		}
 	}
 
@@ -65,6 +66,7 @@ public class QueriesController {
 
 		// TODO: Filtrar nodos frontera
 		System.out.println("-> List Result received");
+		if (results != null) System.out.println("Size: " + results.size());
 
 		for (ResultEntity result : results) {
 
