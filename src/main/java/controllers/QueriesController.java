@@ -35,12 +35,14 @@ public class QueriesController {
 	public void  manageNewQuery(QueryStructure queryStructure) {
 		currentQuery = queryStructure;
 
-		if (queryStructure.hasRelation()) {
+//		if (queryStructure.hasRelation()) {
 			// CASE 1: Query's MATCH clause has a relation
 
 			int idRootNode = queryStructure.getRootNodeId();
 			System.out.println("ID root node: " + idRootNode);
-			if (idRootNode < 0) {
+
+
+		if (idRootNode > 0) {
 				int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
 				String queryString = queryStructure.toString();
 
@@ -51,9 +53,9 @@ public class QueriesController {
 					// Root node is in the slave node with id "partitionID"
 					mmServer.sendQuery(partitionID, queryString, this);
 				}
-			} else {
-				System.out.println(ErrorConstants.ERR_QUERY_ROOT_NODE_ID);
-			}
+//			} else {
+//				System.out.println(ErrorConstants.ERR_QUERY_ROOT_NODE_ID);
+//			}
 		} else {
 			// CASE 2: Query's MATCH clause has not a relation
 			mmServer.sendQueryBroadcast(queryStructure, this);
