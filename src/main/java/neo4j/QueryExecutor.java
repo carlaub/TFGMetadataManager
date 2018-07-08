@@ -1,15 +1,11 @@
 package neo4j;
 
-import application.MetadataManager;
-import constants.ErrorConstants;
-import constants.GenericConstants;
 import controllers.QueriesController;
-import network.MMServer;
 import org.neo4j.graphdb.*;
-import queryStructure.QueryStructure;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 06/06/2018.
@@ -32,8 +28,9 @@ public class QueryExecutor {
 			System.out.println("HAS NEXT: " + result.hasNext());
 
 			while (result.hasNext()) {
+				Map<String, Object> next = result.next();
 
-				Node node = (Node)result.next().get("n");
+				Node node = (Node)next.get("n");
 				if (node != null) {
 					ResultNode resultNode = new ResultNode();
 
@@ -46,8 +43,9 @@ public class QueryExecutor {
 
 					list.add(resultNode);
 				} else {
+					System.out.println("-> Is relation");
 					// Is Relation
-					Relationship relationship = (Relationship) result.next().get("r");
+					Relationship relationship = (Relationship) next.get("r");
 
 					if (relationship != null) {
 						ResultRelation resultRelation = new ResultRelation();
