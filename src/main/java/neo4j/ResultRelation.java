@@ -8,7 +8,26 @@ package neo4j;
  */
 public class ResultRelation extends ResultEntity {
 
+	private long startNodeId;
+	private long endNodeId;
+
 	public ResultRelation() {
 		super();
+	}
+
+	public long getStartNodeId() {
+		return startNodeId;
+	}
+
+	public void setStartNodeId(long startNodeId) {
+		this.startNodeId = startNodeId;
+	}
+
+	public long getEndNodeId() {
+		return endNodeId;
+	}
+
+	public void setEndNodeId(long endNodeId) {
+		this.endNodeId = endNodeId;
 	}
 }
