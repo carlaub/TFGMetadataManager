@@ -63,7 +63,6 @@ public class ResultQuery {
 
 	public void addEntity(int columnIndex, ResultEntity entity) {
 		List<ResultEntity> column = dataList.get(columnIndex);
-		if (column == null) column = new ArrayList<>();
 		column.add(entity);
 	}
 
