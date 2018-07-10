@@ -53,10 +53,10 @@ public class ResultNode extends ResultEntity implements Serializable {
 			int labelsListSize = labels.size();
 
 			for (int i = 0; i < labelsListSize; i++) {
-				strBuilder.append(": ");
+				strBuilder.append(":");
 				strBuilder.append(labels.get(i));
 			}
-			strBuilder.append("{ ");
+			strBuilder.append(" { ");
 		}
 
 		// Properties
