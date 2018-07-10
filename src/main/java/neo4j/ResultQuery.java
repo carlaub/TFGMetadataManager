@@ -74,7 +74,7 @@ public class ResultQuery {
 	public Object[][] getDataTable() {
 		if (dataList == null || dataList.size() == 0) return null;
 
-		Object[][] dataTable = new Object[columnsCount][maxRowCount];
+		Object[][] dataTable = new Object[maxRowCount][columnsCount];
 		System.out.println("Column size init: " + maxRowCount);
 
 		for (int i = 0; i < columnsCount; i++) {
