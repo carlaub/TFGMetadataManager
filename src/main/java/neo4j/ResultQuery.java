@@ -75,15 +75,12 @@ public class ResultQuery {
 		if (dataList == null || dataList.size() == 0) return null;
 
 		Object[][] dataTable = new Object[maxRowCount][columnsCount];
+
 		System.out.println("Column size init: " + maxRowCount);
 
-		for (int i = 0; i < columnsCount; i++) {
-			List<ResultEntity> columnResults = dataList.get(i);
-			int columnResultsCount = columnResults.size();
-			System.out.println("Column " + i  + " Count: " + columnResultsCount);
-
-			for (int j = 0;j < columnResultsCount; j++) {
-				dataTable[i][j] =  columnResults.get(j).toString();
+		for (int i = 0; i < maxRowCount; i++) {
+			for (int j = 0; j < columnsCount; j++) {
+				if (dataList.get(j).get(i) != null) dataTable[i][j] = dataList.get(j).get(i).toString();
 			}
 		}
 
