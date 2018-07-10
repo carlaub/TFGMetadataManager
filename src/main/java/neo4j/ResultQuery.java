@@ -80,7 +80,7 @@ public class ResultQuery {
 
 		for (int i = 0; i < maxRowCount; i++) {
 			for (int j = 0; j < columnsCount; j++) {
-				if (dataList.get(j).get(i) != null) dataTable[i][j] = dataList.get(j).get(i).toString();
+				if (dataList.get(j).size() > j) dataTable[i][j] = dataList.get(j).get(i).toString();
 			}
 		}
 
