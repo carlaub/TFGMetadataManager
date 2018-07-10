@@ -55,6 +55,7 @@ public class ResultQuery {
 
 	public void addColumn(int columnIndex, String columnName) {
 		if (columnsName != null && dataList != null) {
+			dataList.add(columnIndex, new ArrayList<ResultEntity>());
 			columnsName[columnIndex] = columnName;
 			columnsCount ++;
 		}

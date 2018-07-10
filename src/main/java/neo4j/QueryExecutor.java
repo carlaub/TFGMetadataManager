@@ -27,11 +27,11 @@ public class QueryExecutor {
 			List<String> columnNames = result.columns();
 			int columnsCount;
 
-			resultQuery.setColumnsName(columnNames);
 			columnsCount = columnNames.size();
 
 			for (int i = 0; i < columnsCount; i++) {
 				ResourceIterator columnIterator = result.columnAs(columnNames.get(i));
+				resultQuery.addColumn(i, columnNames.get(i));
 
 				while (columnIterator.hasNext()) {
 					Object next = columnIterator.next();
