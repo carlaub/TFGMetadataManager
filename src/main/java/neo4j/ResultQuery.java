@@ -13,9 +13,11 @@ public class ResultQuery {
 	String[] columnsName;
 	int columnsCount;
 	List<List<ResultEntity>> dataList;
+	int maxRowCount;
 
 	public ResultQuery(int columnsCount) {
 		this.columnsCount = columnsCount;
+		this.maxRowCount = 0;
 
 		dataList = new ArrayList<>();
 		columnsName = new String[columnsCount];
@@ -65,16 +67,21 @@ public class ResultQuery {
 		List<ResultEntity> column = dataList.get(columnIndex);
 		System.out.println("Column size: " + column.size());
 		column.add(entity);
+
+		if (column.size() > maxRowCount) maxRowCount = column.size();
 	}
 
 	public Object[][] getDataTable() {
 		if (dataList == null || dataList.size() == 0) return null;
 
-		Object[][] dataTable = new Object[columnsCount][dataList.get(0).size()];
+		Object[][] dataTable = new Object[columnsCount][maxRowCount];
+		System.out.println("Column size init: " + maxRowCount);
 
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = dataList.get(i);
 			int columnResultsCount = columnResults.size();
+			System.out.println("Column " + i  + " Count: " + columnResultsCount);
+
 			for (int j = 0;j < columnResultsCount; j++) {
 				dataTable[i][j] =  columnResults.get(j).toString();
 			}
