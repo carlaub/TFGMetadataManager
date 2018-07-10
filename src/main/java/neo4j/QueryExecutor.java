@@ -34,6 +34,7 @@ public class QueryExecutor {
 
 				while (columnIterator.hasNext()) {
 					Object next = columnIterator.next();
+					System.out.println("Next: " + next.getClass().getName());
 
 					if (next instanceof Node) {
 						Node node = (Node) next;

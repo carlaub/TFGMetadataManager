@@ -65,7 +65,6 @@ public class ResultQuery {
 
 	public void addEntity(int columnIndex, ResultEntity entity) {
 		List<ResultEntity> column = dataList.get(columnIndex);
-		System.out.println("Column size: " + column.size());
 		column.add(entity);
 
 		if (column.size() > maxRowCount) maxRowCount = column.size();
