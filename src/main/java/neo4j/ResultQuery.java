@@ -49,15 +49,15 @@ public class ResultQuery {
 	}
 
 	public List<ResultEntity> getColumn(int columnIndex) {
-		if (dataList != null && dataList.size() > columnIndex) return dataList.get(columnIndex);
+		if (dataList != null) return dataList.get(columnIndex);
 		return null;
 	}
 
 	public void addColumn(int columnIndex, String columnName) {
 		if (columnsName != null && dataList != null) {
+			System.out.println("Add new column");
 			dataList.add(columnIndex, new ArrayList<ResultEntity>());
 			columnsName[columnIndex] = columnName;
-			columnsCount ++;
 		}
 	}
 
