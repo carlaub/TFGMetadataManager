@@ -23,11 +23,10 @@ public class QueryExecutor {
 		try (Transaction q = graphDatabaseService.beginTx();
 			 Result result = graphDatabaseService.execute(query)) {
 
-			ResultQuery resultQuery = new ResultQuery();
 			List<String> columnNames = result.columns();
-			int columnsCount;
+			int columnsCount = columnNames.size();
+			ResultQuery resultQuery = new ResultQuery(columnsCount);
 
-			columnsCount = columnNames.size();
 
 			for (int i = 0; i < columnsCount; i++) {
 				ResourceIterator columnIterator = result.columnAs(columnNames.get(i));

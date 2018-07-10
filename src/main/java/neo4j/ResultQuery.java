@@ -14,8 +14,8 @@ public class ResultQuery {
 	int columnsCount;
 	List<List<ResultEntity>> dataList;
 
-	public ResultQuery() {
-		this.columnsCount = 0;
+	public ResultQuery(int columnsCount) {
+		this.columnsCount = columnsCount;
 
 		dataList = new ArrayList<>();
 		columnsName = new String[columnsCount];
