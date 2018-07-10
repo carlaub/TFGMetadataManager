@@ -9,8 +9,10 @@ import java.util.HashMap;
  * ResultEntity.java
  * ResultEntity parent class.
  */
-public class ResultEntity implements Serializable {
+public abstract class ResultEntity implements Serializable {
 	private HashMap<String, Object> properties;
+
+	public abstract String toString();
 
 	public ResultEntity() {
 		this.properties = new HashMap<>();
@@ -27,4 +29,5 @@ public class ResultEntity implements Serializable {
 	public void setProperties(HashMap<String, Object> properties) {
 		this.properties = properties;
 	}
+
 }

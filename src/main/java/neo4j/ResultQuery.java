@@ -73,7 +73,11 @@ public class ResultQuery {
 		Object[][] dataTable = new Object[columnsCount][dataList.get(0).size()];
 
 		for (int i = 0; i < columnsCount; i++) {
-			dataTable[i] = dataList.get(i).toArray();
+			List<ResultEntity> columnResults = dataList.get(i);
+			int columnResultsCount = columnResults.size();
+			for (int j = 0;j < columnResultsCount; j++) {
+				dataTable[i][j] =  columnResults.get(j).toString();
+			}
 		}
 
 		return dataTable;

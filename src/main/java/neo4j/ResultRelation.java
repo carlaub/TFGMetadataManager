@@ -1,5 +1,8 @@
 package neo4j;
 
+import java.util.Iterator;
+import java.util.Map;
+
 /**
  * Created by Carla Urrea Blázquez on 25/06/2018.
  *
@@ -29,5 +32,24 @@ public class ResultRelation extends ResultEntity {
 
 	public void setEndNodeId(long endNodeId) {
 		this.endNodeId = endNodeId;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder strBuilder = new StringBuilder();
+
+		strBuilder.append("[ ");
+
+		// Properties
+		for (Object o : getProperties().entrySet()) {
+			Map.Entry entry = (Map.Entry) o;
+			strBuilder.append(entry.getKey());
+			strBuilder.append(": ");
+			strBuilder.append(entry.getValue());
+		}
+
+		strBuilder.append(" ]");
+
+		return strBuilder.toString();
 	}
 }

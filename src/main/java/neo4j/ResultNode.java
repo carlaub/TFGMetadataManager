@@ -4,7 +4,9 @@ import constants.GenericConstants;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 25/06/2018.
@@ -18,8 +20,6 @@ public class ResultNode extends ResultEntity implements Serializable {
 		super();
 		this.labels = new ArrayList<>();
 	}
-
-
 
 	public void addLabel(String label) {
 		labels.add(label);
@@ -41,5 +41,37 @@ public class ResultNode extends ResultEntity implements Serializable {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder strBuilder = new StringBuilder();
+
+		strBuilder.append("[ ");
+		// Labels
+		if (!labels.isEmpty()) {
+			int labelsListSize = labels.size();
+
+			for (int i = 0; i < labelsListSize - 1; i++) {
+				strBuilder.append(labels.get(i));
+				strBuilder.append(": ");
+			}
+			strBuilder.append("{ ", strBuilder.length(), strBuilder.length() + 1);
+		}
+
+		// Properties
+		Iterator propertiesIterator = getProperties().entrySet().iterator();
+		while(propertiesIterator.hasNext()) {
+			Map.Entry entry = (Map.Entry)propertiesIterator.next();
+			strBuilder.append(entry.getKey());
+			strBuilder.append(": ");
+			strBuilder.append(entry.getValue());
+			if (propertiesIterator.hasNext()) strBuilder.append(", ");
+		}
+		strBuilder.append(" } ]");
+
+
+
+		return strBuilder.toString();
 	}
 }

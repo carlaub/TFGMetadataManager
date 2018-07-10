@@ -87,14 +87,12 @@ public class QueriesController {
 
 					List<String> labels = resultNode.getLabels();
 
-					System.out.println("Node ");
-
 					// Labels
 					if (!labels.isEmpty()) {
 						int listSize = labels.size();
 
 						System.out.print("{ ");
-						for (int j = 0; i < listSize - 1; j++) {
+						for (int j = 0; j < listSize - 1; j++) {
 							System.out.print(labels.get(j) + ": ");
 						}
 						System.out.print(labels.get(listSize - 1) + " }");
