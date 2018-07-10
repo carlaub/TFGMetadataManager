@@ -36,7 +36,6 @@ public class QueryExecutor {
 					Object next = columnIterator.next();
 
 					if (next instanceof Node) {
-						System.out.println("Nodeeeee");
 						Node node = (Node) next;
 						if (node != null) {
 							ResultNode resultNode = new ResultNode();
