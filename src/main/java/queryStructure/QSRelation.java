@@ -3,7 +3,7 @@ package queryStructure;
 /**
  * Created by Carla Urrea Blázquez on 27/06/2018.
  */
-public class QSRelation extends QSEntity {
+public class QSRelation extends ResultEntity {
 	private String variable;
 	private String type;
 	private String start;

@@ -24,7 +24,7 @@ MATCH (n)<-[r]-(m)
 RETURN n, r
 END
 
-BEGIN
-MATCH (n {id: 4})
-RETURN n
-END
+#BEGIN
+#MATCH (n {id: 4})
+#RETURN n
+#END

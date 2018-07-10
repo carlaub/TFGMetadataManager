@@ -90,6 +90,21 @@
             <artifactId>hadoop-common</artifactId>
             <version>3.1.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.massisframework/j-text-utils -->
+        <dependency>
+            <groupId>com.massisframework</groupId>
+            <artifactId>j-text-utils</artifactId>
+            <version>0.3.4</version>
+        </dependency>
+
     </dependencies>
+
+    <repositories>
+        <repository>
+            <id>d-maven</id>
+            <url>http://d-maven.googlecode.com/svn/trunk/repo</url>
+        </repository>
+    </repositories>
 
 </project>

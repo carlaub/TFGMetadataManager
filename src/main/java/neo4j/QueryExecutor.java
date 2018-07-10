@@ -19,54 +19,64 @@ public class QueryExecutor {
 		graphDatabaseService = GraphDatabase.getInstance().getDataBaseGraphService();
 	}
 
-	public List<ResultEntity> processQuery(String query, QueriesController queriesController) {
+	public ResultQuery processQuery(String query, QueriesController queriesController, boolean trackingMode) {
 		try (Transaction q = graphDatabaseService.beginTx();
 			 Result result = graphDatabaseService.execute(query)) {
 
-			List<ResultEntity> list = new ArrayList<>();
+			ResultQuery resultQuery = new ResultQuery();
+			List<String> columnNames = result.columns();
+			int columnsCount;
 
-			System.out.println("HAS NEXT: " + result.hasNext());
+			resultQuery.setColumnsName(columnNames);
+			columnsCount = columnNames.size();
 
-			while (result.hasNext()) {
-				Map<String, Object> next = result.next();
+			for (int i = 0; i < columnsCount; i++) {
+				ResourceIterator columnIterator = result.columnAs(columnNames.get(i));
 
-				Node node = (Node)next.get("n");
-				if (node != null) {
-					ResultNode resultNode = new ResultNode();
+				while (columnIterator.hasNext()) {
+					Map<String, Object> next = (Map<String, Object>) columnIterator.next();
 
-					Iterable<String> properties = node.getPropertyKeys();
-					Iterable<Label> labels = node.getLabels();
+					Node node = (Node) next.get("n");
+					if (node != null) {
+						ResultNode resultNode = new ResultNode();
 
-					for (String propertyKey : properties) resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
+						Iterable<String> properties = node.getPropertyKeys();
+						Iterable<Label> labels = node.getLabels();
 
-					for (Label label : labels) resultNode.addLabel(label.name());
+						for (String propertyKey : properties)
+							resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
 
-					list.add(resultNode);
-				} else {
-					System.out.println("-> Is relation");
-					// Is Relation
-					Relationship relationship = (Relationship) next.get("r");
+						for (Label label : labels) resultNode.addLabel(label.name());
 
-					if (relationship != null) {
-						ResultRelation resultRelation = new ResultRelation();
+						resultQuery.addEntity(i, resultNode);
+					} else {
+						// Is Relation
+						System.out.println("Is relation??");
+						Relationship relationship = (Relationship) next.get("r");
+						if (relationship != null) {
+							ResultRelation resultRelation = new ResultRelation();
 
-						Iterable<String> properties = relationship.getPropertyKeys();
+							Iterable<String> properties = relationship.getPropertyKeys();
 
-						for (String propertyKey : properties) {
-							resultRelation.addProperty(propertyKey, relationship.getProperty(propertyKey));
+							for (String propertyKey : properties) {
+								resultRelation.addProperty(propertyKey, relationship.getProperty(propertyKey));
+							}
+
+							resultRelation.setStartNodeId(relationship.getStartNodeId());
+							resultRelation.setEndNodeId(relationship.getEndNodeId());
+
+							resultQuery.addEntity(i, resultRelation);
 						}
-
-						list.add(resultRelation);
 					}
 				}
 			}
 
-			queriesController.processQueryResults(list);
+			queriesController.processQueryResults(resultQuery, trackingMode);
 
 			// Important to avoid unwanted behaviour, such as leaking transactions
 			result.close();
 
-			return list;
+			return resultQuery;
 		}
 	}
 }

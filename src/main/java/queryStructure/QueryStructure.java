@@ -11,19 +11,19 @@ import java.util.*;
  * QueryStructure.java
  */
 public class QueryStructure {
-	LinkedHashMap<Type, List<QSEntity>> queryStructure;
+	LinkedHashMap<Type, List<ResultEntity>> queryStructure;
 
 	public QueryStructure() {
 		queryStructure = new LinkedHashMap<>();
 	}
 
-	public void addEntity(Token tClause, QSEntity entity) {
-		if (!queryStructure.containsKey(tClause.getType())) queryStructure.put(tClause.getType(), new ArrayList<QSEntity>());
-		List<QSEntity> list = queryStructure.get(tClause.getType());
+	public void addEntity(Token tClause, ResultEntity entity) {
+		if (!queryStructure.containsKey(tClause.getType())) queryStructure.put(tClause.getType(), new ArrayList<ResultEntity>());
+		List<ResultEntity> list = queryStructure.get(tClause.getType());
 		list.add(entity);
 	}
 
-	public List<QSEntity> getList(Token tClause) {
+	public List<ResultEntity> getList(Token tClause) {
 		if (queryStructure.containsKey(tClause)) return queryStructure.get(tClause);
 		return null;
 	}
@@ -34,8 +34,8 @@ public class QueryStructure {
 	 */
 	public boolean hasRelation() {
 		if (queryStructure.containsKey(Type.MATCH)) {
-			List<QSEntity> entityList = queryStructure.get(Type.MATCH);
-			for (QSEntity entity : entityList) {
+			List<ResultEntity> entityList = queryStructure.get(Type.MATCH);
+			for (ResultEntity entity : entityList) {
 				if (entity instanceof QSRelation) {
 					return true;
 				}
@@ -50,9 +50,9 @@ public class QueryStructure {
 	 */
 	public int getRootNodeId() {
 		if (queryStructure.containsKey(Type.MATCH)) {
-			List<QSEntity> list = queryStructure.get(Type.MATCH);
+			List<ResultEntity> list = queryStructure.get(Type.MATCH);
 
-			for (QSEntity entity : list) {
+			for (ResultEntity entity : list) {
 				if (entity instanceof QSNode && (((QSNode) entity).getProperties().containsKey("id"))) {
 					return Integer.valueOf(((QSNode) entity).getProperties().get("id"));
 				}
@@ -69,14 +69,14 @@ public class QueryStructure {
 	 */
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		List<QSEntity> entityList;
+		List<ResultEntity> entityList;
 
 		// MATCH clause
 		if (queryStructure.containsKey(Type.MATCH)) {
 			entityList = queryStructure.get(Type.MATCH);
 			if (!entityList.isEmpty()){
 				stringBuilder.append("MATCH ");
-				for (QSEntity entity : entityList) {
+				for (ResultEntity entity : entityList) {
 					if (entity instanceof QSNode) {
 						// Node entity
 						QSNode node = (QSNode) entity;

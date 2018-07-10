@@ -3,7 +3,7 @@ package network;
 import application.MetadataManager;
 import constants.MsgConstants;
 import controllers.QueriesController;
-import neo4j.ResultEntity;
+import neo4j.ResultQuery;
 import queryStructure.QueryStructure;
 
 import java.io.*;
@@ -49,7 +49,7 @@ public class MMServer {
 
 		// Wait node's connections to the MetadataManager Server
 		// TODO: Descomentar
-		waitConnections();
+//		waitConnections();
 	}
 
 	/**
@@ -120,7 +120,7 @@ public class MMServer {
 	 * @param query:    Query in string format which will be execute in the slave node
 	 * @return Neo4J Result obj
 	 */
-	public void sendQuery(int SNDestId, String query, QueriesController queriesController) {
+	public void sendQuery(int SNDestId, String query, QueriesController queriesController, boolean trackingMode) {
 		boolean sent;
 		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query);
 
@@ -128,8 +128,8 @@ public class MMServer {
 			Msg msg = waitResponseFromSlaveNode(SNDestId);
 
 			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
-				List<ResultEntity> results = (List<ResultEntity>) msg.getData();
-				queriesController.processQueryResults(results);
+				ResultQuery result = (ResultQuery) msg.getData();
+				queriesController.processQueryResults(result, trackingMode);
 			}
 		}
 	}
@@ -140,10 +140,9 @@ public class MMServer {
 	public void sendQueryBroadcast(QueryStructure queryStructure, QueriesController queriesController) {
 		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
 		String queryString = queryStructure.toString();
-		boolean status;
 
 		for (int i = 0; i < numSN; i++) {
-			sendQuery(i + 1, queryString, queriesController);
+			sendQuery(i + 1, queryString, queriesController, false);
 		}
 	}
 
