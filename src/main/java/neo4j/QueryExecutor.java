@@ -34,25 +34,27 @@ public class QueryExecutor {
 				ResourceIterator columnIterator = result.columnAs(columnNames.get(i));
 
 				while (columnIterator.hasNext()) {
-					Map<String, Object> next = (Map<String, Object>) columnIterator.next();
+					Object next = columnIterator.next();
 
-					Node node = (Node) next.get("n");
-					if (node != null) {
-						ResultNode resultNode = new ResultNode();
+					if (next instanceof Node) {
+						Node node = (Node) next;
+						if (node != null) {
+							ResultNode resultNode = new ResultNode();
 
-						Iterable<String> properties = node.getPropertyKeys();
-						Iterable<Label> labels = node.getLabels();
+							Iterable<String> properties = node.getPropertyKeys();
+							Iterable<Label> labels = node.getLabels();
 
-						for (String propertyKey : properties)
-							resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
+							for (String propertyKey : properties)
+								resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
 
-						for (Label label : labels) resultNode.addLabel(label.name());
+							for (Label label : labels) resultNode.addLabel(label.name());
 
-						resultQuery.addEntity(i, resultNode);
-					} else {
+							resultQuery.addEntity(i, resultNode);
+						}
+					} else if (next instanceof Relationship) {
 						// Is Relation
 						System.out.println("Is relation??");
-						Relationship relationship = (Relationship) next.get("r");
+						Relationship relationship = (Relationship) next;
 						if (relationship != null) {
 							ResultRelation resultRelation = new ResultRelation();
 
