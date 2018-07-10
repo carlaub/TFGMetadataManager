@@ -3,9 +3,7 @@ package neo4j;
 import controllers.QueriesController;
 import org.neo4j.graphdb.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 06/06/2018.
@@ -31,6 +29,7 @@ public class QueryExecutor {
 			for (int i = 0; i < columnsCount; i++) {
 				ResourceIterator columnIterator = result.columnAs(columnNames.get(i));
 				resultQuery.addColumn(i, columnNames.get(i));
+				System.out.println("Col si: " + (columnIterator != null));
 
 				while (columnIterator.hasNext()) {
 					Object next = columnIterator.next();

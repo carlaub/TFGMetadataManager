@@ -24,9 +24,6 @@ public class ResultQuery {
 
 	}
 
-	public void setColumnsName(List<String> columnsName) {
-		this.columnsName = (String[]) columnsName.toArray();
-	}
 
 	public int getColumnsCount() {
 		return columnsCount;
