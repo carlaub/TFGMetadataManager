@@ -15,13 +15,17 @@ public class ResultQuery {
 	List<List<ResultEntity>> dataList;
 	int maxRowCount;
 
-	public ResultQuery(int columnsCount) {
-		this.columnsCount = columnsCount;
+	public ResultQuery(List<String> columnsName) {
+		this.columnsCount = columnsName.size();
 		this.maxRowCount = 0;
 
 		dataList = new ArrayList<>();
-		columnsName = new String[columnsCount];
+		this.columnsName = new String[columnsCount];
+		this.columnsName = (String[]) columnsName.toArray();
 
+		for (int i = 0; i < columnsCount; i++) {
+			dataList = new ArrayList<>();
+		}
 	}
 
 
@@ -52,13 +56,6 @@ public class ResultQuery {
 		return null;
 	}
 
-	public void addColumn(int columnIndex, String columnName) {
-		if (columnsName != null && dataList != null) {
-			System.out.println("Add new column");
-			dataList.add(columnIndex, new ArrayList<ResultEntity>());
-			columnsName[columnIndex] = columnName;
-		}
-	}
 
 	public void addEntity(int columnIndex, ResultEntity entity) {
 		List<ResultEntity> column = dataList.get(columnIndex);

@@ -3,11 +3,14 @@ package neo4j;
 import controllers.QueriesController;
 import org.neo4j.graphdb.*;
 
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Carla Urrea Blázquez on 06/06/2018.
- *
+ * <p>
  * QueryExecutor.java
  */
 public class QueryExecutor {
@@ -23,54 +26,51 @@ public class QueryExecutor {
 
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
-			ResultQuery resultQuery = new ResultQuery(columnsCount);
+			ResultQuery resultQuery = new ResultQuery(result.columns());
+
+			while (result.hasNext()) {
+				Map<String, Object> next = result.next();
+
+				for (int i = 0; i < columnsCount; i++) {
+					Object o = next.get(resultQuery.getColumnsName()[i]);
+
+					if (o instanceof Node) {
+						Node node = (Node) o;
+
+						ResultNode resultNode = new ResultNode();
+
+						Iterable<String> properties = node.getPropertyKeys();
+						Iterable<Label> labels = node.getLabels();
+
+						for (String propertyKey : properties)
+							resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
+
+						for (Label label : labels) resultNode.addLabel(label.name());
+
+						resultQuery.addEntity(i, resultNode);
 
 
-			for (int i = 0; i < columnsCount; i++) {
-				ResourceIterator columnIterator = result.columnAs(columnNames.get(i));
-				resultQuery.addColumn(i, columnNames.get(i));
-				System.out.println("Col si: " + (columnIterator != null));
-
-				while (columnIterator.hasNext()) {
-					Object next = columnIterator.next();
-					System.out.println("Next: " + next.getClass().getName());
-
-					if (next instanceof Node) {
-						Node node = (Node) next;
-						if (node != null) {
-							ResultNode resultNode = new ResultNode();
-
-							Iterable<String> properties = node.getPropertyKeys();
-							Iterable<Label> labels = node.getLabels();
-
-							for (String propertyKey : properties)
-								resultNode.addProperty(propertyKey, node.getProperty(propertyKey));
-
-							for (Label label : labels) resultNode.addLabel(label.name());
-
-							resultQuery.addEntity(i, resultNode);
-						}
-					} else if (next instanceof Relationship) {
+					} else if (o instanceof Relationship) {
 						// Is Relation
 						System.out.println("Is relation??");
-						Relationship relationship = (Relationship) next;
-						if (relationship != null) {
-							ResultRelation resultRelation = new ResultRelation();
+						Relationship relationship = (Relationship) o;
+						ResultRelation resultRelation = new ResultRelation();
 
-							Iterable<String> properties = relationship.getPropertyKeys();
+						Iterable<String> properties = relationship.getPropertyKeys();
 
-							for (String propertyKey : properties) {
-								resultRelation.addProperty(propertyKey, relationship.getProperty(propertyKey));
-							}
-
-							resultRelation.setStartNodeId(relationship.getStartNodeId());
-							resultRelation.setEndNodeId(relationship.getEndNodeId());
-
-							resultQuery.addEntity(i, resultRelation);
+						for (String propertyKey : properties) {
+							resultRelation.addProperty(propertyKey, relationship.getProperty(propertyKey));
 						}
+
+						resultRelation.setStartNodeId(relationship.getStartNodeId());
+						resultRelation.setEndNodeId(relationship.getEndNodeId());
+
+						resultQuery.addEntity(i, resultRelation);
+
 					}
 				}
 			}
+
 
 			queriesController.processQueryResults(resultQuery, trackingMode);
 
