@@ -38,17 +38,19 @@ public class ResultRelation extends ResultEntity {
 	public String toString() {
 		StringBuilder strBuilder = new StringBuilder();
 
-		strBuilder.append("[ ");
+		strBuilder.append("[");
 
 		// Properties
 		for (Object o : getProperties().entrySet()) {
 			Map.Entry entry = (Map.Entry) o;
+			strBuilder.append(" ");
 			strBuilder.append(entry.getKey());
 			strBuilder.append(": ");
 			strBuilder.append(entry.getValue());
+			strBuilder.append(",");
 		}
 
-		strBuilder.append(" ]");
+		strBuilder.insert(strBuilder.length() - 1, " ]");
 
 		return strBuilder.toString();
 	}
