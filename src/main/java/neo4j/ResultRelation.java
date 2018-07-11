@@ -47,10 +47,10 @@ public class ResultRelation extends ResultEntity {
 			strBuilder.append(entry.getKey());
 			strBuilder.append(": ");
 			strBuilder.append(entry.getValue());
-			strBuilder.append(",");
+			strBuilder.append(", ");
 		}
 
-		strBuilder.insert(strBuilder.length(), " ]");
+		strBuilder.replace(strBuilder.length() - 2, strBuilder.length(), " ]");
 
 		return strBuilder.toString();
 	}
