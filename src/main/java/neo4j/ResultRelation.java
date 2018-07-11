@@ -50,7 +50,7 @@ public class ResultRelation extends ResultEntity {
 			strBuilder.append(",");
 		}
 
-		strBuilder.insert(strBuilder.length() - 1, " ]");
+		strBuilder.insert(strBuilder.length(), " ]");
 
 		return strBuilder.toString();
 	}
