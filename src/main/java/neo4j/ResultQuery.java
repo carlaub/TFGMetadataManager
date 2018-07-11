@@ -24,7 +24,7 @@ public class ResultQuery {
 		this.columnsName = (String[]) columnsName.toArray();
 
 		for (int i = 0; i < columnsCount; i++) {
-			dataList = new ArrayList<>();
+			dataList.add(new ArrayList<ResultEntity>());
 		}
 	}
 
