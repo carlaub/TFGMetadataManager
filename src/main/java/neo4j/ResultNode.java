@@ -43,6 +43,16 @@ public class ResultNode extends ResultEntity implements Serializable {
 		return false;
 	}
 
+	public int getNodeId() {
+		if (properties.containsKey("id")) return (int)properties.get("id");
+		return -1;
+	}
+
+	public int getForeignPartitionId() {
+		if (properties.containsKey("paritition")) return (int)properties.get("partition");
+		return -1;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder strBuilder = new StringBuilder();
@@ -69,7 +79,6 @@ public class ResultNode extends ResultEntity implements Serializable {
 			if (propertiesIterator.hasNext()) strBuilder.append(", ");
 		}
 		strBuilder.append(" } ]");
-
 
 
 		return strBuilder.toString();

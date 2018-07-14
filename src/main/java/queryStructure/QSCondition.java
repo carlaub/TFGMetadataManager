@@ -4,7 +4,7 @@ package queryStructure;
  * Created by Carla Urrea Blázquez on 27/06/2018.
  *
  */
-public class QSCondition extends ResultEntity {
+public class QSCondition extends QSEntity {
 	String condition;
 
 	public String getConditions() {

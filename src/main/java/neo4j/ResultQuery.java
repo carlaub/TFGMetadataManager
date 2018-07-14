@@ -69,11 +69,8 @@ public class ResultQuery {
 
 		Object[][] dataTable = new Object[maxRowCount][columnsCount];
 
-		System.out.println("Column size init: " + maxRowCount);
-
 		for (int i = 0; i < maxRowCount; i++) {
 			for (int j = 0; j < columnsCount; j++) {
-				System.out.println("Column " + j +", Size: " + dataList.get(j).size());
 				if (dataList.get(j).size() > i) dataTable[i][j] = dataList.get(j).get(i).toString();
 			}
 		}

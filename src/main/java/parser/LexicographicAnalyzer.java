@@ -1,6 +1,7 @@
 package parser;
 
 import application.MetadataManager;
+import constants.GenericConstants;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -12,7 +13,6 @@ import java.util.Scanner;
  * LexicographicAnalyzer.java
  */
 public class LexicographicAnalyzer {
-	private static final String GENERIC_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=\'\"";
 
 	private static LexicographicAnalyzer instance;
 	private Scanner scnQueries;
@@ -67,7 +67,7 @@ public class LexicographicAnalyzer {
 						}
 						state = 0;
 
-					} else if (GENERIC_CHARS.indexOf(character) != -1) {
+					} else if (GenericConstants.COMMON_CHARS.indexOf(character) != -1) {
 						state = 1;
 					} else if ("()[]{}.,:-<>".indexOf(character) != -1) {
 						state = 2;
@@ -97,7 +97,7 @@ public class LexicographicAnalyzer {
 
 
 
-					} while (GENERIC_CHARS.indexOf(character) != -1);
+					} while (GenericConstants.COMMON_CHARS.indexOf(character) != -1);
 
 					if (lexema.equalsIgnoreCase("BEGIN")) {
 						return new Token(Type.BEGIN, lexema);

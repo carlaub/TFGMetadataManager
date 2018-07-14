@@ -1,7 +1,6 @@
 package controllers;
 
 import application.MetadataManager;
-import constants.GenericConstants;
 import dnl.utils.text.table.TextTable;
 import neo4j.*;
 import network.MMServer;
@@ -21,17 +20,22 @@ import java.util.Map;
 public class QueriesController {
 	private MMServer mmServer;
 	private QueryExecutor queryExecutor;
-	private QueryStructure currentQuery;
+	private ResultQuery initialResultQuery;
+	private QueryStructure currentQueryStructure;
+	private int columnsCount;
+	private ResultNode rootNode;
 
 
 	public QueriesController() {
 		mmServer = MMServer.getInstance();
 		queryExecutor = new QueryExecutor();
+		initialResultQuery = null;
+		rootNode = null;
 	}
 
 	public void  manageNewQuery(QueryStructure queryStructure) {
-		currentQuery = queryStructure;
 
+		this.currentQueryStructure = queryStructure;
 //		if (queryStructure.hasRelation()) {
 			// CASE 1: Query's MATCH clause has a relation
 
@@ -39,8 +43,7 @@ public class QueriesController {
 			System.out.println("ID root node: " + idRootNode);
 
 			//TODO: Descomentar y eliminar
-			String queryString = queryStructure.toString();
-			queryExecutor.processQuery(queryString, this, false);
+			queryExecutor.processQuery(queryStructure, this, false);
 
 //		if (idRootNode > 0) {
 //				int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
@@ -63,15 +66,40 @@ public class QueriesController {
 //		}
 	}
 
-	public void processQueryResults(ResultQuery resultQuery, boolean trackingMode) {
+	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
 
-		// TODO: Filtrar nodos frontera
 		System.out.println("-> Query Result received");
 
 		if (resultQuery == null) return;
 
-		int columnsCount = resultQuery.getColumnsCount();
+		if (this.initialResultQuery == null) {
+			this.columnsCount = resultQuery.getColumnsCount();
+			this.initialResultQuery = resultQuery;
+		}
+
+		if (!trackingMode) {
+			// Send a query to the original root node partition to get its information. This information is needed to replace
+			// some conditions in the WHERE clause related with the root node
+			// EX:
+			//	ORG Query				MOD Query
+			// (root.age > m.age)	=>	(14 > m.age)
+
+			System.out.println("Search for root node id: " + queryStructure.getRootNodeId());
+
+			int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+			String queryRootInfo = "MATCH n {id:" + queryStructure.getRootNodeId() + " } RETURN n;";
+			ResultQuery resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
+
+			if (resultQueryRootInfo.getColumnsCount() > 0) {
+				List<ResultEntity> column = resultQueryRootInfo.getColumn(0);
+
+				if (column.size() > 0) {
+					rootNode = (ResultNode) column.get(0);
+				}
+			}
+
+		}
 
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
@@ -85,26 +113,52 @@ public class QueriesController {
 
 					ResultNode resultNode = (ResultNode) result;
 
-					List<String> labels = resultNode.getLabels();
+					if (resultNode.isBorderNode()) {
+
+						/*
+						En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
+						Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
+						Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
+						 */
+						// TODO: Reformat query
+
+						int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+						int idPartitionForeign = resultNode.getForeignPartitionId();
+
+						String key = String.valueOf(idPartitionLocal) + String.valueOf(idPartitionForeign);
+
+						int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().get(key);
+						System.out.println("Key: " + key + " - Id node foreign: " + idForeignBorderNode);
+
+						QueryStructure queryStructureModified = queryStructure.replaceRootNode(queryStructure, idForeignBorderNode, rootNode);
+
+						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+
+					} else if (!trackingMode) {
+						initialResultQuery.addEntity(i, resultNode);
+					}
+
+
+//					List<String> labels = resultNode.getLabels();
 
 					// Labels
-					if (!labels.isEmpty()) {
-						int listSize = labels.size();
-
-						System.out.print("{ ");
-						for (int j = 0; j < listSize - 1; j++) {
-							System.out.print(labels.get(j) + ": ");
-						}
-						System.out.print(labels.get(listSize - 1) + " }");
-					}
-
-					// Properties
-					it = result.getProperties().entrySet().iterator();
-					while(it.hasNext()) {
-						Map.Entry entry = (Map.Entry)it.next();
-						System.out.print(", " + entry.getKey() + ": " + entry.getValue());
-					}
-					System.out.println("\n");
+//					if (!labels.isEmpty()) {
+//						int listSize = labels.size();
+//
+//						System.out.print("{ ");
+//						for (int j = 0; j < listSize - 1; j++) {
+//							System.out.print(labels.get(j) + ": ");
+//						}
+//						System.out.print(labels.get(listSize - 1) + " }");
+//					}
+//
+//					// Properties
+//					it = result.getProperties().entrySet().iterator();
+//					while(it.hasNext()) {
+//						Map.Entry entry = (Map.Entry)it.next();
+//						System.out.print(", " + entry.getKey() + ": " + entry.getValue());
+//					}
+//					System.out.println("\n");
 
 				} else if (result instanceof ResultRelation) {
 					it = result.getProperties().entrySet().iterator();
@@ -121,6 +175,7 @@ public class QueriesController {
 			// Show result table
 			TextTable textTable = new TextTable(resultQuery.getColumnsName(), resultQuery.getDataTable());
 			textTable.printTable();
+			System.out.println("\n\n");
 		}
 	}
 }

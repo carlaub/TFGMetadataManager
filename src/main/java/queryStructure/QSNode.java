@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by Carla Urrea Blázquez on 27/06/2018.
  * QSNode.java
  */
-public class QSNode extends ResultEntity {
+public class QSNode extends QSEntity {
 	private  boolean isRoot;
 	private String variable;
 	private List<String> labels;

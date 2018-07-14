@@ -120,7 +120,21 @@ public class MMServer {
 	 * @param query:    Query in string format which will be execute in the slave node
 	 * @return Neo4J Result obj
 	 */
-	public void sendQuery(int SNDestId, String query, QueriesController queriesController, boolean trackingMode) {
+	public void sendQuery(int SNDestId, QueryStructure query, QueriesController queriesController, boolean trackingMode) {
+		boolean sent;
+		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query.toString());
+
+		if (sent) {
+			Msg msg = waitResponseFromSlaveNode(SNDestId);
+
+			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
+				ResultQuery result = (ResultQuery) msg.getData();
+				queriesController.processQueryResults(result, query, trackingMode);
+			}
+		}
+	}
+
+	public ResultQuery sendStringQuery(int SNDestId, String query) {
 		boolean sent;
 		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query);
 
@@ -128,10 +142,11 @@ public class MMServer {
 			Msg msg = waitResponseFromSlaveNode(SNDestId);
 
 			if (msg != null && msg.getCode() == NetworkConstants.PCK_QUERY_RESULT) {
-				ResultQuery result = (ResultQuery) msg.getData();
-				queriesController.processQueryResults(result, trackingMode);
+				return (ResultQuery) msg.getData();
 			}
 		}
+
+		return null;
 	}
 
 	/**
@@ -139,10 +154,9 @@ public class MMServer {
 	 */
 	public void sendQueryBroadcast(QueryStructure queryStructure, QueriesController queriesController) {
 		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
-		String queryString = queryStructure.toString();
 
 		for (int i = 0; i < numSN; i++) {
-			sendQuery(i + 1, queryString, queriesController, false);
+			sendQuery(i + 1, queryStructure, queriesController, false);
 		}
 	}
 

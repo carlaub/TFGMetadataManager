@@ -6,11 +6,11 @@ import java.util.HashMap;
 /**
  * Created by Carla Urrea Blázquez on 25/06/2018.
  *
- * ResultEntity.java
- * ResultEntity parent class.
+ * QSEntity.java
+ * QSEntity parent class.
  */
 public abstract class ResultEntity implements Serializable {
-	private HashMap<String, Object> properties;
+	protected HashMap<String, Object> properties;
 
 	public abstract String toString();
 

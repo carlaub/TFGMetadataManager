@@ -2,11 +2,10 @@ package neo4j;
 
 import controllers.QueriesController;
 import org.neo4j.graphdb.*;
+import queryStructure.QueryStructure;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Carla Urrea Blázquez on 06/06/2018.
@@ -20,9 +19,9 @@ public class QueryExecutor {
 		graphDatabaseService = GraphDatabase.getInstance().getDataBaseGraphService();
 	}
 
-	public ResultQuery processQuery(String query, QueriesController queriesController, boolean trackingMode) {
+	public ResultQuery processQuery(QueryStructure query, QueriesController queriesController, boolean trackingMode) {
 		try (Transaction q = graphDatabaseService.beginTx();
-			 Result result = graphDatabaseService.execute(query)) {
+			 Result result = graphDatabaseService.execute(query.toString())) {
 
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
@@ -72,7 +71,7 @@ public class QueryExecutor {
 			}
 
 
-			queriesController.processQueryResults(resultQuery, trackingMode);
+			queriesController.processQueryResults(resultQuery, query, trackingMode);
 
 			// Important to avoid unwanted behaviour, such as leaking transactions
 			result.close();

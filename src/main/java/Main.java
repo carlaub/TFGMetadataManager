@@ -18,6 +18,8 @@ import java.io.IOException;
 public class Main {
 
     public static void main(String[] args) {
+        String hola = "ndfjsds skfdj n.holapsp sc n.";
+        System.out.println(hola.indexOf("n."));
         System.out.println("/************* METADATA MANAGER *************/\n\n");
 
         // Create application singleton object
