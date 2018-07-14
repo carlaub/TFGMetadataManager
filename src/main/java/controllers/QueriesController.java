@@ -88,7 +88,7 @@ public class QueriesController {
 			System.out.println("Search for root node id: " + queryStructure.getRootNodeId());
 
 			int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
-			String queryRootInfo = "MATCH n {id:" + queryStructure.getRootNodeId() + " } RETURN n;";
+			String queryRootInfo = "MATCH (n {id:" + queryStructure.getRootNodeId() + " }) RETURN n;";
 			ResultQuery resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
 
 			if (resultQueryRootInfo.getColumnsCount() > 0) {
@@ -130,7 +130,7 @@ public class QueriesController {
 						int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().get(key);
 						System.out.println("Key: " + key + " - Id node foreign: " + idForeignBorderNode);
 
-						QueryStructure queryStructureModified = queryStructure.replaceRootNode(queryStructure, idForeignBorderNode, rootNode);
+						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode);
 
 						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 

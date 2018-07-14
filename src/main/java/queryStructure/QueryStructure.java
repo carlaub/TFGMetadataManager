@@ -158,7 +158,7 @@ public class QueryStructure {
 		return stringBuilder.toString();
 	}
 
-	public QueryStructure replaceRootNode (QueryStructure queryStructureOrig, int idRootNodeReplace, ResultNode rootNode) {
+	public QueryStructure replaceRootNode (int idRootNodeReplace, ResultNode rootNode) {
 		String varRootNode = "";
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
@@ -176,6 +176,7 @@ public class QueryStructure {
 						newRootNode.isRoot();
 						varRootNode = newRootNode.getVariable();
 						newRootNode.setProperties(new HashMap<>(((QSNode) entity).getProperties()));
+						newRootNode.getProperties().put("id", String.valueOf(idRootNodeReplace));
 
 						ArrayList<String> labels = new ArrayList<>();
 						labels.add(GenericConstants.BORDER_NODE_LABEL);

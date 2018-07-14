@@ -1,17 +1,17 @@
-BEGIN
-MATCH (n)
-RETURN n
-END
+#BEGIN
+#MATCH (n)
+#RETURN n
+#END
 
-BEGIN
-MATCH (n)<-[r]-(m)
-RETURN n, r
-END
+#BEGIN
+#MATCH (n)<-[r]-(m)
+#RETURN n, r
+#END
 
-BEGIN
-MATCH (n {id: 2})
-RETURN n
-END
+#BEGIN
+#MATCH (n {id: 2})
+#RETURN n
+#END
 
 BEGIN
 MATCH (n {id: 2})<--(m)
