@@ -167,7 +167,6 @@ public class QueryStructure {
 			Map.Entry<Type, List<QSEntity>> entry = iterator.next();
 			Type clauseType = entry.getKey();
 			List<QSEntity> entities = entry.getValue();
-			System.out.println("Entra");
 
 			if (clauseType == Type.MATCH) {
 
@@ -226,7 +225,7 @@ public class QueryStructure {
 			if (clauseType == Type.RETURN) {
 				System.out.println("Entra en return");
 				for (QSEntity entity : entities) {
-					if (entities instanceof QSCondition) {
+					if (entity instanceof QSCondition) {
 						String condition = ((QSCondition) entity).getConditions();
 						System.out.println("Condition: " + condition);
 						// Root node information has been obtained on the first phase (original query)
