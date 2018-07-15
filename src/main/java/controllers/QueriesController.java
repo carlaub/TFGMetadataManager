@@ -89,6 +89,7 @@ public class QueriesController {
 				List<ResultEntity> column = resultQueryRootInfo.getColumn(0);
 
 				if (column.size() > 0) {
+					System.out.println("Root node OK");
 					rootNode = (ResultNode) column.get(0);
 				}
 			}
@@ -99,6 +100,8 @@ public class QueriesController {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
 
 			for (ResultEntity result : columnResults) {
+
+				System.out.println("Entra");
 
 				if (result instanceof ResultNode) {
 
@@ -131,28 +134,6 @@ public class QueriesController {
 					} else if (!trackingMode) {
 						initialResultQuery.addEntity(i, resultNode);
 					}
-
-
-//					List<String> labels = resultNode.getLabels();
-
-					// Labels
-//					if (!labels.isEmpty()) {
-//						int listSize = labels.size();
-//
-//						System.out.print("{ ");
-//						for (int j = 0; j < listSize - 1; j++) {
-//							System.out.print(labels.get(j) + ": ");
-//						}
-//						System.out.print(labels.get(listSize - 1) + " }");
-//					}
-//
-//					// Properties
-//					it = result.getProperties().entrySet().iterator();
-//					while(it.hasNext()) {
-//						Map.Entry entry = (Map.Entry)it.next();
-//						System.out.print(", " + entry.getKey() + ": " + entry.getValue());
-//					}
-//					System.out.println("\n");
 
 				} else if (result instanceof ResultRelation) {
 					it = result.getProperties().entrySet().iterator();
