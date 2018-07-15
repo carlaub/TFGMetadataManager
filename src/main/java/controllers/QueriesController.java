@@ -117,7 +117,7 @@ public class QueriesController {
 						int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
 						int idPartitionForeign = resultNode.getForeignPartitionId();
 
-						String key = String.valueOf(idPartitionLocal) + String.valueOf(idPartitionForeign);
+						String key = String.valueOf(idPartitionForeign) + String.valueOf(idPartitionLocal);
 						System.out.println("Key: " + key );
 
 						int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().get(key);
