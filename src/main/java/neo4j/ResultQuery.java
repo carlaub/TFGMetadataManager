@@ -1,6 +1,7 @@
 package neo4j;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  *
  */
 
-public class ResultQuery {
+public class ResultQuery implements Serializable{
 	String[] columnsName;
 	int columnsCount;
 	List<List<ResultEntity>> dataList;
