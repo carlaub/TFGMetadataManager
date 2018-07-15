@@ -127,7 +127,7 @@ public class QueriesController {
 
 						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 
-					} else if (!trackingMode) {
+					} else {
 						initialResultQuery.addEntity(i, resultNode);
 					}
 
@@ -138,13 +138,15 @@ public class QueriesController {
 						System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 					}
 					System.out.println("\n");
+					initialResultQuery.addEntity(i, result);
+
 				}
 			}
 		}
 
 		if (!trackingMode) {
 			// Show result table
-			TextTable textTable = new TextTable(resultQuery.getColumnsName(), resultQuery.getDataTable());
+			TextTable textTable = new TextTable(initialResultQuery.getColumnsName(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
 		}
