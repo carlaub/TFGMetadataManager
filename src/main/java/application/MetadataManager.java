@@ -22,9 +22,9 @@ public class MetadataManager {
 	private ArrayList<SlaveNodeObject> snConnected;
 
 	// ---- Data structures ----
-	private Map<Integer, Integer> mapGraphNodes; // 1 - Structure that holds the relation nodeId -> partition where is located
-	private Map<String, Integer> mapBoarderNodes; // 2 - Each key is composed by [idLocalPartition concat idForeignPartition], the value is the edge node's id
-	private RelationshipsTable relationshipsTable; // 3 - Hash table that contains, for each border node, a list with all the relationships that it has. Node boarder id is the key.
+	private static Map<Integer, Integer> mapGraphNodes; // 1 - Structure that holds the relation nodeId -> partition where is located
+	private static Map<String, Integer> mapBoarderNodes; // 2 - Each key is composed by [idLocalPartition concat idForeignPartition], the value is the edge node's id
+	private static RelationshipsTable relationshipsTable; // 3 - Hash table that contains, for each border node, a list with all the relationships that it has. Node boarder id is the key.
 
 	public MetadataManager() {
 		snConnected = new ArrayList<SlaveNodeObject>();
