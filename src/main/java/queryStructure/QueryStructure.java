@@ -174,7 +174,8 @@ public class QueryStructure {
 					if (entity instanceof QSNode && ((QSNode) entity).isRoot()) {
 						QSNode newRootNode = new QSNode();
 						newRootNode.isRoot();
-						varRootNode = newRootNode.getVariable();
+						varRootNode = ((QSNode) entity).getVariable();
+						newRootNode.setVariable(varRootNode);
 						newRootNode.setProperties(new HashMap<>(((QSNode) entity).getProperties()));
 						newRootNode.getProperties().put("id", String.valueOf(idRootNodeReplace));
 
@@ -225,7 +226,7 @@ public class QueryStructure {
 				for (QSEntity entity : entities) {
 					if (entities instanceof QSCondition) {
 						String condition = ((QSCondition) entity).getConditions();
-
+						System.out.println("Condition: " + condition);
 						// Root node information has been obtained on the first phase (original query)
 						if (!(condition.equals(varRootNode) ||
 								condition.matches("^("+ varRootNode +".).*"))) {
