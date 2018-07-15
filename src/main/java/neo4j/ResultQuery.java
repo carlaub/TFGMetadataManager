@@ -16,13 +16,12 @@ public class ResultQuery implements Serializable{
 	List<List<ResultEntity>> dataList;
 	int maxRowCount;
 
-	public ResultQuery(List<String> columnsName) {
-		this.columnsCount = columnsName.size();
+	public ResultQuery(String[] columnsName) {
+		this.columnsCount = columnsName.length;
 		this.maxRowCount = 0;
 
 		dataList = new ArrayList<>();
-		this.columnsName = new String[columnsCount];
-		this.columnsName = (String[]) columnsName.toArray();
+		this.columnsName = columnsName;
 
 		for (int i = 0; i < columnsCount; i++) {
 			dataList.add(new ArrayList<ResultEntity>());

@@ -67,7 +67,7 @@ public class QueriesController {
 
 		if (this.initialResultQuery == null) {
 			this.columnsCount = resultQuery.getColumnsCount();
-			this.initialResultQuery = new ResultQuery(new ArrayList<>(Arrays.asList(resultQuery.getColumnsName())));
+			this.initialResultQuery = new ResultQuery(resultQuery.getColumnsName());
 		}
 
 		if (!trackingMode) {

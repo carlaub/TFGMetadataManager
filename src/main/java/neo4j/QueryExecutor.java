@@ -25,7 +25,7 @@ public class QueryExecutor {
 
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
-			ResultQuery resultQuery = new ResultQuery(result.columns());
+			ResultQuery resultQuery = new ResultQuery((String[]) result.columns().toArray());
 
 			while (result.hasNext()) {
 				Map<String, Object> next = result.next();
