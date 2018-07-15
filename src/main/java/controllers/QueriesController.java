@@ -66,7 +66,6 @@ public class QueriesController {
 		if (resultQuery == null) return;
 
 		if (this.initialResultQuery == null) {
-			this.columnsCount = resultQuery.getColumnsCount();
 			this.initialResultQuery = new ResultQuery(resultQuery.getColumnsName());
 		}
 
@@ -93,6 +92,7 @@ public class QueriesController {
 
 		}
 
+		columnsCount = resultQuery.getColumnsCount();
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
 
