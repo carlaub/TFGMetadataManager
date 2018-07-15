@@ -1,6 +1,7 @@
 package controllers;
 
 import application.MetadataManager;
+import constants.GenericConstants;
 import dnl.utils.text.table.TextTable;
 import neo4j.*;
 import network.MMServer;
@@ -36,34 +37,27 @@ public class QueriesController {
 	public void  manageNewQuery(QueryStructure queryStructure) {
 
 		this.currentQueryStructure = queryStructure;
-//		if (queryStructure.hasRelation()) {
 			// CASE 1: Query's MATCH clause has a relation
-
 			int idRootNode = queryStructure.getRootNodeId();
 			System.out.println("ID root node: " + idRootNode);
 
-			//TODO: Descomentar y eliminar
-			queryExecutor.processQuery(queryStructure, this, false);
 
-//		if (idRootNode > 0) {
-//				int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
-//				String queryString = queryStructure.toString();
-//
-//				if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
-//					// Root node is inside MetadataManager's Neo4j instance
-//					queryExecutor.processQuery(queryString, this, false);
-//				} else {
-//					// Root node is in the slave node with id "partitionID"
-//					mmServer.sendQuery(partitionID, queryString, this, false);
-//				}
-////			} else {
-////				System.out.println(ErrorConstants.ERR_QUERY_ROOT_NODE_ID);
-////			}
-//		} else {
-//			// CASE 2: Query's MATCH clause has not a relation
-//			mmServer.sendQueryBroadcast(queryStructure, this);
-//			queryExecutor.processQuery(queryStructure.toString(), this, false);
-//		}
+		if (idRootNode > 0) {
+				int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
+
+				if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
+					// Root node is inside MetadataManager's Neo4j instance
+					queryExecutor.processQuery(queryStructure, this, false);
+				} else {
+					// Root node is in the slave node with id "partitionID"
+					mmServer.sendQuery(partitionID, queryStructure, this, false);
+				}
+
+		} else {
+			// CASE 2: Query's MATCH clause has not a relation
+			mmServer.sendQueryBroadcast(queryStructure, this);
+			queryExecutor.processQuery(queryStructure, this, false);
+		}
 	}
 
 	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
