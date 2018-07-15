@@ -7,9 +7,7 @@ import neo4j.*;
 import network.MMServer;
 import queryStructure.QueryStructure;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 06/07/2018.
@@ -69,7 +67,7 @@ public class QueriesController {
 
 		if (this.initialResultQuery == null) {
 			this.columnsCount = resultQuery.getColumnsCount();
-			this.initialResultQuery = resultQuery;
+			this.initialResultQuery = new ResultQuery(new ArrayList<>(Arrays.asList(resultQuery.getColumnsName())));
 		}
 
 		if (!trackingMode) {
@@ -89,7 +87,6 @@ public class QueriesController {
 				List<ResultEntity> column = resultQueryRootInfo.getColumn(0);
 
 				if (column.size() > 0) {
-					System.out.println("Root node OK");
 					rootNode = (ResultNode) column.get(0);
 				}
 			}
@@ -100,8 +97,6 @@ public class QueriesController {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
 
 			for (ResultEntity result : columnResults) {
-
-				System.out.println("Entra");
 
 				if (result instanceof ResultNode) {
 
