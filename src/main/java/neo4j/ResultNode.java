@@ -49,7 +49,7 @@ public class ResultNode extends ResultEntity implements Serializable {
 	}
 
 	public int getForeignPartitionId() {
-		if (properties.containsKey("partition")) return (int)properties.get("partition");
+		if (properties.containsKey("partition")) return Integer.valueOf((String) properties.get("partition"));
 		return -1;
 	}
 
