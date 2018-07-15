@@ -115,9 +115,9 @@ public class QueryStructure {
 					} else if (entity instanceof QSRelation){
 						// Relationship entity
 						QSRelation qsRelation = (QSRelation) entity;
-						stringBuilder.append(qsRelation.getStart());
-						stringBuilder.append(qsRelation.getType());
-						stringBuilder.append(qsRelation.getEnd());
+						if (qsRelation.getStart() != null) stringBuilder.append(qsRelation.getStart());
+						if (qsRelation.getType() != null) stringBuilder.append(qsRelation.getType());
+						if (qsRelation.getEnd() != null) stringBuilder.append(qsRelation.getEnd());
 					}
 				}
 			}
