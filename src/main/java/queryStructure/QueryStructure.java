@@ -173,7 +173,7 @@ public class QueryStructure {
 				for (QSEntity entity : entities) {
 					if (entity instanceof QSNode && ((QSNode) entity).isRoot()) {
 						QSNode newRootNode = new QSNode();
-						newRootNode.isRoot();
+						newRootNode.setRoot(((QSNode) entity).isRoot());
 						varRootNode = ((QSNode) entity).getVariable();
 						newRootNode.setVariable(varRootNode);
 						newRootNode.setProperties(new HashMap<>(((QSNode) entity).getProperties()));
