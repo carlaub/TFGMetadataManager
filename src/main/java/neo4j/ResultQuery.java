@@ -11,13 +11,13 @@ import java.util.List;
  */
 
 public class ResultQuery implements Serializable{
-	String[] columnsName;
+	List<String> columnsName;
 	int columnsCount;
 	List<List<ResultEntity>> dataList;
 	int maxRowCount;
 
-	public ResultQuery(String[] columnsName) {
-		this.columnsCount = columnsName.length;
+	public ResultQuery(List<String> columnsName) {
+		this.columnsCount = columnsName.size();
 		this.maxRowCount = 0;
 
 		dataList = new ArrayList<>();
@@ -38,7 +38,7 @@ public class ResultQuery implements Serializable{
 	}
 
 
-	public String[] getColumnsName() {
+	public List<String> getColumnsName() {
 		return columnsName;
 	}
 

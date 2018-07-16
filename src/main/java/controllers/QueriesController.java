@@ -20,7 +20,6 @@ public class QueriesController {
 	private MMServer mmServer;
 	private QueryExecutor queryExecutor;
 	private ResultQuery initialResultQuery;
-	private QueryStructure currentQueryStructure;
 	private int columnsCount;
 	private ResultNode rootNode;
 
@@ -34,7 +33,6 @@ public class QueriesController {
 
 	public void  manageNewQuery(QueryStructure queryStructure) {
 
-		this.currentQueryStructure = queryStructure;
 			// CASE 1: Query's MATCH clause has a relation
 			int idRootNode = queryStructure.getRootNodeId();
 			System.out.println("ID root node: " + idRootNode);
@@ -60,6 +58,8 @@ public class QueriesController {
 
 	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
+		int indexOrgColumn = 0;
+
 
 		System.out.println("-> Query Result received");
 
@@ -93,8 +93,13 @@ public class QueriesController {
 		}
 
 		columnsCount = resultQuery.getColumnsCount();
+		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
+		// corresponding column to show the results
+
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
+
+			if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
 
 			for (ResultEntity result : columnResults) {
 
@@ -112,8 +117,6 @@ public class QueriesController {
 						Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
 						Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
 						 */
-						// TODO: Reformat query
-
 						int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
 						int idPartitionForeign = resultNode.getForeignPartitionId();
 
@@ -128,7 +131,8 @@ public class QueriesController {
 						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 
 					} else {
-						initialResultQuery.addEntity(i, resultNode);
+						System.out.println("Index org column: " + indexOrgColumn);
+						initialResultQuery.addEntity(trackingMode ? indexOrgColumn : i, result);
 					}
 
 				} else if (result instanceof ResultRelation) {
@@ -138,7 +142,7 @@ public class QueriesController {
 						System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 					}
 					System.out.println("\n");
-					initialResultQuery.addEntity(i, result);
+					initialResultQuery.addEntity(trackingMode ? indexOrgColumn : i, result);
 
 				}
 			}
@@ -146,7 +150,7 @@ public class QueriesController {
 
 		if (!trackingMode) {
 			// Show result table
-			TextTable textTable = new TextTable(initialResultQuery.getColumnsName(), initialResultQuery.getDataTable());
+			TextTable textTable = new TextTable((String[])initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
 		}

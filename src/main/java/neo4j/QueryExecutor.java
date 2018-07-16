@@ -25,13 +25,13 @@ public class QueryExecutor {
 
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
-			ResultQuery resultQuery = new ResultQuery((String[]) result.columns().toArray());
+			ResultQuery resultQuery = new ResultQuery(result.columns());
 
 			while (result.hasNext()) {
 				Map<String, Object> next = result.next();
 
 				for (int i = 0; i < columnsCount; i++) {
-					Object o = next.get(resultQuery.getColumnsName()[i]);
+					Object o = next.get(resultQuery.getColumnsName().get(i));
 
 					if (o instanceof Node) {
 						Node node = (Node) o;
