@@ -38,6 +38,14 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 		return results;
 	}
 
+	public boolean containRelation(int idNode1, int idNode2) {
+		for (Relationship relationship : list) {
+			if (relationship.contains(idNode1, idNode2)) return true;
+		}
+
+		return false;
+	}
+
 	public void print() {
 		for (Relationship relationship : list) {
 			System.out.println("\tOrigin: " + relationship.getIdNodeOrg() + "  Destination: " + relationship.getIdNodeDest());

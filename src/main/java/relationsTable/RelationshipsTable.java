@@ -51,10 +51,7 @@ public class RelationshipsTable {
 		RelationshipsList relationshipsList = relationshipTable.get(borderNodeId);
 
 		if (relationshipsList != null) {
-			System.out.println("Realtionlist no null");
-			for (Relationship relationship : relationshipsList) {
-				if (relationship.contains(idNode1, idNode2)) return true;
-			}
+			return relationshipsList.containRelation(idNode1, idNode2);
 		}
 
 		return false;
