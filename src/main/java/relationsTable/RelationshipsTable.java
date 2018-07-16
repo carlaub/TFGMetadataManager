@@ -47,9 +47,11 @@ public class RelationshipsTable {
 	}
 
 	public boolean existsRelationship(int borderNodeId, int idNode1, int idNode2) {
+		System.out.println("Border node id: " + borderNodeId + " idNode1: " + idNode1 + " idNode2: " + idNode2);
 		RelationshipsList relationshipsList = relationshipTable.get(borderNodeId);
 
 		if (relationshipsList != null) {
+			System.out.println("Realtionlist no null");
 			for (Relationship relationship : relationshipsList) {
 				if (relationship.contains(idNode1, idNode2)) return true;
 			}

@@ -29,7 +29,7 @@ public class Relationship {
 	}
 
 	public boolean contains(int idNode1, int idNode2) {
-		return (idNodeDest == idNode1 || idNodeOrg == idNode1
-				|| idNodeDest == idNode2 || idNodeOrg == idNode2);
+		return ((idNodeDest == idNode1 && idNodeOrg == idNode2) ||
+				(idNodeDest == idNode2 && idNodeOrg == idNode1));
 	}
 }
