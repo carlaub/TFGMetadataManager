@@ -6,6 +6,7 @@ import dnl.utils.text.table.TextTable;
 import neo4j.*;
 import network.MMServer;
 import queryStructure.QueryStructure;
+import relationsTable.RelationshipsTable;
 
 import java.util.*;
 
@@ -22,6 +23,7 @@ public class QueriesController {
 	private ResultQuery initialResultQuery;
 	private int columnsCount;
 	private ResultNode rootNode;
+	private RelationshipsTable relationshipsTable;
 
 
 	public QueriesController() {
@@ -29,6 +31,7 @@ public class QueriesController {
 		queryExecutor = new QueryExecutor();
 		initialResultQuery = null;
 		rootNode = null;
+		relationshipsTable = MetadataManager.getInstance().getRelationshipsTable();
 	}
 
 	public void  manageNewQuery(QueryStructure queryStructure) {
@@ -59,6 +62,7 @@ public class QueriesController {
 	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
 		int indexOrgColumn = 0;
+		int idBorderNode;
 
 
 		System.out.println("-> Query Result received");
@@ -119,6 +123,7 @@ public class QueriesController {
 						 */
 						int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
 						int idPartitionForeign = resultNode.getForeignPartitionId();
+						idBorderNode = resultNode.getNodeId();
 
 						String key = String.valueOf(idPartitionForeign) + String.valueOf(idPartitionLocal);
 						System.out.println("Key: " + key );
@@ -131,18 +136,26 @@ public class QueriesController {
 						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 
 					} else {
-						initialResultQuery.addEntity(trackingMode ? indexOrgColumn : i, result);
+						if (trackingMode) {
+							// Add only the node if has relation with the root node
+							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
+								initialResultQuery.addEntity(indexOrgColumn, result);
+							}
+						} else {
+							initialResultQuery.addEntity(i, result);
+						}
 					}
 
 				} else if (result instanceof ResultRelation) {
-					it = result.getProperties().entrySet().iterator();
-					while(it.hasNext()) {
-						Map.Entry entry = (Map.Entry)it.next();
-						System.out.println("- " + entry.getKey() + ": " + entry.getValue());
+					if (!trackingMode) {
+						it = result.getProperties().entrySet().iterator();
+						while(it.hasNext()) {
+							Map.Entry entry = (Map.Entry)it.next();
+							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
+						}
+						System.out.println("\n");
+						initialResultQuery.addEntity(i, result);
 					}
-					System.out.println("\n");
-					initialResultQuery.addEntity(trackingMode ? indexOrgColumn : i, result);
-
 				}
 			}
 		}

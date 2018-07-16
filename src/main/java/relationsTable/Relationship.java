@@ -27,4 +27,9 @@ public class Relationship {
 	public void setIdNodeDest(int idNodeDest) {
 		this.idNodeDest = idNodeDest;
 	}
+
+	public boolean contains(int idNode1, int idNode2) {
+		return (idNodeDest == idNode1 || idNodeOrg == idNode1
+				|| idNodeDest == idNode2 || idNodeOrg == idNode2);
+	}
 }

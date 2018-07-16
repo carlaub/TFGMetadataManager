@@ -46,6 +46,18 @@ public class RelationshipsTable {
 		}
 	}
 
+	public boolean existsRelationship(int borderNodeId, int idNode1, int idNode2) {
+		RelationshipsList relationshipsList = relationshipTable.get(borderNodeId);
+
+		if (relationshipsList != null) {
+			for (Relationship relationship : relationshipsList) {
+				if (relationship.contains(idNode1, idNode2)) return true;
+			}
+		}
+
+		return false;
+	}
+
 	public void print() {
 		for (Map.Entry<Integer, RelationshipsList> entry : relationshipTable.entrySet()) {
 			System.out.println("Border node " + entry.getKey());
