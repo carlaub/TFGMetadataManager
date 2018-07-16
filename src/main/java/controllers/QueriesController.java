@@ -131,7 +131,6 @@ public class QueriesController {
 						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 
 					} else {
-						System.out.println("Index org column: " + indexOrgColumn);
 						initialResultQuery.addEntity(trackingMode ? indexOrgColumn : i, result);
 					}
 

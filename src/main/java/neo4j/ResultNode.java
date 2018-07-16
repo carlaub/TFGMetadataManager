@@ -57,7 +57,7 @@ public class ResultNode extends ResultEntity implements Serializable {
 	public String toString() {
 		StringBuilder strBuilder = new StringBuilder();
 
-		strBuilder.append("[ ");
+		strBuilder.append("[");
 		// Labels
 		if (!labels.isEmpty()) {
 			int labelsListSize = labels.size();
@@ -66,7 +66,7 @@ public class ResultNode extends ResultEntity implements Serializable {
 				strBuilder.append(":");
 				strBuilder.append(labels.get(i));
 			}
-			strBuilder.append(" { ");
+			strBuilder.append("{");
 		}
 
 		// Properties
@@ -74,11 +74,11 @@ public class ResultNode extends ResultEntity implements Serializable {
 		while(propertiesIterator.hasNext()) {
 			Map.Entry entry = (Map.Entry)propertiesIterator.next();
 			strBuilder.append(entry.getKey());
-			strBuilder.append(": ");
+			strBuilder.append(":");
 			strBuilder.append(entry.getValue());
-			if (propertiesIterator.hasNext()) strBuilder.append(", ");
+			if (propertiesIterator.hasNext()) strBuilder.append(",");
 		}
-		strBuilder.append(" } ]");
+		strBuilder.append("}]");
 
 
 		return strBuilder.toString();

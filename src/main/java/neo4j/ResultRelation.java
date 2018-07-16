@@ -45,12 +45,12 @@ public class ResultRelation extends ResultEntity {
 			Map.Entry entry = (Map.Entry) o;
 			strBuilder.append(" ");
 			strBuilder.append(entry.getKey());
-			strBuilder.append(": ");
+			strBuilder.append(":");
 			strBuilder.append(entry.getValue());
-			strBuilder.append(", ");
+			strBuilder.append(",");
 		}
 
-		strBuilder.replace(strBuilder.length() - 2, strBuilder.length(), " ]");
+		strBuilder.replace(strBuilder.length() - 2, strBuilder.length(), "]");
 
 		return strBuilder.toString();
 	}
