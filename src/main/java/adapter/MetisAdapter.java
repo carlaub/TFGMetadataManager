@@ -223,7 +223,7 @@ public class MetisAdapter {
 			newEdgeInformation = newEdgeInformation + part + "\t";
 		}
 		// Add the ID of the original destination node located in a different partition
-		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + destNodeId;
+//		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + destNodeId;
 
 		// Write the relation (between partition node and boarder node) in the edges file of the partition
 		writeEdgeInPartFile(newEdgeInformation, localPartition);

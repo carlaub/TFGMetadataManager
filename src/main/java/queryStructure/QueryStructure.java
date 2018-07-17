@@ -137,8 +137,6 @@ public class QueryStructure {
 
 				stringBuilder.append(((QSCondition)entityList.get(size - 1)).getConditions());
 			}
-
-			// TODO: añadir "OR m:border"
 		}
 
 		// RETURN clause
@@ -162,8 +160,10 @@ public class QueryStructure {
 
 	public QueryStructure replaceRootNode (int idRootNodeReplace, ResultNode rootNode) {
 		String varRootNode = "";
+		String secondaryNodeVar = "";
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
+		boolean hasWhereClause = false;
 
 		while (iterator.hasNext()) {
 			Map.Entry<Type, List<QSEntity>> entry = iterator.next();
@@ -188,6 +188,8 @@ public class QueryStructure {
 						queryStructureModified.addEntity(clauseType, newRootNode);
 
 					} else {
+						// TODO: Soportar mas de una variable secundaria
+						secondaryNodeVar = ((QSNode)entity).getVariable();
 						queryStructureModified.addEntity(clauseType, entity);
 					}
 				}
@@ -195,6 +197,8 @@ public class QueryStructure {
 
 			if (clauseType == Type.WHERE) {
 				int index;
+
+				if (!hasWhereClause) hasWhereClause = true;
 
 				for (QSEntity entity : entities) {
 					if (entities instanceof QSCondition) {
@@ -236,6 +240,13 @@ public class QueryStructure {
 					}
 				}
 			}
+		}
+
+		if (hasWhereClause && !secondaryNodeVar.isEmpty()) {
+			// Add extra condition to force the match of border nodes to follow the relation's real path
+			QSCondition borderCond = new QSCondition();
+			borderCond.setCondition(" OR " + secondaryNodeVar + ":" + GenericConstants.BORDER_NODE_LABEL);
+			queryStructureModified.addEntity(Type.WHERE, borderCond);
 		}
 
 		System.out.println("-> Query modified: ");

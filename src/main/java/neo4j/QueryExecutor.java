@@ -51,7 +51,6 @@ public class QueryExecutor {
 
 					} else if (o instanceof Relationship) {
 						// Is Relation
-						System.out.println("Relation OK");
 						Relationship relationship = (Relationship) o;
 						ResultRelation resultRelation = new ResultRelation();
 
@@ -65,7 +64,6 @@ public class QueryExecutor {
 						resultRelation.setEndNodeId(relationship.getEndNodeId());
 
 						resultQuery.addEntity(i, resultRelation);
-
 					}
 				}
 			}
