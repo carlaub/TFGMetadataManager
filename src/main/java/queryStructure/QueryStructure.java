@@ -137,6 +137,8 @@ public class QueryStructure {
 
 				stringBuilder.append(((QSCondition)entityList.get(size - 1)).getConditions());
 			}
+
+			// TODO: añadir "OR m:border"
 		}
 
 		// RETURN clause

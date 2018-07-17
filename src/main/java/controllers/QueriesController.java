@@ -147,8 +147,9 @@ public class QueriesController {
 					}
 
 				} else if (result instanceof ResultRelation) {
+					System.out.println("Hay relacion tracking mode: " + trackingMode);
 					if (!trackingMode) {
-						System.out.println("Tiene una relacion");
+						System.out.println("Entro en la relacion");
 
 						it = result.getProperties().entrySet().iterator();
 						while(it.hasNext()) {
