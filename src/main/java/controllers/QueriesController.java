@@ -102,6 +102,7 @@ public class QueriesController {
 
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
+			System.out.println("Column size: " + columnResults.size() + " " + trackingMode);
 
 			if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
 
@@ -134,7 +135,7 @@ public class QueriesController {
 						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode);
 
 						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
-
+						System.out.println("Salgo de border. Tracking: " + trackingMode);
 					} else {
 						if (trackingMode) {
 							// Add only the node if has relation with the root node
