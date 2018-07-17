@@ -21,7 +21,6 @@ public class QueriesController {
 	private MMServer mmServer;
 	private QueryExecutor queryExecutor;
 	private ResultQuery initialResultQuery;
-	private int columnsCount;
 	private ResultNode rootNode;
 	private RelationshipsTable relationshipsTable;
 
@@ -96,13 +95,13 @@ public class QueriesController {
 
 		}
 
-		columnsCount = resultQuery.getColumnsCount();
+		int columnsCount = resultQuery.getColumnsCount();
 		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
 		// corresponding column to show the results
 
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
-			System.out.println("Column size: " + columnResults.size() + " " + trackingMode);
+			System.out.println("Column " + i + " size: " + columnResults.size() + " " + trackingMode);
 
 			if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
 

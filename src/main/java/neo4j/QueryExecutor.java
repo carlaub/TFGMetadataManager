@@ -51,7 +51,7 @@ public class QueryExecutor {
 
 					} else if (o instanceof Relationship) {
 						// Is Relation
-						System.out.println("Is relation??");
+						System.out.println("Relation OK");
 						Relationship relationship = (Relationship) o;
 						ResultRelation resultRelation = new ResultRelation();
 
