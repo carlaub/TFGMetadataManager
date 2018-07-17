@@ -36,10 +36,10 @@ public class Neo4JImport {
 		}
 
 		// Reset the Data Base information (Delete all nodes and relations)
-		try (Transaction q = graphDb.beginTx();
-			 Result result = graphDb.execute("MATCH (n) DETACH DELETE n")) {
-			if (result != null) result.close();
+		try ( Transaction tx = graphDb.beginTx() ) {
+			graphDb.execute("MATCH (n) DETACH DELETE n");
 			System.out.println("-> DB Reset done");
+			tx.success();
 		}
 
 		// Process partition file of nodes
