@@ -26,4 +26,5 @@ END
 BEGIN
 MATCH (n {id: 5})<--(m)
 WHERE m.age > n.age
+RETURN m, n
 END
