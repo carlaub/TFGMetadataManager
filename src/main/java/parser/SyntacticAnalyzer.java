@@ -136,7 +136,6 @@ public class SyntacticAnalyzer {
 				}
 				lookahead = lex.getToken();
 				queryStructure.addEntity(clauseToken, qsNode);
-				System.out.println("FIN N");
 			}
 
 			// RELATION CASE
@@ -178,7 +177,6 @@ public class SyntacticAnalyzer {
 				}
 
 				queryStructure.addEntity(clauseToken, qsRelation);
-				System.out.println("FIN R");
 			}
 		}
 	}

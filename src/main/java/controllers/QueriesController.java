@@ -147,6 +147,7 @@ public class QueriesController {
 					}
 
 				} else if (result instanceof ResultRelation) {
+					System.out.println("Tiene una relacion");
 					if (!trackingMode) {
 						it = result.getProperties().entrySet().iterator();
 						while(it.hasNext()) {

@@ -19,7 +19,7 @@ RETURN n, m, r
 END
 
 BEGIN
-MATCH (n {id: 4})<--(m)
+MATCH (n {id: 4})<-[r]-(m)
 RETURN n, m, r
 END
 
