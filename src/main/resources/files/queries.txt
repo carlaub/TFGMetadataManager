@@ -14,6 +14,16 @@
 #END
 
 BEGIN
-MATCH (n {id: 2})<--(m)
-RETURN n, m
+MATCH (n {id: 2})<-[r]-(m)
+RETURN n, m, r
+END
+
+BEGIN
+MATCH (n {id: 4})<--(m)
+RETURN n, m, r
+END
+
+BEGIN
+MATCH (n {id: 5})<--(m)
+WHERE m.age > n.age
 END
