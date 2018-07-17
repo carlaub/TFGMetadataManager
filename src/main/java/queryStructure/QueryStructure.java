@@ -160,7 +160,7 @@ public class QueryStructure {
 
 	public QueryStructure replaceRootNode (int idRootNodeReplace, ResultNode rootNode) {
 		String varRootNode = "";
-		String secondaryNodeVar = "";
+		List<String> secondaryNodeVar = new ArrayList<>();
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
 		boolean hasWhereClause = false;
@@ -173,23 +173,26 @@ public class QueryStructure {
 			if (clauseType == Type.MATCH) {
 
 				for (QSEntity entity : entities) {
-					if (entity instanceof QSNode && ((QSNode) entity).isRoot()) {
-						QSNode newRootNode = new QSNode();
-						newRootNode.setRoot(((QSNode) entity).isRoot());
-						varRootNode = ((QSNode) entity).getVariable();
-						newRootNode.setVariable(varRootNode);
-						newRootNode.setProperties(new HashMap<>(((QSNode) entity).getProperties()));
-						newRootNode.getProperties().put("id", String.valueOf(idRootNodeReplace));
+					if (entity instanceof QSNode) {
+						if (((QSNode) entity).isRoot()){
+							QSNode newRootNode = new QSNode();
+							newRootNode.setRoot(((QSNode) entity).isRoot());
+							varRootNode = ((QSNode) entity).getVariable();
+							newRootNode.setVariable(varRootNode);
+							newRootNode.setProperties(new HashMap<>(((QSNode) entity).getProperties()));
+							newRootNode.getProperties().put("id", String.valueOf(idRootNodeReplace));
 
-						ArrayList<String> labels = new ArrayList<>();
-						labels.add(GenericConstants.BORDER_NODE_LABEL);
-						newRootNode.setLabels(labels);
+							ArrayList<String> labels = new ArrayList<>();
+							labels.add(GenericConstants.BORDER_NODE_LABEL);
+							newRootNode.setLabels(labels);
 
-						queryStructureModified.addEntity(clauseType, newRootNode);
-
+							queryStructureModified.addEntity(clauseType, newRootNode);
+						} else {
+							// TODO: Soportar mas de una variable secundaria
+							secondaryNodeVar.add(((QSNode)entity).getVariable());
+							queryStructureModified.addEntity(clauseType, entity);
+						}
 					} else {
-						// TODO: Soportar mas de una variable secundaria
-						secondaryNodeVar = ((QSNode)entity).getVariable();
 						queryStructureModified.addEntity(clauseType, entity);
 					}
 				}
@@ -244,9 +247,11 @@ public class QueryStructure {
 
 		if (hasWhereClause && !secondaryNodeVar.isEmpty()) {
 			// Add extra condition to force the match of border nodes to follow the relation's real path
-			QSCondition borderCond = new QSCondition();
-			borderCond.setCondition(" OR " + secondaryNodeVar + ":" + GenericConstants.BORDER_NODE_LABEL);
-			queryStructureModified.addEntity(Type.WHERE, borderCond);
+			for (String var : secondaryNodeVar) {
+				QSCondition borderCond = new QSCondition();
+				borderCond.setCondition(" OR " + var + ":" + GenericConstants.BORDER_NODE_LABEL);
+				queryStructureModified.addEntity(Type.WHERE, borderCond);
+			}
 		}
 
 		System.out.println("-> Query modified: ");
