@@ -226,10 +226,9 @@ public class QueryStructure {
 							// TODO: permitir mas de un "var." en una misma condicion
 							int i = (index + varRootNode.length() + 1);
 //							for (int i = (index + varRootNode.length() + 1); i < conditionCharArray.length; i++) {
-								c = conditionCharArray[i];
 								do {
-									sbProperty.append(c);
 									c = conditionCharArray[i];
+									sbProperty.append(c);
 									i++;
 								} while (GenericConstants.COMMON_CHARS.indexOf(c) != -1 && i < conditionCharArray.length);
 
