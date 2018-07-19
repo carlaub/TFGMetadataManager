@@ -177,7 +177,6 @@ public class QueryStructure {
 		String varRootNode = "";
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
-		boolean hasWhereClause = false;
 
 		while (iterator.hasNext()) {
 			Map.Entry<Type, List<QSEntity>> entry = iterator.next();
@@ -211,14 +210,15 @@ public class QueryStructure {
 			}
 
 			if (clauseType == Type.WHERE) {
+				System.out.println("--> Query Mod entro en WHERE");
 				int index;
-
-				if (!hasWhereClause) hasWhereClause = true;
 
 				for (QSEntity entity : entities) {
 					if (entities instanceof QSCondition) {
+						System.out.println("--> Condition");
 						String condition = ((QSCondition) entity).getConditions();
 						if ((index = condition.indexOf(varRootNode + ".")) != -1) {
+							System.out.println("--> Variable detectada");
 							StringBuilder sbProperty = new StringBuilder();
 							char[] conditionCharArray = condition.toCharArray();
 							char c;
