@@ -133,7 +133,12 @@ public class QueriesController {
 
 						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode);
 
-						mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+						if (idPartitionForeign == 0) {
+							queryExecutor.processQuery(queryStructure, this, true);
+						} else {
+							mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+						}
+
 						System.out.println("Salgo de border. Tracking: " + trackingMode);
 					} else {
 						if (trackingMode) {
