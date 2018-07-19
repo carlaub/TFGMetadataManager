@@ -231,7 +231,7 @@ public class QueryStructure {
 									sbProperty.append(c);
 									c = conditionCharArray[i];
 									i++;
-								} while (GenericConstants.COMMON_CHARS.indexOf(c) != -1);
+								} while (GenericConstants.COMMON_CHARS.indexOf(c) != -1 || i > conditionCharArray.length);
 
 								System.out.println("Var en clausula WHERE: " + sbProperty.toString());
 
