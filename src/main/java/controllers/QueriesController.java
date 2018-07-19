@@ -136,7 +136,7 @@ public class QueriesController {
 						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode);
 
 						if (idPartitionForeign == 0) {
-							queryExecutor.processQuery(queryStructure, this, true);
+							queryExecutor.processQuery(queryStructureModified, this, true);
 						} else {
 							mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 						}
