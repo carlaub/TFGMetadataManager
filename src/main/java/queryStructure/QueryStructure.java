@@ -214,7 +214,7 @@ public class QueryStructure {
 				int index;
 
 				for (QSEntity entity : entities) {
-					if (entities instanceof QSCondition) {
+					if (entity instanceof QSCondition) {
 						System.out.println("--> Condition");
 						String condition = ((QSCondition) entity).getConditions();
 						if ((index = condition.indexOf(varRootNode + ".")) != -1) {
