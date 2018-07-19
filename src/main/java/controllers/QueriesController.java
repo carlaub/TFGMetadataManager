@@ -109,6 +109,8 @@ public class QueriesController {
 
 				if (result instanceof ResultNode) {
 
+					System.out.println("Entra en node");
+
 					// TODO: Si es un nodo frontera, hacer el send query pasando la misma instanci y borrar el nodo frontera de la query,
 					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
 
@@ -147,6 +149,7 @@ public class QueriesController {
 								initialResultQuery.addEntity(indexOrgColumn, result);
 							}
 						} else {
+							System.out.println("Add entity: " + i);
 							initialResultQuery.addEntity(i, result);
 						}
 					}
