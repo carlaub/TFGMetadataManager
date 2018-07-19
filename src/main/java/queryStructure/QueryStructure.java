@@ -224,17 +224,19 @@ public class QueryStructure {
 							char c;
 
 							// TODO: permitir mas de un "var." en una misma condicion
-							for (int i = (index + varRootNode.length() + 1); i < conditionCharArray.length; i++) {
+							int i = (index + varRootNode.length() + 1);
+//							for (int i = (index + varRootNode.length() + 1); i < conditionCharArray.length; i++) {
 								c = conditionCharArray[i];
 								do {
 									sbProperty.append(c);
 									c = conditionCharArray[i];
+									i++;
 								} while (GenericConstants.COMMON_CHARS.indexOf(c) != -1);
 
 								System.out.println("Var en clausula WHERE: " + sbProperty.toString());
 
 								((QSCondition) entity).setCondition(condition.replace((varRootNode + "." + sbProperty.toString()), String.valueOf(rootNode.getProperties().get(sbProperty.toString()))));
-							}
+//							}
 
 						}
 
