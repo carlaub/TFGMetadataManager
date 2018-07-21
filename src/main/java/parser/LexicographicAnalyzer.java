@@ -43,7 +43,7 @@ public class LexicographicAnalyzer {
 		}
 	}
 
-	private Token nextToken() {
+	private Token nextToken(boolean ignoreSpaces) {
 		char character;
 		String lexema = "";
 		int state = 0;
@@ -52,7 +52,7 @@ public class LexicographicAnalyzer {
 			character = line.charAt(nChar);
 			switch (state) {
 				case 0:
-					if (character == ' ' || character == '\t') {
+					if ((character == ' ' && ignoreSpaces) || character == '\t') {
 						state = 0;
 						nChar++;
 					} else if (character == '\n') {
@@ -67,7 +67,7 @@ public class LexicographicAnalyzer {
 						}
 						state = 0;
 
-					} else if (GenericConstants.COMMON_CHARS.indexOf(character) != -1) {
+					} else if ((GenericConstants.COMMON_CHARS.indexOf(character) != -1) || (character == ' ' && !ignoreSpaces)) {
 						state = 1;
 					} else if ("()[]{}.,:-<>=".indexOf(character) != -1) {
 						state = 2;
@@ -155,7 +155,11 @@ public class LexicographicAnalyzer {
 	}
 
 	public Token getToken() {
-		Token token = nextToken();
+		return getToken(true);
+	}
+
+	public Token getToken(boolean ignoreSpaces) {
+		Token token = nextToken(ignoreSpaces);
 		System.out.println("Token: " + token.getLexema());
 		return token;
 	}

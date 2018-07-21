@@ -191,12 +191,12 @@ public class SyntacticAnalyzer {
 			while ((lookahead.getType() != Type.COMA) &&
 					!clausesTypes.contains(lookahead.getType())) {
 				conditionStr = conditionStr + lookahead.getLexema();
-				lookahead = lex.getToken();
+				lookahead = lex.getToken(false);
 			}
 			qsCondition.setCondition(conditionStr);
 			queryStructure.addEntity(clauseToken, qsCondition);
 
-			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken();
+			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken(false);
 		}
 	}
 }
