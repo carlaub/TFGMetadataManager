@@ -5,6 +5,7 @@ import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
 import constants.MsgConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.*;
 import utils.HadoopUtils;
 
@@ -100,9 +101,19 @@ public class Neo4JImport {
 		}
 
 		// TODO: CAMBIAR ID, UTILIZAR INDEX MANAGER  index() (https://neo4j.com/docs/java-reference/current/javadocs/org/neo4j/graphdb/GraphDatabaseService.html#createNode--)
+
 		// Attributes processing
+		String property;
+		String value;
 		while(index < totalParts) {
-			properties.put(parts[index], parts[index + 1]);
+			property = parts[index];
+			value = parts[index + 1];
+
+			if (StringUtils.isNumeric(value)) {
+				properties.put(property, Integer.valueOf(value));
+			} else {
+				properties.put(property, value);
+			}
 			index += 2;
 		}
 
