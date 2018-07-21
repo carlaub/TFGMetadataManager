@@ -5,6 +5,7 @@ import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
 import constants.MsgConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.*;
 import utils.HadoopUtils;
 
@@ -107,13 +108,19 @@ public class Neo4JImport {
 		}
 
 		Node n;
+		String strValue;
 
 		try ( Transaction tx = graphDb.beginTx() ) {
 			// Database operations go here
 			n = graphDb.createNode(labels);
 
 			for (Map.Entry<String, Object> entry : properties.entrySet()) {
-				n.setProperty(entry.getKey(), entry.getValue());
+				strValue = (String)entry.getValue();
+				if (StringUtils.isNumeric(strValue)) {
+					n.setProperty(entry.getKey(), Integer.valueOf(strValue));
+				} else {
+					n.setProperty(entry.getKey(), strValue);
+				}
 			}
 			nodeCache.put(id, n);
 
