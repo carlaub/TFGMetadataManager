@@ -235,10 +235,14 @@ public class QueryStructure {
 
 								System.out.println("Var en clausula WHERE: " + sbProperty.toString());
 
-								((QSCondition) entity).setCondition(condition.replace((varRootNode + "." + sbProperty.toString()), String.valueOf(rootNode.getProperties().get(sbProperty.toString()))));
-//							}
+								condition = condition.replace((varRootNode + "." + sbProperty.toString()), String.valueOf(rootNode.getProperties().get(sbProperty.toString())));
+//
+								System.out.println("--> Condition: " + condition);
+// 							}
 
 						}
+
+						((QSCondition) entity).setCondition(condition);
 
 						queryStructureModified.addEntity(clauseType, entity);
 					}
