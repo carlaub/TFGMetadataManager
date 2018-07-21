@@ -69,7 +69,7 @@ public class LexicographicAnalyzer {
 
 					} else if (GenericConstants.COMMON_CHARS.indexOf(character) != -1) {
 						state = 1;
-					} else if ("()[]{}.,:-<>".indexOf(character) != -1) {
+					} else if ("()[]{}.,:-<>=".indexOf(character) != -1) {
 						state = 2;
 					} else {
 						// Unknown character
