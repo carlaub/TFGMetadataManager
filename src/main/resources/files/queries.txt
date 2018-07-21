@@ -28,3 +28,9 @@ MATCH (n {id: 5})<--(m)
 WHERE m.age > n.age
 RETURN m, n
 END
+
+BEGIN
+MATCH (n {id: 5})<--(m)
+WHERE m.age = 23 OR m.age = 25
+RETURN m, n
+END

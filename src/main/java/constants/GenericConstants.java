@@ -17,6 +17,6 @@ public class GenericConstants {
     public static final String BORDER_NODE_LABEL = "border";
 
     // TODO quitar el =
-    public static final String COMMON_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789=\'\"";
+    public static final String COMMON_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\'\"";
 
 }

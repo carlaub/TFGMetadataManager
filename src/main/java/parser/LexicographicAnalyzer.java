@@ -146,6 +146,8 @@ public class LexicographicAnalyzer {
 						return new Token(Type.GT, lexema);
 					} else if (character == '<') {
 						return new Token(Type.LT, lexema);
+					} else if (character == '=') {
+						return new Token(Type.EQUAL, lexema);
 					}
 			}
 		}

@@ -217,7 +217,8 @@ public class QueryStructure {
 					if (entity instanceof QSCondition) {
 						System.out.println("--> Condition");
 						String condition = ((QSCondition) entity).getConditions();
-						if ((index = condition.indexOf(varRootNode + ".")) != -1) {
+
+						while ((index = condition.indexOf(varRootNode + ".")) != -1) {
 							System.out.println("--> Variable detectada");
 							StringBuilder sbProperty = new StringBuilder();
 							char[] conditionCharArray = condition.toCharArray();
