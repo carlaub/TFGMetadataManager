@@ -253,8 +253,9 @@ public class QueryStructure {
 				for (QSEntity entity : entities) {
 					if (entity instanceof QSCondition) {
 						String condition = ((QSCondition) entity).getConditions();
+						System.out.println("Return condition: " + condition);
 						// Root node information has been obtained on the first phase (original query)
-						if (!(condition.equals(varRootNode) ||
+						if (!(condition.replaceAll("\\s+","").equals(varRootNode) ||
 								condition.matches("^("+ varRootNode +".).*"))) {
 							queryStructureModified.addEntity(clauseType, entity);
 						}
