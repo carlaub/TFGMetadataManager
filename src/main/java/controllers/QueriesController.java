@@ -61,7 +61,6 @@ public class QueriesController {
 	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
 		int indexOrgColumn = 0;
-		int idBorderNode;
 
 
 		System.out.println("-> Query Result received");
@@ -125,13 +124,10 @@ public class QueriesController {
 						 */
 						int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
 						int idPartitionForeign = resultNode.getForeignPartitionId();
-						idBorderNode = resultNode.getNodeId();
 
 						String key = String.valueOf(idPartitionForeign) + String.valueOf(idPartitionLocal);
-						System.out.println("Key: " + key );
 
 						int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().get(key);
-						System.out.println("Key: " + key + " - Id node foreign: " + idForeignBorderNode);
 
 						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode);
 

@@ -109,6 +109,12 @@ public class LexicographicAnalyzer {
 						return new Token(Type.WHERE, lexema);
 					} else if (lexema.equalsIgnoreCase("RETURN")) {
 						return new Token(Type.RETURN, lexema);
+					} else if (lexema.equalsIgnoreCase("CREATE")) {
+						return new Token(Type.CREATE, lexema);
+					} else if (lexema.equalsIgnoreCase("DELETE")) {
+						return new Token(Type.DELETE, lexema);
+					} else if (lexema.equalsIgnoreCase("DETACH")) {
+						return new Token(Type.DETACH, lexema);
 					} else if (lexema.equals("-")) {
 						return new Token(Type.DASH, lexema);
 					} else if (lexema.equals("<")) {
@@ -151,7 +157,6 @@ public class LexicographicAnalyzer {
 					}
 			}
 		}
-
 	}
 
 	public Token getToken() {
