@@ -205,7 +205,7 @@ public class QueryStructure {
 
 			if (clauseType == Type.MATCH) {
 
-				for (int i = 0 ; i < level; i++) {
+				for (int i = 0 ; i < (level - 1); i++) {
 					// Remove node + relation from previous levels
 					// Ej: (n)<--(m)<--(k) [m = level 1] => (m)<--
 					entities.remove(0); // Node
