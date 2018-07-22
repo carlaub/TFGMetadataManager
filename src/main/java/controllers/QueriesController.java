@@ -23,6 +23,7 @@ public class QueriesController {
 	private ResultQuery initialResultQuery;
 	private ResultNode rootNode;
 	private RelationshipsTable relationshipsTable;
+	private List<Integer> exploredBorderNodes;
 
 
 	public QueriesController() {
@@ -31,6 +32,7 @@ public class QueriesController {
 		initialResultQuery = null;
 		rootNode = null;
 		relationshipsTable = MetadataManager.getInstance().getRelationshipsTable();
+		exploredBorderNodes = new ArrayList<>();
 	}
 
 	public void  manageNewQuery(QueryStructure queryStructure) {
@@ -115,8 +117,8 @@ public class QueriesController {
 
 					ResultNode resultNode = (ResultNode) result;
 
-					if (resultNode.isBorderNode()) {
-
+					if (resultNode.isBorderNode() && !exploredBorderNodes.contains(resultNode.getNodeId())) {
+						exploredBorderNodes.add(resultNode.getNodeId());
 						/*
 						En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
 						Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
