@@ -37,6 +37,5 @@ END
 
 BEGIN
 MATCH (n {id: 5})<--(m)<--(k)
-WHERE m.age = 23 OR m.age = 25
 RETURN m, n, k
 END

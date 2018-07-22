@@ -195,6 +195,7 @@ public class QueryStructure {
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
 		boolean rootSet = false;
+		List<String> varPrevLevels = new ArrayList<>();
 
 		while (iterator.hasNext()) {
 			Map.Entry<Type, List<QSEntity>> entry = iterator.next();
@@ -208,6 +209,7 @@ public class QueryStructure {
 				for (int i = 0 ; i < (level - 1); i++) {
 					// Remove node + relation from previous levels
 					// Ej: (n)<--(m)<--(k) [m = level 1] => (m)<--
+					varPrevLevels.add(((QSNode)entities.get(0)).getVariable());
 					entities.remove(0); // Node
 					entities.remove(0); // Relation
 				}
@@ -279,9 +281,11 @@ public class QueryStructure {
 				for (QSEntity entity : entities) {
 					if (entity instanceof QSCondition) {
 						String condition = ((QSCondition) entity).getConditions();
-						// Root node information has been obtained on the first phase (original query)
-						if (!(condition.replaceAll("\\s+","").equals(varRootNode) ||
-								condition.matches("^("+ varRootNode +".).*"))) {
+						// Root node or prev. levels nodes information has been obtained on the first phase (original query)
+						condition = condition.replaceAll("\\s+","");
+						if (!(condition.equals(varRootNode) ||
+								condition.matches("^("+ varRootNode +".).*") ||
+								varPrevLevels.contains(condition))) {
 							queryStructureModified.addEntity(clauseType, entity);
 						}
 					}
