@@ -23,7 +23,7 @@ public class QueriesController {
 	private ResultQuery initialResultQuery;
 	private ResultNode rootNode;
 	private RelationshipsTable relationshipsTable;
-	private List<Integer> exploredBorderNodes;
+	private List<String> exploredBorderNodes;
 
 
 	public QueriesController() {
@@ -116,9 +116,11 @@ public class QueriesController {
 					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
 
 					ResultNode resultNode = (ResultNode) result;
+					int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
 
-					if (resultNode.isBorderNode() && !exploredBorderNodes.contains(resultNode.getNodeId())) {
-						exploredBorderNodes.add(resultNode.getNodeId());
+
+					if (resultNode.isBorderNode() && !exploredBorderNodes.contains(resultNode.getNodeId() + "-" + matchVarLevel)) {
+						exploredBorderNodes.add(resultNode.getNodeId() + "-" + matchVarLevel);
 						/*
 						En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
 						Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
@@ -131,7 +133,7 @@ public class QueriesController {
 
 						int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().get(key);
 
-						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode);
+						QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode, matchVarLevel);
 
 						if (idPartitionForeign == 0) {
 							queryExecutor.processQuery(queryStructureModified, this, true);

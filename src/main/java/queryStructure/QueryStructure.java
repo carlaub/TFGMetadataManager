@@ -68,6 +68,23 @@ public class QueryStructure {
 		return -1;
 	}
 
+	public int getNodeLevel(String varName) {
+		int level = 0;
+		List<QSEntity> matchList = queryStructure.get(Type.MATCH);
+
+		for (QSEntity entity : matchList) {
+			if (entity instanceof QSNode) {
+				if (((QSNode) entity).getVariable().equals(varName)) {
+					return level;
+				} else {
+					level++;
+				}
+			}
+		}
+
+		return -1;
+	}
+
 
 	/**
 	 * Convert the query structure to string. Util to execute the Graph Database Service's "execute" function.
@@ -173,21 +190,33 @@ public class QueryStructure {
 		return stringBuilder.toString();
 	}
 
-	public QueryStructure replaceRootNode (int idRootNodeReplace, ResultNode rootNode) {
+	public QueryStructure replaceRootNode (int idRootNodeReplace, ResultNode rootNode, int level) {
 		String varRootNode = "";
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
+		boolean rootSet = false;
 
 		while (iterator.hasNext()) {
 			Map.Entry<Type, List<QSEntity>> entry = iterator.next();
 			Type clauseType = entry.getKey();
 			List<QSEntity> entities = entry.getValue();
 
+			System.out.println("\n--> LEVEL: " + level);
+
 			if (clauseType == Type.MATCH) {
+
+				for (int i = 0 ; i < level; i++) {
+					// Remove node + relation from previous levels
+					// Ej: (n)<--(m)<--(k) [m = level 1] => (m)<--
+					entities.remove(0); // Node
+					entities.remove(0); // Relation
+				}
 
 				for (QSEntity entity : entities) {
 					if (entity instanceof QSNode) {
-						if (((QSNode) entity).isRoot()){
+//						if (((QSNode) entity).isRoot()){
+						if (!rootSet) {
+							rootSet = true;
 							QSNode newRootNode = new QSNode();
 							newRootNode.setRoot(((QSNode) entity).isRoot());
 							varRootNode = ((QSNode) entity).getVariable();
@@ -210,12 +239,10 @@ public class QueryStructure {
 			}
 
 			if (clauseType == Type.WHERE) {
-				System.out.println("--> Query Mod entro en WHERE");
 				int index;
 
 				for (QSEntity entity : entities) {
 					if (entity instanceof QSCondition) {
-						System.out.println("--> Condition");
 						String condition = ((QSCondition) entity).getConditions();
 
 						while ((index = condition.indexOf(varRootNode + ".")) != -1) {
@@ -237,7 +264,6 @@ public class QueryStructure {
 
 								condition = condition.replace((varRootNode + "." + sbProperty.toString()), String.valueOf(rootNode.getProperties().get(sbProperty.toString())));
 //
-								System.out.println("--> Condition: " + condition);
 // 							}
 
 						}
@@ -253,7 +279,6 @@ public class QueryStructure {
 				for (QSEntity entity : entities) {
 					if (entity instanceof QSCondition) {
 						String condition = ((QSCondition) entity).getConditions();
-						System.out.println("Return condition: " + condition);
 						// Root node information has been obtained on the first phase (original query)
 						if (!(condition.replaceAll("\\s+","").equals(varRootNode) ||
 								condition.matches("^("+ varRootNode +".).*"))) {
@@ -264,7 +289,7 @@ public class QueryStructure {
 			}
 		}
 
-		System.out.println("-> Query modified: ");
+		System.out.println("\n\n-> Query modified: ");
 		System.out.println(queryStructureModified.toString());
 
 		return queryStructureModified;
