@@ -97,13 +97,19 @@ public class QueryStructure {
 	 * @return root node id
 	 */
 	public int getRootNodeId() {
-		if (queryStructure.containsKey(Type.MATCH)) {
-			List<QSEntity> list = queryStructure.get(Type.MATCH);
+		List<QSEntity> list;
 
-			for (QSEntity entity : list) {
-				if (entity instanceof QSNode && ((QSNode) entity).isRoot() && (((QSNode) entity).getProperties().containsKey("id"))) {
-					return Integer.valueOf(((QSNode) entity).getProperties().get("id"));
-				}
+		if (queryStructure.containsKey(Type.MATCH)) {
+			list = queryStructure.get(Type.MATCH);
+
+		} else if (queryStructure.containsKey(Type.CREATE)) {
+			list = queryStructure.get(Type.CREATE);
+
+		} else return -1;
+
+		for (QSEntity entity : list) {
+			if (entity instanceof QSNode && ((QSNode) entity).isRoot() && (((QSNode) entity).getProperties().containsKey("id"))) {
+				return Integer.valueOf(((QSNode) entity).getProperties().get("id"));
 			}
 		}
 
