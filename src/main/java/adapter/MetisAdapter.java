@@ -43,8 +43,8 @@ public class MetisAdapter {
 	private List<BufferedOutputStream> bosNodes;
 	private List<BufferedOutputStream> bosEdges;
 
-
 	private int maxNodeId = 0;
+
 
 	public MetisAdapter() {
 		mapGraphNodes = MetadataManager.getInstance().getMapGraphNodes();
@@ -78,6 +78,10 @@ public class MetisAdapter {
 		processEdgeFile();
 
 		closeResources();
+
+		// Update the last assigned ID for future node creations
+		MetadataManager.getInstance().setMaxNodeId(maxNodeId);
+
 	}
 
 	/**

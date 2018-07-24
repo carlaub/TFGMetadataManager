@@ -20,4 +20,7 @@ public class ErrorConstants {
 
     // Queries
     public static final String ERR_QUERY_ROOT_NODE_ID = "[ERROR] Query's main node must include its id";
+    public static final String ERR_NODE_CREATION = "[ERROR] The node has not been inserted";
+    public static final String ERR_RELATION_CREATION = "[ERROR] The relation has not been created";
+    public static final String ERR_RELATION_NODE_ID = "[ERROR] Node id not valid";
 }

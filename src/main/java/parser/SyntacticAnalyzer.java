@@ -55,10 +55,17 @@ public class SyntacticAnalyzer {
 
 					if (lookahead.getType() == Type.MATCH) {
 						processClauseMatch(queryStructure, lookahead);
+
+					} else if (lookahead.getType() == Type.CREATE) {
+						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_CREATE);
+						// CREATE clause are processed as MATCH clauses
+						processClauseMatch(queryStructure, lookahead);
+
 					} else if (lookahead.getType() == Type.WHERE ||
 							lookahead.getType() == Type.RETURN) {
 						processClauseConditions(queryStructure, lookahead);
 						strQuery = strQuery + " " + lookahead.getLexema() + " ";
+
 					} else {
 						strQuery = strQuery + lookahead.getLexema();
 						lookahead = lex.getToken();
@@ -72,10 +79,6 @@ public class SyntacticAnalyzer {
 			QueriesController queriesController = new QueriesController();
 			queriesController.manageNewQuery(queryStructure);
 
-			//TODO: Logica y tratamiento de la query para saber a que nodo/nodos enviar o cambiar parametro
-//			mmServer.sendQuery(1, strQuery);
-//			mmServer.sendQuery(2, strQuery);
-
 			strQuery = "";
 		}
 	}
@@ -85,7 +88,7 @@ public class SyntacticAnalyzer {
 		boolean rootNodeAssigned = false;
 
 		lookahead = lex.getToken();
-		// Bucle hasta encontrar la siguiente clausula
+		// Loop until reach the next clause
 		while (!clausesTypes.contains(lookahead.getType())) {
 
 			// NODE CASE
@@ -138,6 +141,11 @@ public class SyntacticAnalyzer {
 				queryStructure.addEntity(clauseToken, qsNode);
 			}
 
+			// COMA separating nodes
+			if (lookahead.getType() == Type.COMA) {
+				lookahead = lex.getToken();
+			}
+
 			// RELATION CASE
 			if (lookahead.getType() == Type.DASH ||
 					lookahead.getType() == Type.LT) {
@@ -155,16 +163,57 @@ public class SyntacticAnalyzer {
 				System.out.println("START: " + relationStart);
 				qsRelation.setStart(relationStart);
 
+				String propKey;
+				String propValue;
+
 				// There is information about the relationship
 				if (lookahead.getType() == Type.OBRACKET) {
 					String relationInfo = lookahead.getLexema();
 					lookahead = lex.getToken();
 
-					while (lookahead.getType() != Type.DASH) {
-						relationInfo = relationInfo + lookahead.getLexema();
-						lookahead = lex.getToken();
+					while (lookahead.getType() != Type.CBRACKET) {
+						switch (lookahead.getType()) {
+							case TXT:
+								// Variable
+								qsRelation.setVariable(lookahead.getLexema());
+								lookahead = lex.getToken();
+								break;
+
+							case OBRACE:
+								// Properties
+								while (lookahead.getType() != Type.CBRACE) {
+									lookahead = lex.getToken();
+
+									propKey = lookahead.getLexema();
+									lex.getToken(); // :
+									lookahead = lex.getToken();
+									propValue = lookahead.getLexema();
+									qsRelation.putNewProperty(propKey, propValue);
+									lex.getToken(); // , o }
+								}
+
+								lookahead = lex.getToken();
+								break;
+
+							case COLON:
+								// Type
+								lookahead = lex.getToken();
+								if (lookahead.getType() == Type.TXT) {
+									qsRelation.setType(lookahead.getLexema());
+								}
+
+								lookahead = lex.getToken();
+								break;
+						}
 					}
-					qsRelation.setType(relationInfo);
+
+					lookahead = lex.getToken();
+//
+//					while (lookahead.getType() != Type.DASH) {
+//						relationInfo = relationInfo + lookahead.getLexema();
+//						lookahead = lex.getToken();
+//					}
+//					qsRelation.setContent(relationInfo);
 
 					String relationEnd = lookahead.getLexema();
 					lookahead = lex.getToken();
@@ -174,6 +223,7 @@ public class SyntacticAnalyzer {
 						lookahead = lex.getToken();
 					}
 					qsRelation.setEnd(relationEnd);
+					qsRelation.generateReationInfo();
 				}
 
 				queryStructure.addEntity(clauseToken, qsRelation);

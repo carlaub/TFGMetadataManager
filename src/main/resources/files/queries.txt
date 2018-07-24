@@ -39,3 +39,12 @@ BEGIN
 MATCH (n {id: 5})<--(m)<--(k)
 RETURN m, n, k
 END
+
+BEGIN
+CREATE (n:person{name: "Pepito"})
+RETURN n
+END
+
+BEGIN
+CREATE (n:person{name: "Fulanito"})
+END

@@ -10,7 +10,7 @@ import java.util.HashMap;
  * QSEntity parent class.
  */
 public abstract class ResultEntity implements Serializable {
-	protected HashMap<String, Object> properties;
+	HashMap<String, Object> properties;
 
 	public abstract String toString();
 

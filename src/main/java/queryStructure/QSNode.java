@@ -1,9 +1,6 @@
 package queryStructure;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 27/06/2018.
@@ -51,4 +48,37 @@ public class QSNode extends QSEntity {
 	public void setProperties(Map<String, String> properties) {
 		this.properties = properties;
 	}
+
+
+	public String toGraphFilesFormat() {
+		StringBuilder strBuilder = new StringBuilder();
+		if (!properties.containsKey("id")) return null;
+
+		// ID
+		strBuilder.append(properties.get("id"));
+		strBuilder.append("\t");
+
+		// Num labels
+		strBuilder.append(labels.size());
+		strBuilder.append("\t");
+
+		// Labels
+		for (String label : labels) {
+			strBuilder.append(label);
+			strBuilder.append("\t");
+		}
+
+		// Properties
+		Iterator it = properties.entrySet().iterator();
+
+		while(it.hasNext()) {
+			Object o = it.next();
+			strBuilder.append(o);
+			strBuilder.append("\t");
+		}
+
+		System.out.println("\n--> toGraphFilesFormat: " + strBuilder.toString());
+		return strBuilder.toString();
+	}
+
 }

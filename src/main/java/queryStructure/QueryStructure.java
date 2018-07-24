@@ -13,10 +13,29 @@ import java.util.*;
  * QueryStructure.java
  */
 public class QueryStructure {
+	public static final int QUERY_TYPE_DEFAULT = 0;
+	public static final int QUERY_TYPE_CREATE = 1;
+	public static final int QUERY_TYPE_DELETE = 2;
+
 	private LinkedHashMap<Type, List<QSEntity>> queryStructure;
+	private int queryType;
 
 	public QueryStructure() {
 		queryStructure = new LinkedHashMap<>();
+		queryType = QUERY_TYPE_DEFAULT;
+	}
+
+	public QueryStructure(int queryType) {
+		queryStructure = new LinkedHashMap<>();
+		queryType = queryType;
+	}
+
+	public int getQueryType() {
+		return queryType;
+	}
+
+	public void setQueryType(int queryType) {
+		this.queryType = queryType;
 	}
 
 	public void addEntity(Token tClause, QSEntity entity) {
@@ -51,6 +70,24 @@ public class QueryStructure {
 	}
 
 	/**
+	 * Return the root node of the query string
+	 * @return RootNode
+	 */
+	public QSNode getRootNode() {
+		if (queryStructure.containsKey(Type.MATCH)) {
+			List<QSEntity> list = queryStructure.get(Type.MATCH);
+
+			for (QSEntity entity : list) {
+				if (entity instanceof QSNode && ((QSNode) entity).isRoot()) {
+					return (QSNode) entity;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
 	 * Return the root node id from the match clause
 	 * @return root node id
 	 */
@@ -66,6 +103,46 @@ public class QueryStructure {
 		}
 
 		return -1;
+	}
+
+	/**
+	 * Return the [position] QSNode inside the MATCH clause. If there isn't any node at this position, return null.
+	 * This function is useful to recover the node's information/ID when a relation should be created.
+	 * @return QSNode if exist node in this position, null if not.
+	 */
+	public QSNode getMatchNodeAt(int position) {
+		int currentPosition = 0;
+
+		if (queryStructure.containsKey(Type.MATCH)) {
+			List<QSEntity> list = queryStructure.get(Type.MATCH);
+
+			for (QSEntity entity : list) {
+				if (entity instanceof QSNode) {
+					if (currentPosition == position) return (QSNode) entity;
+					currentPosition ++;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Return the QSRelation defined in the CREATE clause. Is a requirement that only one relation be defined in the CREATE clause.
+	 * @return The CREATE's relation. If it isn't exists, return null-
+	 */
+	public QSRelation getCreateRelation() {
+		if (queryStructure.containsKey(Type.CREATE)) {
+			List<QSEntity> list = queryStructure.get(Type.CREATE);
+
+			for (QSEntity entity : list) {
+				if (entity instanceof QSRelation) {
+					return (QSRelation) entity;
+				}
+			}
+		}
+
+		return null;
 	}
 
 	public int getNodeLevel(String varName) {
@@ -138,7 +215,7 @@ public class QueryStructure {
 						// Relationship entity
 						QSRelation qsRelation = (QSRelation) entity;
 						if (qsRelation.getStart() != null) stringBuilder.append(qsRelation.getStart());
-						if (qsRelation.getType() != null) stringBuilder.append(qsRelation.getType());
+						if (qsRelation.getRelationInfo() != null) stringBuilder.append(qsRelation.getRelationInfo());
 						if (qsRelation.getEnd() != null) stringBuilder.append(qsRelation.getEnd());
 					}
 				}

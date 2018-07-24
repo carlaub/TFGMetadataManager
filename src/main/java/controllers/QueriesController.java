@@ -1,10 +1,14 @@
 package controllers;
 
 import application.MetadataManager;
+import constants.ErrorConstants;
 import constants.GenericConstants;
 import dnl.utils.text.table.TextTable;
+import managers.GraphAlterationsManager;
 import neo4j.*;
 import network.MMServer;
+import queryStructure.QSNode;
+import queryStructure.QSRelation;
 import queryStructure.QueryStructure;
 import relationsTable.RelationshipsTable;
 
@@ -35,35 +39,74 @@ public class QueriesController {
 		exploredBorderNodes = new ArrayList<>();
 	}
 
-	public void  manageNewQuery(QueryStructure queryStructure) {
+	public void send(QueryStructure queryStructure, int idRootNode) {
+		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
 
+		if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
+			// Root node is inside MetadataManager's Neo4j instance
+			queryExecutor.processQuery(queryStructure, this, false);
+		} else {
+			// Root node is in the slave node with id "partitionID"
+			mmServer.sendQuery(partitionID, queryStructure, this, false);
+		}
+	}
+
+	public void  manageNewQuery(QueryStructure queryStructure) {
+		int queryType = queryStructure.getQueryType();
+		GraphAlterationsManager gam = GraphAlterationsManager.getInstance();
+
+		if (queryType == QueryStructure.QUERY_TYPE_CREATE) {
+			if (queryStructure.hasRelation()) {
+				// CREATE RELATION
+				// The nodes of the relationship with their IDs are recovered
+				QSNode qsNodeA = queryStructure.getMatchNodeAt(0);
+				QSNode qsNodeB = queryStructure.getMatchNodeAt(1);
+				QSRelation qsRelation = queryStructure.getCreateRelation();
+
+				if (qsNodeA != null && qsNodeB != null && qsRelation != null) {
+					Map<Integer, String> relCreationQueries;
+					Set<Map.Entry<Integer, String>> set;
+					relCreationQueries = gam.addNewRelation(qsNodeA, qsNodeB, qsRelation);
+
+					// If the relation is established between node located in different partitions, some subqueries must
+					// be executed to create relations with border nodes or insert new border nodes if are required.
+					set = relCreationQueries.entrySet();
+					if (set != null) {
+						for (Map.Entry<Integer, String> entry : set) {
+							//TODO: Enviar las queries a todas las particiones que sea requerido
+
+						}
+					} else {
+						System.out.println(ErrorConstants.ERR_RELATION_CREATION);
+
+					}
+				} else {
+					System.out.println(ErrorConstants.ERR_RELATION_CREATION);
+				}
+			} else {
+				// CREATE NODE
+				gam.addNewNode(queryStructure.getRootNode());
+				send(queryStructure, queryStructure.getRootNodeId());
+			}
+
+		} else if (queryType == QueryStructure.QUERY_TYPE_DEFAULT){
 			// CASE 1: Query's MATCH clause has a relation
 			int idRootNode = queryStructure.getRootNodeId();
 			System.out.println("ID root node: " + idRootNode);
 
 
-		if (idRootNode > 0) {
-				int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
-
-				if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
-					// Root node is inside MetadataManager's Neo4j instance
-					queryExecutor.processQuery(queryStructure, this, false);
-				} else {
-					// Root node is in the slave node with id "partitionID"
-					mmServer.sendQuery(partitionID, queryStructure, this, false);
-				}
-
-		} else {
-			// CASE 2: Query's MATCH clause has not a relation
-			mmServer.sendQueryBroadcast(queryStructure, this);
-			queryExecutor.processQuery(queryStructure, this, false);
+			if (idRootNode > 0) {
+					send(queryStructure, idRootNode);
+			} else {
+				// CASE 2: Query's MATCH clause has not a relation
+				mmServer.sendQueryBroadcast(queryStructure, this);
+				queryExecutor.processQuery(queryStructure, this, false);
+			}
 		}
 	}
 
 	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
-		Iterator it;
-		int indexOrgColumn = 0;
-
+		int queryType = queryStructure.getQueryType();
 
 		System.out.println("-> Query Result received");
 
@@ -72,6 +115,26 @@ public class QueriesController {
 		if (this.initialResultQuery == null) {
 			this.initialResultQuery = new ResultQuery(resultQuery.getColumnsName());
 		}
+
+		defaultQueryResult(resultQuery, queryStructure, trackingMode);
+
+//		switch (queryType) {
+//			case QueryStructure.QUERY_TYPE_DEFAULT:
+//				defaultQueryResult(resultQuery, queryStructure, trackingMode);
+//				break;
+//			case QueryStructure.QUERY_TYPE_CREATE:
+//				createQueryResult(resultQuery);
+//				break;
+//			case QueryStructure.QUERY_TYPE_DELETE:
+//				deleteQueryResult(resultQuery, queryStructure);
+//				break;
+//		}
+	}
+
+
+	private void defaultQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
+		Iterator it;
+		int indexOrgColumn = 0;
 
 		if (!trackingMode) {
 			// Send a query to the original root node partition to get its information. This information is needed to replace
@@ -177,5 +240,33 @@ public class QueriesController {
 			textTable.printTable();
 			System.out.println("\n\n");
 		}
+	}
+
+	private int createQueryResult(ResultQuery resultQuery) {
+		List<ResultEntity> columnResults;
+		String nodeGraphFilesFormat;
+
+		int columnsCount = resultQuery.getColumnsCount();
+
+		if (columnsCount < 1) {
+			System.out.println(ErrorConstants.ERR_NODE_CREATION);
+			return -1;
+		}
+
+		// RETURN n (where n is the node created) is a requirement in the Query format. If the query has been executed correctly
+		// there will always a column "n" with node information
+		columnResults = resultQuery.getColumn(1);
+
+		for (ResultEntity entity : columnResults) {
+			if (entity instanceof ResultNode) {
+				return 0;
+			}
+		}
+
+		return -1;
+	}
+
+	private void deleteQueryResult(ResultQuery resultQuery, QueryStructure queryStructure) {
+
 	}
 }

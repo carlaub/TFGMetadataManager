@@ -26,6 +26,11 @@ public class MetadataManager {
 	private static Map<String, Integer> mapBoarderNodes; // 2 - Each key is composed by [idLocalPartition concat idForeignPartition], the value is the edge node's id
 	private static RelationshipsTable relationshipsTable; // 3 - Hash table that contains, for each border node, a list with all the relationships that it has. Node boarder id is the key.
 
+	// When a new node is created, it's necessary to know the last assigned ID
+	private int maxNodeId;
+	// Last partition where a node has been inserted. Round-Robin policy. By default start at partition 0.
+	private int lastPartitionFed = 0;
+
 	public MetadataManager() {
 		snConnected = new ArrayList<SlaveNodeObject>();
 	}
@@ -67,4 +72,20 @@ public class MetadataManager {
 		if (relationshipsTable == null) relationshipsTable = new RelationshipsTable();
 		return relationshipsTable;
 	}
+
+	public int getMaxNodeId() {
+		maxNodeId ++;
+		return maxNodeId;
+	}
+
+	public void setMaxNodeId(int maxNodeId) {
+		this.maxNodeId = maxNodeId;
+	}
+
+	public int getLastPartitionFed() {
+		int partition = lastPartitionFed;
+		lastPartitionFed = ((lastPartitionFed >= snConnected.size()) ? 0 : (lastPartitionFed + 1));
+		return partition;
+	}
+
 }

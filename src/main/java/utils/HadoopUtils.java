@@ -100,6 +100,24 @@ public class HadoopUtils {
 		}
 	}
 
+	public void writeIntoPartitionFile() {
+
+	}
+
+	public void writeLineHDFSFile(String fileName, String content) {
+		Path path = new Path("/user/hadoop/" + fileName);
+
+		try {
+			FSDataOutputStream fsout = fs.append(path);
+			BufferedOutputStream bos = new BufferedOutputStream(fsout);
+			bos.write(content.getBytes("UTF-8"));
+			bos.close();
+			fsout.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	public void closeResources() {
 		try {
 			if (fs != null) fs.close();
