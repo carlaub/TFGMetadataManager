@@ -70,7 +70,7 @@ public class HadoopUtils {
 	 * @throws IOException
 	 */
 	public BufferedOutputStream createHDFSFile(String fileName) throws IOException {
-		Path path = new Path(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + fileName + ".txt");
+		Path path = new Path(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + fileName);
 		if (fs.exists(path)) {
 			fs.delete(path, true);
 		}
