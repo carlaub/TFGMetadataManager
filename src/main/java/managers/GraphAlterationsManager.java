@@ -58,7 +58,7 @@ public class GraphAlterationsManager {
 
 		// Write the original relation in the global edges.txt file
 		String relationGraphFilesFormat = qsRelation.toGraphFilesFormat(idNodeA, idNodeB);
-		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES + ".txt", relationGraphFilesFormat);
+		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES, relationGraphFilesFormat);
 
 
 		if (partitionNodeA == partitionNodeB) {
@@ -159,6 +159,6 @@ public class GraphAlterationsManager {
 		String nodeGraphFilesFormat = qsNode.toGraphFilesFormat();
 
 		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + MetadataManager.getInstance().getLastPartitionFed() + ".txt", nodeGraphFilesFormat);
-		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES + ".txt", nodeGraphFilesFormat);
+		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES, nodeGraphFilesFormat);
 	}
 }
