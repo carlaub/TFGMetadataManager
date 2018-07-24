@@ -39,16 +39,16 @@ public class QSRelation extends QSEntity {
 	public void generateReationInfo() {
 		StringBuilder strBuilder = new StringBuilder();
 		strBuilder.append('[');
-		if (!variable.isEmpty()) {
+		if (variable != null && !variable.isEmpty()) {
 			strBuilder.append(variable);
 		}
 
-		if (!type.isEmpty()) {
+		if (type != null && !type.isEmpty()) {
 			strBuilder.append(':');
 			strBuilder.append(type);
 		}
 
-		if (!properties.isEmpty()) {
+		if (properties != null && !properties.isEmpty()) {
 			strBuilder.append('{');
 
 			Set<Map.Entry<String, String>> set = properties.entrySet();
@@ -122,12 +122,12 @@ public class QSRelation extends QSEntity {
 		strBuilder.append(String.valueOf(idNodeDest));
 		strBuilder.append("\t");
 
-		if (!type.isEmpty()) {
+		if (type != null && !type.isEmpty()) {
 			strBuilder.append(type);
 			strBuilder.append("\t");
 		}
 
-		if (!properties.isEmpty()) {
+		if (properties != null && !properties.isEmpty()) {
 			Set<Map.Entry<String, String>> set = properties.entrySet();
 
 			for (Map.Entry<String, String> entry : set) {
