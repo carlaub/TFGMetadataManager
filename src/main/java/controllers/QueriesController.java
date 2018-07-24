@@ -40,6 +40,7 @@ public class QueriesController {
 	}
 
 	public void send(QueryStructure queryStructure, int idRootNode) {
+		System.out.println("ID Root node: " + idRootNode);
 		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
 
 		if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
