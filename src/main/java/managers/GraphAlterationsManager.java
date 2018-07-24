@@ -154,11 +154,20 @@ public class GraphAlterationsManager {
 		}
 	}
 
-	public void addNewNode(QSNode qsNode) {
+	public int addNewNode(QSNode qsNode) {
+		// Update NodeID --> PartitionID
+		int partition = MetadataManager.getInstance().getLastPartitionFed();
+		int nodeID = MetadataManager.getInstance().getMaxNodeId();
+
+		qsNode.getProperties().put("id", String.valueOf(nodeID));
+		mapGraphNodes.put(nodeID, partition);
+
 		// Update graph files
 		String nodeGraphFilesFormat = qsNode.toGraphFilesFormat();
 
-		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + MetadataManager.getInstance().getLastPartitionFed() + ".txt", nodeGraphFilesFormat);
+		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + partition + ".txt", nodeGraphFilesFormat);
 		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES, nodeGraphFilesFormat);
+
+		return partition;
 	}
 }
