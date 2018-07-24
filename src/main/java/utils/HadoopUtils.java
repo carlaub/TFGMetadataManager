@@ -106,13 +106,23 @@ public class HadoopUtils {
 
 	public void writeLineHDFSFile(String fileName, String content) {
 		Path path = new Path("/user/hadoop/" + fileName);
+		System.out.println("PATH: " + path.toString());
 
 		try {
 			FSDataOutputStream fsout = fs.append(path);
-			BufferedOutputStream bos = new BufferedOutputStream(fsout);
-			bos.write(content.getBytes("UTF-8"));
-			bos.close();
+			if (fsout == null) System.out.println("--> fsout es null");
+
+			PrintWriter pw = new PrintWriter(fsout);
+			pw.append(content);
+			pw.flush();
+			fsout.hflush();
+			pw.close();
 			fsout.close();
+
+//			BufferedOutputStream bos = new BufferedOutputStream(fsout);
+//			bos.write(content.getBytes("UTF-8"));
+//			bos.close();
+//			fsout.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
