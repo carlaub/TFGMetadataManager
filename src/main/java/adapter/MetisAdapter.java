@@ -123,6 +123,9 @@ public class MetisAdapter {
 				}
 			}
 
+			readerGraphNodes.close();
+			readerMetisOutput.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
