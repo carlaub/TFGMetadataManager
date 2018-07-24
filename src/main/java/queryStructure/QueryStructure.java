@@ -104,6 +104,7 @@ public class QueryStructure {
 
 		} else if (queryStructure.containsKey(Type.CREATE)) {
 			list = queryStructure.get(Type.CREATE);
+			System.out.println("Entra en create!");
 
 		} else return -1;
 

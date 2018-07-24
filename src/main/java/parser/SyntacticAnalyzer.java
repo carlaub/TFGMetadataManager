@@ -97,6 +97,7 @@ public class SyntacticAnalyzer {
 				// New Node
 				lookahead = lex.getToken();
 				qsNode.setRoot(!rootNodeAssigned);
+				System.out.println("Lo pone en root? " + lookahead.getLexema() + " - " + !rootNodeAssigned);
 				if (!rootNodeAssigned) rootNodeAssigned = true;
 
 				qsNode.setVariable(lookahead.getLexema());
