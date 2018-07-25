@@ -117,7 +117,7 @@ public class SyntacticAnalyzer {
 								key = lookahead.getLexema();
 								lex.getToken(); // Cosume ":"
 								lookahead = lex.getToken();
-								value = lookahead.getLexema();
+								value = lookahead.getLexema().replace("\"", "");
 								qsNode.getProperties().put(key, value);
 							}
 							lookahead = lex.getToken();

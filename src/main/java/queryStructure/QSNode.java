@@ -72,10 +72,14 @@ public class QSNode extends QSEntity {
 		Set<Map.Entry<String, String>> set = properties.entrySet();
 
 		for (Map.Entry<String, String> entry : set) {
-			strBuilder.append(entry.getKey());
-			strBuilder.append("\t");
-			strBuilder.append(entry.getValue());
-			strBuilder.append("\t");
+			// Id is the first item of each row
+			if (!entry.getKey().equalsIgnoreCase("id")) {
+				// Add new property
+				strBuilder.append(entry.getKey());
+				strBuilder.append("\t");
+				strBuilder.append(entry.getValue());
+				strBuilder.append("\t");
+			}
 		}
 
 		System.out.println("\n--> toGraphFilesFormat: " + strBuilder.toString());
