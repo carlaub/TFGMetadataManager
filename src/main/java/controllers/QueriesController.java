@@ -39,10 +39,14 @@ public class QueriesController {
 		exploredBorderNodes = new ArrayList<>();
 	}
 
-	public void send(QueryStructure queryStructure, int idRootNode) {
+	public void sendById(QueryStructure queryStructure, int idRootNode) {
 		System.out.println("ID Root node: " + idRootNode);
 		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
 
+		sendByPartitionID(queryStructure, partitionID);
+	}
+
+	public void sendByPartitionID(QueryStructure queryStructure, int partitionID) {
 		if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
 			// Root node is inside MetadataManager's Neo4j instance
 			queryExecutor.processQuery(queryStructure, this, false);
@@ -86,9 +90,9 @@ public class QueriesController {
 				}
 			} else {
 				// CREATE NODE
-				gam.addNewNode(queryStructure.getRootNode());
+				int partitionID = gam.addNewNode(queryStructure.getRootNode());
 				System.out.println("\nQuery: " + queryStructure.toString() + "\n");
-				send(queryStructure, queryStructure.getRootNodeId());
+				sendByPartitionID(queryStructure, partitionID);
 			}
 
 		} else if (queryType == QueryStructure.QUERY_TYPE_DEFAULT){
@@ -98,7 +102,7 @@ public class QueriesController {
 
 
 			if (idRootNode > 0) {
-					send(queryStructure, idRootNode);
+					sendById(queryStructure, idRootNode);
 			} else {
 				// CASE 2: Query's MATCH clause has not a relation
 				mmServer.sendQueryBroadcast(queryStructure, this);
@@ -177,7 +181,7 @@ public class QueriesController {
 
 					System.out.println("Entra en node");
 
-					// TODO: Si es un nodo frontera, hacer el send query pasando la misma instanci y borrar el nodo frontera de la query,
+					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
 					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
 
 					ResultNode resultNode = (ResultNode) result;
