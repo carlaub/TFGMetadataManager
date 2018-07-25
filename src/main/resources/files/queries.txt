@@ -41,7 +41,7 @@ RETURN m, n, k
 END
 
 BEGIN
-CREATE (n:person{name: "Pepito"})
+CREATE (n:person{name: "Carla"})
 RETURN n
 END
 
