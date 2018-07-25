@@ -174,6 +174,20 @@ public class QueryStructure {
 		return -1;
 	}
 
+	public boolean hasWhereClauseWithVar() {
+		if (queryStructure.containsKey(Type.WHERE)) {
+			List<QSEntity> whereList = queryStructure.get(Type.WHERE);
+
+			for (QSEntity entity : whereList) {
+				if (entity instanceof QSCondition) {
+					if (((QSCondition) entity).getConditions().contains(getRootNode().getVariable() + ".")) return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
 
 	/**
 	 * Convert the query structure to string. Util to execute the Graph Database Service's "execute" function.
