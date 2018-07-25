@@ -142,7 +142,7 @@ public class QueriesController {
 		Iterator it;
 		int indexOrgColumn = 0;
 
-		if (!trackingMode && queryStructure.hasWhereClauseWithVar()) {
+		if (!trackingMode) {
 			// Send a query to the original root node partition to get its information. This information is needed to replace
 			// some conditions in the WHERE clause related with the root node
 			// EX:
