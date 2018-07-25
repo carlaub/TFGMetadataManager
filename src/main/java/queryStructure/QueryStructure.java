@@ -194,32 +194,7 @@ public class QueryStructure {
 					if (entity instanceof QSNode) {
 						// Node entity
 						QSNode node = (QSNode) entity;
-						stringBuilder.append("(");
-						stringBuilder.append(node.getVariable());
-
-						// Node labels
-						if (node.getLabels().size() > 0) {
-							List<String> labels = node.getLabels();
-							for (String label : labels) {
-								stringBuilder.append(":");
-								stringBuilder.append(label);
-							}
-						}
-
-						// Node properties
-						if (node.getProperties().size() > 0) {
-							Map<String, String> properties = node.getProperties();
-							Set<Map.Entry<String, String>> set = properties.entrySet();
-
-							stringBuilder.append("{");
-
-							for (Map.Entry<String, String> entry : set) {
-								stringBuilder.append(entry.getKey()+": ");
-								stringBuilder.append(entry.getValue() + ",");
-							}
-							stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "}" );
-						}
-						stringBuilder.append(")");
+						appendNode(node, stringBuilder);
 
 						if (!((QSNode) entity).isRoot()) secondaryNodeVar.add(((QSNode)entity).getVariable());
 
@@ -229,6 +204,25 @@ public class QueryStructure {
 						if (qsRelation.getStart() != null) stringBuilder.append(qsRelation.getStart());
 						if (qsRelation.getRelationInfo() != null) stringBuilder.append(qsRelation.getRelationInfo());
 						if (qsRelation.getEnd() != null) stringBuilder.append(qsRelation.getEnd());
+					}
+				}
+			}
+		}
+
+		// CREATE clause
+		if (queryStructure.containsKey(Type.CREATE)) {
+			entityList = queryStructure.get(Type.CREATE);
+			if (!entityList.isEmpty()) {
+				stringBuilder.append("\nCREATE ");
+
+				for (QSEntity entity : entityList) {
+
+					if (entity instanceof QSNode) {
+						QSNode node = (QSNode) entity;
+						appendNode(node, stringBuilder);
+
+					} else if (entity instanceof QSRelation){
+						// TODO Append relation
 					}
 				}
 			}
@@ -386,5 +380,35 @@ public class QueryStructure {
 		System.out.println(queryStructureModified.toString());
 
 		return queryStructureModified;
+	}
+
+	private void appendNode(QSNode node, StringBuilder stringBuilder) {
+		// Node entity
+		stringBuilder.append("(");
+		stringBuilder.append(node.getVariable());
+
+		// Node labels
+		if (node.getLabels().size() > 0) {
+			List<String> labels = node.getLabels();
+			for (String label : labels) {
+				stringBuilder.append(":");
+				stringBuilder.append(label);
+			}
+		}
+
+		// Node properties
+		if (node.getProperties().size() > 0) {
+			Map<String, String> properties = node.getProperties();
+			Set<Map.Entry<String, String>> set = properties.entrySet();
+
+			stringBuilder.append("{");
+
+			for (Map.Entry<String, String> entry : set) {
+				stringBuilder.append(entry.getKey()+": ");
+				stringBuilder.append(entry.getValue() + ",");
+			}
+			stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "}" );
+		}
+		stringBuilder.append(")");
 	}
 }
