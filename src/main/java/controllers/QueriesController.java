@@ -142,7 +142,8 @@ public class QueriesController {
 		Iterator it;
 		int indexOrgColumn = 0;
 
-		if (!trackingMode) {
+		if (!trackingMode &&
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE)) {
 			// Send a query to the original root node partition to get its information. This information is needed to replace
 			// some conditions in the WHERE clause related with the root node
 			// EX:
