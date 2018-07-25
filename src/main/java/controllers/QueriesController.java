@@ -87,6 +87,7 @@ public class QueriesController {
 			} else {
 				// CREATE NODE
 				gam.addNewNode(queryStructure.getRootNode());
+				System.out.println("\nQuery: " + queryStructure.toString() + "\n");
 				send(queryStructure, queryStructure.getRootNodeId());
 			}
 

@@ -69,11 +69,12 @@ public class QSNode extends QSEntity {
 		}
 
 		// Properties
-		Iterator it = properties.entrySet().iterator();
+		Set<Map.Entry<String, String>> set = properties.entrySet();
 
-		while(it.hasNext()) {
-			Object o = it.next();
-			strBuilder.append(o);
+		for (Map.Entry<String, String> entry : set) {
+			strBuilder.append(entry.getKey());
+			strBuilder.append("\t");
+			strBuilder.append(entry.getValue());
 			strBuilder.append("\t");
 		}
 

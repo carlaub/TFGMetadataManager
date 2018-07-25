@@ -138,6 +138,9 @@ public class QSRelation extends QSEntity {
 			}
 		}
 
+		System.out.println("\n--> toGraphFilesFormat: " + strBuilder.toString());
+
+
 		return strBuilder.toString();
 	}
 }
