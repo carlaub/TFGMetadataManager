@@ -77,7 +77,7 @@ public class QSNode extends QSEntity {
 				// Add new property
 				strBuilder.append(entry.getKey());
 				strBuilder.append("\t");
-				strBuilder.append(entry.getValue());
+				strBuilder.append(entry.getValue().replace("\"", ""));
 				strBuilder.append("\t");
 			}
 		}
