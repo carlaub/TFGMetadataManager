@@ -23,6 +23,7 @@ public class QueryExecutor {
 		try (Transaction q = graphDatabaseService.beginTx();
 			 Result result = graphDatabaseService.execute(query.toString())) {
 
+			System.out.println("Query enviada a particion MM: \n" + query.toString());
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
 			ResultQuery resultQuery = new ResultQuery(result.columns());
@@ -67,6 +68,8 @@ public class QueryExecutor {
 					}
 				}
 			}
+
+			q.success();
 
 
 			queriesController.processQueryResults(resultQuery, query, trackingMode);
