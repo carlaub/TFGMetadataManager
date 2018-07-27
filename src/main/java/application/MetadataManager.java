@@ -1,5 +1,6 @@
 package application;
 
+import data.MapBorderNodes;
 import network.SlaveNodeObject;
 import relationsTable.RelationshipsTable;
 
@@ -23,7 +24,7 @@ public class MetadataManager {
 
 	// ---- Data structures ----
 	private static Map<Integer, Integer> mapGraphNodes; // 1 - Structure that holds the relation nodeId -> partition where is located
-	private static Map<String, Integer> mapBoarderNodes; // 2 - Each key is composed by [idLocalPartition concat idForeignPartition], the value is the edge node's id
+	private static MapBorderNodes mapBoarderNodes; // 2 - Each key is composed by [idLocalPartition concat idForeignPartition], the value is the edge node's id
 	private static RelationshipsTable relationshipsTable; // 3 - Hash table that contains, for each border node, a list with all the relationships that it has. Node boarder id is the key.
 
 	// When a new node is created, it's necessary to know the last assigned ID
@@ -63,8 +64,8 @@ public class MetadataManager {
 		return mapGraphNodes;
 	}
 
-	public Map<String, Integer> getMapBoarderNodes() {
-		if (mapBoarderNodes == null) mapBoarderNodes = new HashMap<>();
+	public MapBorderNodes getMapBoarderNodes() {
+		if (mapBoarderNodes == null) mapBoarderNodes = new MapBorderNodes();
 		return mapBoarderNodes;
 	}
 
@@ -88,4 +89,7 @@ public class MetadataManager {
 		return partition;
 	}
 
+	public ArrayList<SlaveNodeObject> getSnConnected() {
+		return snConnected;
+	}
 }

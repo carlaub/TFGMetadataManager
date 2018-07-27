@@ -23,4 +23,8 @@ public class ErrorConstants {
     public static final String ERR_NODE_CREATION = "[ERROR] The node has not been inserted";
     public static final String ERR_RELATION_CREATION = "[ERROR] The relation has not been created";
     public static final String ERR_RELATION_NODE_ID = "[ERROR] Node id not valid";
+
+    // Alterations Manager
+    public static final String ERR_UPDATE_METIS_FILE = "[ERROR] Metis file can not be updated";
+    public static final String ERR_NODE_ID_DELETE = "[ERROR] Node without ID specified can not be deleted";
 }

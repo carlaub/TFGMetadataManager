@@ -2,6 +2,7 @@ package adapter;
 
 import application.MetadataManager;
 import constants.GenericConstants;
+import data.MapBorderNodes;
 import relationsTable.Relationship;
 import relationsTable.RelationshipsTable;
 import utils.HadoopUtils;
@@ -32,7 +33,7 @@ import java.util.Map;
 public class MetisAdapter {
 
 	private Map<Integer, Integer> mapGraphNodes; // 1
-	private Map<String, Integer> mapBorderNodes; // 2 key = partition1 (1) cncat partition2 (2) = 12
+	private MapBorderNodes mapBorderNodes; // 2 key = partition1 (1) cncat partition2 (2) = 12
 	private RelationshipsTable relationshipsTable;
 
 	private String fileNameMetisOutput;
@@ -192,8 +193,7 @@ public class MetisAdapter {
 		String newEdgeInformation;
 
 		// Check if the first partition have or not a border node for the specific partition
-		keyBoarderMap = String.valueOf(localPartition) + String.valueOf(foreignPartition);
-		idBoarderNode = mapBorderNodes.get(keyBoarderMap);
+		idBoarderNode = mapBorderNodes.getBorderNodeID(localPartition, foreignPartition);
 
 		if (idBoarderNode == null) {
 			// There isn't any boarder node connecting these two partitions
@@ -203,7 +203,7 @@ public class MetisAdapter {
 			System.out.println("Create border node.... " + idBoarderNode);
 
 			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + foreignPartition, localPartition);
-			mapBorderNodes.put(keyBoarderMap, idBoarderNode);
+			mapBorderNodes.addNewBorderNode(localPartition, foreignPartition, idBoarderNode);
 
 			mapGraphNodes.put(idBoarderNode, localPartition);
 		}

@@ -8,7 +8,7 @@ import java.util.*;
  * RelationshipsList.java
  */
 public class RelationshipsList extends AbstractSequentialList<Relationship> {
-	private List<Relationship> list;
+	public List<Relationship> list;
 
 	public RelationshipsList() {
 		list = new LinkedList();
@@ -49,6 +49,40 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 	public void print() {
 		for (Relationship relationship : list) {
 			System.out.println("\tOrigin: " + relationship.getIdNodeOrg() + "  Destination: " + relationship.getIdNodeDest());
+		}
+	}
+
+	public boolean containNode(int idNode) {
+		for (Relationship relationship : list) {
+			if (relationship.containNode(idNode)) return true;
+		}
+
+		return false;
+	}
+
+	public List<Relationship> getNodeRelationships(int idNode) {
+		List<Relationship> listNodeRelationships = new ArrayList<>();
+
+		for (Relationship relationship : list) {
+			if (relationship.containNode(idNode)) {
+				listNodeRelationships.add(relationship);
+			}
+		}
+
+		return listNodeRelationships;
+	}
+
+	public void removeNodeRelations(int nodeID) {
+		ListIterator<Relationship> listIterator = list.listIterator();
+		Relationship relationship;
+
+		while (listIterator.hasNext()) {
+			relationship = listIterator.next();
+
+			if ((relationship.getIdNodeDest() == nodeID) ||
+					(relationship.getIdNodeOrg() == nodeID)) {
+				listIterator.remove();
+			}
 		}
 	}
 

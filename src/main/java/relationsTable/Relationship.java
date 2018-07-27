@@ -1,9 +1,10 @@
 package relationsTable;
 
 /**
- * Created by Carla Urrea Blázquez on 21/06/2018.
+ * Created by Carla Urrea Blázquez on 27/07/2018.
  */
 public class Relationship {
+
 	private int idNodeOrg;
 	private int idNodeDest;
 
@@ -31,5 +32,9 @@ public class Relationship {
 	public boolean contains(int idNode1, int idNode2) {
 		return ((idNodeDest == idNode1 && idNodeOrg == idNode2) ||
 				(idNodeDest == idNode2 && idNodeOrg == idNode1));
+	}
+
+	public boolean containNode(int idNode) {
+		return ((idNodeDest == idNode) || (idNodeOrg == idNode));
 	}
 }

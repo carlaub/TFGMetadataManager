@@ -11,6 +11,8 @@ public class GenericConstants {
     public static final String FILE_NAME_EDGES_PARTITION_BASE = "edges_part_";
     public static final String FILE_NAME_NODES = "people.txt";
     public static final String FILE_NAME_EDGES = "edges.txt";
+    public static final String FILE_NAME_METIS = "graph_example.txt.part.3";
+    public static final String FILE_PATH_METIS = "/src/main/resources/files/graph_example.txt.part.3";
 
     // Metadata Manager Slave Node
     public static final int MM_SLAVE_NODE_ID = 0;

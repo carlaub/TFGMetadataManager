@@ -57,6 +57,26 @@ public class RelationshipsTable {
 		return false;
 	}
 
+	public List<Relationship> getNodeRelationships(int borderNodeId, int idNode) {
+
+		System.out.println("Border node id: " + borderNodeId + " idNode: " + idNode);
+		RelationshipsList relationshipsList = relationshipTable.get(borderNodeId);
+
+		if (relationshipsList != null) {
+			return relationshipsList.getNodeRelationships(idNode);
+		}
+
+		return null;
+	}
+
+	public void removeNodeRelations(int borderNodeID, int nodeToRemoveID) {
+		RelationshipsList relationshipsList = relationshipTable.get(borderNodeID);
+
+		if (relationshipsList != null) {
+			relationshipsList.removeNodeRelations(borderNodeID);
+		}
+	}
+
 	public void print() {
 		for (Map.Entry<Integer, RelationshipsList> entry : relationshipTable.entrySet()) {
 			System.out.println("Border node " + entry.getKey());

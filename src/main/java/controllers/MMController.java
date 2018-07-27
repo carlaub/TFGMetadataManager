@@ -2,6 +2,8 @@ package controllers;
 
 import adapter.MetisAdapter;
 import application.MetadataManager;
+import constants.GenericConstants;
+import managers.GraphAlterationsManager;
 import neo4j.GraphDatabase;
 import neo4j.Neo4JImport;
 import neo4j.QueryExecutor;
@@ -38,7 +40,7 @@ public class MMController {
 	public void exportMetisFormat() {
 		MetisAdapter metisAdapter = new MetisAdapter();
 		// TODO: No tener pre-generado el output de METIS en el proyecto
-		metisAdapter.beginExport(System.getProperty("user.dir") + "/src/main/resources/files/graph_example.txt.part.3",
+		metisAdapter.beginExport(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS,
 				MetadataManager.getInstance().getMMInformation().getNumberPartitions());
 
 		// TODO: Borrar debug
@@ -70,6 +72,7 @@ public class MMController {
 		mmServer.sendStopDB();
 		HadoopUtils.getInstance().closeResources();
 		GraphDatabase.getInstance().shutdown();
+		GraphAlterationsManager.getInstance().closeResources();
 		System.exit(0);
 	}
 }

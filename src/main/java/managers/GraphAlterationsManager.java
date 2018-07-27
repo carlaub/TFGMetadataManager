@@ -3,23 +3,33 @@ package managers;
 import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
+import data.MapBorderNodes;
+import network.SlaveNodeObject;
 import queryStructure.QSNode;
 import queryStructure.QSRelation;
+import relationsTable.Relationship;
+import relationsTable.RelationshipsTable;
 import utils.HadoopUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 23/07/2018.
- *
+ * <p>
  * This Singleton class offers method to manager the graph alterations as insertions/deletions. Each one of those features requires
  * update files or generate subqueries.
  */
 public class GraphAlterationsManager {
 	private static GraphAlterationsManager instance;
 	private Map<Integer, Integer> mapGraphNodes;
-	private Map<String, Integer> mapBorderNodes;
+	private MapBorderNodes mapBorderNodes;
+	private BufferedWriter bwMetis;
+	private BufferedReader brMetis;
+
+	private List<Integer> nodesToRemove;
+	private List<String> relationshipsToAdd;
+	private Map<Integer, String> nodesToAdd;
 
 
 
@@ -31,10 +41,19 @@ public class GraphAlterationsManager {
 	private GraphAlterationsManager() {
 		mapGraphNodes = MetadataManager.getInstance().getMapGraphNodes();
 		mapBorderNodes = MetadataManager.getInstance().getMapBoarderNodes();
+		nodesToRemove = new ArrayList<>();
+		nodesToAdd = new HashMap<>();
+
+		try {
+			brMetis = new BufferedReader(new FileReader(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS));
+			bwMetis = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
-	 *
 	 * @param qsNodeA
 	 * @param qsNodeB
 	 * @param qsRelation
@@ -56,9 +75,10 @@ public class GraphAlterationsManager {
 		int partitionNodeA = mapGraphNodes.get(idNodeA);
 		int partitionNodeB = mapGraphNodes.get(idNodeB);
 
-		// Write the original relation in the global edges.txt file
+		// Save the relation to update the graph edge.txt file
 		String relationGraphFilesFormat = qsRelation.toGraphFilesFormat(idNodeA, idNodeB);
-		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES, relationGraphFilesFormat);
+//		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES, relationGraphFilesFormat);
+		relationshipsToAdd.add(relationGraphFilesFormat);
 
 
 		if (partitionNodeA == partitionNodeB) {
@@ -69,8 +89,6 @@ public class GraphAlterationsManager {
 			System.out.println("\n--> Send to p: " + partitionNodeA + "\n " + "MATCH (a{id: " + idNodeA + "}), (b{id: " + idNodeB + "}) " +
 					"CREATE (a)" + qsRelation.toString() + "(b)");
 
-			// Update the partition's edges file
-			HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeA+ ".txt", relationGraphFilesFormat);
 
 		} else {
 			// Nodes are located in different partitions
@@ -135,25 +153,6 @@ public class GraphAlterationsManager {
 	}
 
 
-
-	private int checkBorderNode(int partOrg, int partDes, Map<Integer, String> relCreationQueries) {
-		String key = String.valueOf(partOrg) + String.valueOf(partDes);
-		int borderNodeId;
-
-		if (!mapBorderNodes.containsKey(key)) {
-			// Border node exists
-			return mapBorderNodes.get(key);
-		} else {
-			borderNodeId = MetadataManager.getInstance().getMaxNodeId();
-			relCreationQueries.put(partOrg, "CREATE (n:border{id: " + borderNodeId + ",  partition: " + partDes + "})");
-			System.out.println("\n--> Send to p: " + partOrg + "\n " + "CREATE (n:border{id: " + borderNodeId + ",  partition: " + partDes + "})");
-
-			mapBorderNodes.put(String.valueOf(partOrg)+String.valueOf(partDes), borderNodeId);
-
-			return borderNodeId;
-		}
-	}
-
 	public int addNewNode(QSNode qsNode) {
 		// Update NodeID --> PartitionID
 		int partition = MetadataManager.getInstance().getLastPartitionFed();
@@ -165,9 +164,142 @@ public class GraphAlterationsManager {
 		// Update graph files
 		String nodeGraphFilesFormat = qsNode.toGraphFilesFormat();
 
-		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + partition + ".txt", nodeGraphFilesFormat);
-		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES, nodeGraphFilesFormat);
+//		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES_PARTITION_BASE + partition + ".txt", nodeGraphFilesFormat);
+
+		nodesToAdd.put(partition, nodeGraphFilesFormat);
+//		HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_NODES, nodeGraphFilesFormat);
 
 		return partition;
+	}
+
+
+	public Map<Integer, String> detachDeleteNode(QSNode qsNode, String originalQuery) {
+
+		if (!qsNode.getProperties().containsKey("id")) {
+			System.out.println(ErrorConstants.ERR_NODE_ID_DELETE);
+			return null;
+		}
+
+		Map<Integer, String> deleteQueries = new HashMap<>();
+		int nodeToRemoveID = Integer.valueOf(qsNode.getProperties().get("id"));
+		int nodeToRemovePartition = mapGraphNodes.get(nodeToRemoveID);
+		int borderNodeID;
+
+		// Add the original query (MATCH DETACH [...]) to the deleteQueries structure that store the sub-queries required to delete the node's relations
+		// in the rest of partitions
+		deleteQueries.put(nodeToRemovePartition, originalQuery);
+
+		// For each partition's border node, check if there is any relation with an foreign node. If there is, add the sub-query
+		// required and remove it from the [relationshipsTable] global structure.
+		RelationshipsTable relationshipsTable = MetadataManager.getInstance().getRelationshipsTable();
+		int partitionsNum = MetadataManager.getInstance().getMMInformation().getNumberPartitions();
+
+		for (int iPart = 0; iPart < partitionsNum; iPart++) {
+			if (nodeToRemovePartition == iPart) continue;
+
+			if (mapBorderNodes.contains(iPart, nodeToRemovePartition)) {
+				borderNodeID = mapBorderNodes.getBorderNodeID(iPart, nodeToRemovePartition);
+
+				List<Relationship> relationsremovedNode = relationshipsTable.getNodeRelationships(borderNodeID, nodeToRemoveID);
+
+				for (Relationship relation : relationsremovedNode) {
+
+					if (relation.getIdNodeOrg() == nodeToRemoveID) {
+						deleteQueries.put(iPart, "MATCH (n{id: " + borderNodeID + "})-[r]->(m{id: " + relation.getIdNodeDest() + ") DELETE r");
+					} else {
+						deleteQueries.put(iPart, "MATCH (m{id: " + relation.getIdNodeOrg() + "})-[r]->(n{id: " + borderNodeID + ") DELETE r");
+					}
+				}
+
+				relationshipsTable.removeNodeRelations(borderNodeID, nodeToRemoveID);
+			}
+
+			// Remove relations from relationshipTable related with the partition of the removed node
+			if (mapBorderNodes.contains(nodeToRemoveID, iPart)) {
+				borderNodeID = mapBorderNodes.getBorderNodeID(iPart, nodeToRemovePartition);
+				relationshipsTable.removeNodeRelations(nodeToRemoveID, borderNodeID);
+
+			}
+		}
+
+
+		// TODO: update relationshipTable border node local
+
+
+		return deleteQueries;
+	}
+
+
+	private int checkBorderNode(int partOrg, int partDes, Map<Integer, String> relCreationQueries) {
+		int borderNodeId;
+
+		if (!mapBorderNodes.contains(partOrg, partDes)) {
+			// Border node exists
+			return mapBorderNodes.getBorderNodeID(partOrg, partDes);
+		} else {
+			borderNodeId = MetadataManager.getInstance().getMaxNodeId();
+			relCreationQueries.put(partOrg, "CREATE (n:border{id: " + borderNodeId + ",  partition: " + partDes + "})");
+			System.out.println("\n--> Send to p: " + partOrg + "\n " + "CREATE (n:border{id: " + borderNodeId + ",  partition: " + partDes + "})");
+
+			mapBorderNodes.addNewBorderNode(partOrg, partDes, borderNodeId);
+
+			return borderNodeId;
+		}
+	}
+
+
+	private void updateNodesFiles() {
+		Set<Map.Entry<Integer, String>> set = nodesToAdd.entrySet();
+		List<Integer> numLinesRemoved;
+
+		// General graph nodes file
+		numLinesRemoved = HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_NODES, nodesToRemove, new ArrayList<>(nodesToAdd.values()));
+
+		// Metis output file
+
+		File tempFile = new File("metisTemp.txt");
+		String currentLine;
+		int numCurrentLine = 0;
+
+		try {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+			while((currentLine = brMetis.readLine()) != null) {
+
+				if(numLinesRemoved.contains(numCurrentLine)) continue;
+				writer.write(currentLine + "\n");
+			}
+
+			// Add new nodes
+			for (Map.Entry entry : set) {
+				writer.write(entry.getKey() + "\n");
+			}
+
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		if (!tempFile.renameTo(new File(GenericConstants.FILE_NAME_METIS))) {
+			System.out.println(ErrorConstants.ERR_UPDATE_METIS_FILE);
+		}
+	}
+
+	public void updateEdgesFiles() {
+		// General graph nodes file
+		HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_EDGES, nodesToRemove, relationshipsToAdd);
+	}
+
+	public void closeResources() {
+		try {
+			// Update files for future executions
+			updateNodesFiles();
+			updateEdgesFiles();
+
+			if (bwMetis != null) bwMetis.close();
+			if (brMetis != null) brMetis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
