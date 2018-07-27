@@ -16,6 +16,7 @@ public class QueryStructure {
 	public static final int QUERY_TYPE_DEFAULT = 0;
 	public static final int QUERY_TYPE_CREATE = 1;
 	public static final int QUERY_TYPE_DELETE = 2;
+	public static final int QUERY_TYPE_CHAINED = 3;
 
 	private LinkedHashMap<Type, List<QSEntity>> queryStructure;
 	private int queryType;
@@ -201,6 +202,8 @@ public class QueryStructure {
 
 		// MATCH clause
 		if (queryStructure.containsKey(Type.MATCH)) {
+			boolean previousEntityNode = false;
+
 			entityList = queryStructure.get(Type.MATCH);
 			if (!entityList.isEmpty()){
 				stringBuilder.append("MATCH ");
@@ -210,14 +213,19 @@ public class QueryStructure {
 						QSNode node = (QSNode) entity;
 						appendNode(node, stringBuilder);
 
+						if (previousEntityNode) stringBuilder.append(", ");
+
 						if (!((QSNode) entity).isRoot()) secondaryNodeVar.add(((QSNode)entity).getVariable());
 
+						previousEntityNode = true;
 					} else if (entity instanceof QSRelation){
 						// Relationship entity
 						QSRelation qsRelation = (QSRelation) entity;
 						if (qsRelation.getStart() != null) stringBuilder.append(qsRelation.getStart());
 						if (qsRelation.getRelationInfo() != null) stringBuilder.append(qsRelation.getRelationInfo());
 						if (qsRelation.getEnd() != null) stringBuilder.append(qsRelation.getEnd());
+
+						previousEntityNode = false;
 					}
 				}
 			}
