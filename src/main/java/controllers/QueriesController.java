@@ -61,7 +61,10 @@ public class QueriesController {
 		GraphAlterationsManager gam = GraphAlterationsManager.getInstance();
 
 		if (queryType == QueryStructure.QUERY_TYPE_CREATE) {
+			System.out.println("Type create");
 			if (queryStructure.hasRelation()) {
+				System.out.println("Has relation");
+
 				// CREATE RELATION
 				// The nodes of the relationship with their IDs are recovered
 				QSNode qsNodeA = queryStructure.getMatchNodeAt(0);

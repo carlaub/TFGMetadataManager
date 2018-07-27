@@ -51,6 +51,8 @@ public class GraphAlterationsManager {
 	public Map<Integer, String> addNewRelation(QSNode qsNodeA, QSNode qsNodeB, QSRelation qsRelation) {
 		Map<Integer, String> relCreationQueries = new HashMap<>();
 
+		System.out.println("Add new relation");
+
 		if (!(qsNodeA.getProperties().containsKey("id") && qsNodeA.getProperties().containsKey("id"))) return null;
 
 		int idNodeA = Integer.valueOf(qsNodeA.getProperties().get("id"));

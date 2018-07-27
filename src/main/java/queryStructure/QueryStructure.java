@@ -211,9 +211,8 @@ public class QueryStructure {
 					if (entity instanceof QSNode) {
 						// Node entity
 						QSNode node = (QSNode) entity;
-						appendNode(node, stringBuilder);
-
 						if (previousEntityNode) stringBuilder.append(", ");
+						appendNode(node, stringBuilder);
 
 						if (!((QSNode) entity).isRoot()) secondaryNodeVar.add(((QSNode)entity).getVariable());
 
