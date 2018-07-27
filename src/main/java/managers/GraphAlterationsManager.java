@@ -282,6 +282,8 @@ public class GraphAlterationsManager {
 
 		if (!tempFile.renameTo(new File(GenericConstants.FILE_NAME_METIS))) {
 			System.out.println(ErrorConstants.ERR_UPDATE_METIS_FILE);
+		} else {
+			System.out.println("--> Metis file updated");
 		}
 	}
 
