@@ -32,7 +32,7 @@ public class SyntacticAnalyzer {
 		this.mmServer = MMServer.getInstance();
 
 
-		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END);
+		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE);
 	}
 
 	public void program() {
@@ -47,7 +47,7 @@ public class SyntacticAnalyzer {
 			if (lookahead.getType() == Type.BEGIN) {
 				lookahead = lex.getToken();
 
-				System.out.println("Token: " + lookahead.getLexema());
+				System.out.println("Token p: " + lookahead.getLexema());
 
 				queryStructure = new QueryStructure();
 
