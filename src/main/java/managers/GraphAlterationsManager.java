@@ -4,7 +4,6 @@ import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
 import data.MapBorderNodes;
-import network.SlaveNodeObject;
 import queryStructure.QSNode;
 import queryStructure.QSRelation;
 import relationsTable.Relationship;
@@ -24,13 +23,10 @@ public class GraphAlterationsManager {
 	private static GraphAlterationsManager instance;
 	private Map<Integer, Integer> mapGraphNodes;
 	private MapBorderNodes mapBorderNodes;
-	private BufferedWriter bwMetis;
-	private BufferedReader brMetis;
 
 	private List<Integer> nodesToRemove;
 	private List<String> relationshipsToAdd;
 	private Map<Integer, String> nodesToAdd;
-
 
 
 	public static GraphAlterationsManager getInstance() {
@@ -43,13 +39,6 @@ public class GraphAlterationsManager {
 		mapBorderNodes = MetadataManager.getInstance().getMapBoarderNodes();
 		nodesToRemove = new ArrayList<>();
 		nodesToAdd = new HashMap<>();
-
-		try {
-			brMetis = new BufferedReader(new FileReader(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS));
-			bwMetis = new BufferedWriter(new FileWriter(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 
 	}
 
@@ -251,6 +240,9 @@ public class GraphAlterationsManager {
 	private void updateNodesFiles() {
 		Set<Map.Entry<Integer, String>> set = nodesToAdd.entrySet();
 		List<Integer> numLinesRemoved;
+		BufferedReader brMetis;
+		BufferedWriter wMetisTemp;
+
 
 		// General graph nodes file
 		numLinesRemoved = HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_NODES, nodesToRemove, new ArrayList<>(nodesToAdd.values()));
@@ -262,20 +254,22 @@ public class GraphAlterationsManager {
 		int numCurrentLine = 0;
 
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+			wMetisTemp = new BufferedWriter(new FileWriter(tempFile));
+			brMetis = new BufferedReader(new FileReader(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS));
 
-			while((currentLine = brMetis.readLine()) != null) {
+			while ((currentLine = brMetis.readLine()) != null) {
 
-				if(numLinesRemoved.contains(numCurrentLine)) continue;
-				writer.write(currentLine + "\n");
+				if (numLinesRemoved.contains(numCurrentLine)) continue;
+				wMetisTemp.write(currentLine + "\n");
 			}
 
 			// Add new nodes
 			for (Map.Entry entry : set) {
-				writer.write(entry.getKey() + "\n");
+				wMetisTemp.write(entry.getKey() + "\n");
 			}
 
-			writer.close();
+			wMetisTemp.close();
+			brMetis.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -293,15 +287,8 @@ public class GraphAlterationsManager {
 	}
 
 	public void closeResources() {
-		try {
-			// Update files for future executions
-			updateNodesFiles();
-			updateEdgesFiles();
-
-			if (bwMetis != null) bwMetis.close();
-			if (brMetis != null) brMetis.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// Update files for future executions
+		updateNodesFiles();
+		updateEdgesFiles();
 	}
 }
