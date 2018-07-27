@@ -47,7 +47,7 @@ public class SyntacticAnalyzer {
 			if (lookahead.getType() == Type.BEGIN) {
 				lookahead = lex.getToken();
 
-				System.out.println("Token p: " + lookahead.getLexema());
+				System.out.println("Token: " + lookahead.getLexema());
 
 				queryStructure = new QueryStructure();
 

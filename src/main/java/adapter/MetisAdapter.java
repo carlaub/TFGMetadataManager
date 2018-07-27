@@ -98,12 +98,14 @@ public class MetisAdapter {
 		int partitionNumber;
 
 
+
 		try {
+
 			readerMetisOutput = new BufferedReader(new FileReader(fileNameMetisOutput));
 //			readerGraphNodes = new BufferedReader(new FileReader("/Users/carlaurrea/Documents/Cuarto_Informatica/TFG/MetadataManager/src/main/resources/files/nodes.txt"));
 			readerGraphNodes = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSPathNodesFile());
 
-
+			System.out.println("Process nodes");
 			while ((lineMetisOutput = readerMetisOutput.readLine()) != null) {
 				lineGraphNode = readerGraphNodes.readLine();
 
