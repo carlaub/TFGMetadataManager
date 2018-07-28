@@ -67,11 +67,14 @@ public class QueryStructure {
 		} else if (queryStructure.containsKey(Type.CREATE)) {
 			entityList = queryStructure.get(Type.CREATE);
 		}
-
+		System.out.println("Hola");
 		if (entityList == null) return false;
+		System.out.println("Hola2");
 
 		for (QSEntity entity : entityList) {
 			if (entity instanceof QSRelation) {
+				System.out.println("Hola 3");
+
 				return true;
 			}
 		}

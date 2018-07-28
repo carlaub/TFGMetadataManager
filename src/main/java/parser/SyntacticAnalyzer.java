@@ -228,6 +228,7 @@ public class SyntacticAnalyzer {
 				}
 
 				queryStructure.addEntity(clauseToken, qsRelation);
+				System.out.println("--> Add relation");
 			}
 		}
 	}
