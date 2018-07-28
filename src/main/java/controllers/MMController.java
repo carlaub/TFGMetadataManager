@@ -86,9 +86,9 @@ public class MMController {
 	 */
 	public void shutdownSystem() {
 		mmServer.sendStopDB();
-		HadoopUtils.getInstance().closeResources();
-		GraphDatabase.getInstance().shutdown();
 		GraphAlterationsManager.getInstance().closeResources();
+		GraphDatabase.getInstance().shutdown();
+		HadoopUtils.getInstance().closeResources();
 		System.exit(0);
 	}
 }
