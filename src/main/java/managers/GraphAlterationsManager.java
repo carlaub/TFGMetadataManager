@@ -67,7 +67,7 @@ public class GraphAlterationsManager {
 		int partitionNodeA = mapGraphNodes.get(idNodeA);
 		int partitionNodeB = mapGraphNodes.get(idNodeB);
 
-		System.out.println("--> NodeA: " + idNodeA + " NodeB: " + idNodeB);
+		System.out.println("--> NodeA: " + idNodeA + " part: " + partitionNodeA + "\n    NodeB: " + idNodeB + " part: " + partitionNodeB);
 
 		// Save the relation to update the graph edge.txt file
 		String relationGraphFilesFormat = qsRelation.toGraphFilesFormat(idNodeA, idNodeB);
