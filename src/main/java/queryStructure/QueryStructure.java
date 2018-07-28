@@ -17,6 +17,7 @@ public class QueryStructure {
 	public static final int QUERY_TYPE_CREATE = 1;
 	public static final int QUERY_TYPE_DELETE = 2;
 	public static final int QUERY_TYPE_CHAINED = 3;
+	public static final int QUERY_TYPE_BROADCAST = 4;
 
 	private LinkedHashMap<Type, List<QSEntity>> queryStructure;
 	private int queryType;

@@ -16,9 +16,9 @@ import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 06/07/2018.
- *
+ * <p>
  * QueriesControlles.java
- *
+ * <p>
  * For each query, create a controller.
  */
 public class QueriesController {
@@ -56,7 +56,7 @@ public class QueriesController {
 		}
 	}
 
-	public void  manageNewQuery(QueryStructure queryStructure) {
+	public void manageNewQuery(QueryStructure queryStructure) {
 		int queryType = queryStructure.getQueryType();
 		GraphAlterationsManager gam = GraphAlterationsManager.getInstance();
 
@@ -77,15 +77,11 @@ public class QueriesController {
 					// If the relation is established between node located in different partitions, some subqueries must
 					// be executed to create relations with border nodes or insert new border nodes if are required.
 					set = relCreationQueries.entrySet();
-					if (set != null) {
-						for (Map.Entry<Integer, String> entry : set) {
-							//TODO: Enviar las queries a todas las particiones que sea requerido
-
-						}
-					} else {
-						System.out.println(ErrorConstants.ERR_RELATION_CREATION);
-
+					for (Map.Entry<Integer, String> entry : set) {
+						//TODO: TEST Enviar las queries a todas las particiones que sea requerido
+						mmServer.sendStringQuery(entry.getKey(), entry.getValue());
 					}
+
 				} else {
 					System.out.println(ErrorConstants.ERR_RELATION_CREATION);
 				}
@@ -96,16 +92,17 @@ public class QueriesController {
 				sendByPartitionID(queryStructure, partitionID);
 			}
 
-		} else if (queryType == QueryStructure.QUERY_TYPE_DEFAULT){
+		} else if (queryType == QueryStructure.QUERY_TYPE_DEFAULT) {
 			// CASE 1: Query's MATCH clause has a relation
 			int idRootNode = queryStructure.getRootNodeId();
 			System.out.println("ID root node: " + idRootNode);
 
 
 			if (idRootNode > 0) {
-					sendById(queryStructure, idRootNode);
+				sendById(queryStructure, idRootNode);
 			} else {
 				// CASE 2: Query's MATCH clause has not a relation
+				queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
 				mmServer.sendQueryBroadcast(queryStructure, this);
 				queryExecutor.processQuery(queryStructure, this, false);
 			}
@@ -144,7 +141,8 @@ public class QueriesController {
 		int indexOrgColumn = 0;
 
 		if (!trackingMode &&
-				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE)) {
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST)) {
 			// Send a query to the original root node partition to get its information. This information is needed to replace
 			// some conditions in the WHERE clause related with the root node
 			// EX:
@@ -175,7 +173,8 @@ public class QueriesController {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
 			System.out.println("Column " + i + " size: " + columnResults.size() + " " + trackingMode);
 
-			if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
+			if (trackingMode)
+				indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
 
 			for (ResultEntity result : columnResults) {
 
@@ -233,8 +232,8 @@ public class QueriesController {
 						System.out.println("Entro en la relacion");
 
 						it = result.getProperties().entrySet().iterator();
-						while(it.hasNext()) {
-							Map.Entry entry = (Map.Entry)it.next();
+						while (it.hasNext()) {
+							Map.Entry entry = (Map.Entry) it.next();
 							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 						}
 						System.out.println("\n");
@@ -246,7 +245,7 @@ public class QueriesController {
 
 		if (!trackingMode) {
 			// Show result table
-			TextTable textTable = new TextTable((String[])initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
+			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
 		}
