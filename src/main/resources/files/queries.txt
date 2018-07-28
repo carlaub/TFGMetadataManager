@@ -40,19 +40,19 @@ MATCH (n {id: 5})<--(m)<--(k)
 RETURN m, n, k
 END
 
-#BEGIN
-#CREATE (n:person{name: "Carla"})
-#RETURN n
-#END
+BEGIN
+CREATE (n:person{name: "Carla"})
+RETURN n
+END
 
-#BEGIN
-#CREATE (n:person{name: "Fulanito"})
-#END
+BEGIN
+CREATE (n:person{name: "Fulanito"})
+END
 
-#BEGIN
-#MATCH (n{id:6}), (m{id: 1})
-#CREATE (n)-->(m)
-#END
+BEGIN
+MATCH (n{id:6}), (m{id: 1})
+CREATE (n)-[:WORK WITH]->(m)
+END
 
 BEGIN
 MATCH (n)
