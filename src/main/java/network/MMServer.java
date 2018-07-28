@@ -92,10 +92,23 @@ public class MMServer {
 	public boolean sendStartDB() {
 		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
 		boolean status;
+		Msg response;
 
 		for (int i = 0; i < numSN; i++) {
 			status = sendToSlaveNode(i + 1, NetworkConstants.PCK_CODE_START_DB, "");
 			if (!status) return false;
+		}
+
+		for (int i = 0; i < numSN; i++) {
+			response = waitResponseFromSlaveNode(i + 1);
+			if (response != null) {
+				switch (response.getCode()) {
+					case NetworkConstants.PCK_STATUS_OK_START_DB:
+						break;
+					default:
+						return false;
+				}
+			}
 		}
 
 		return true;

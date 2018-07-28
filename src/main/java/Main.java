@@ -43,7 +43,21 @@ public class Main {
 //        System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
 
         // Show the menu
-        Menu menu = new Menu();
-        menu.showMenu();
+//        Menu menu = new Menu();
+//        menu.showMenu();
+
+        MMController mmController = new MMController();
+
+
+        mmController.exportMetisFormat();
+
+        mmController.createGraphDBInTheNodes();
+
+        System.out.println(MsgConstants.MSG_PROC_QUERIES);
+        mmController.queriesFileExecution();
+        System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
+
+        mmController.shutdownSystem();
+
     }
 }

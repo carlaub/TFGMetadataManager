@@ -38,6 +38,7 @@ public class GraphAlterationsManager {
 		mapGraphNodes = MetadataManager.getInstance().getMapGraphNodes();
 		mapBorderNodes = MetadataManager.getInstance().getMapBoarderNodes();
 		nodesToRemove = new ArrayList<>();
+		relationshipsToAdd = new ArrayList<>();
 		nodesToAdd = new HashMap<>();
 
 	}
