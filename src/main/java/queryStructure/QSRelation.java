@@ -83,7 +83,11 @@ public class QSRelation extends QSEntity {
 	}
 
 	public boolean isRelationLTR() {
-		if (end.contains(">")) return true;
+		if (end != null && end.contains(">") ||
+			start != null && start.contains(">")) {
+			return true;
+		}
+
 		return false;
 	}
 

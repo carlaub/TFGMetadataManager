@@ -227,7 +227,7 @@ public class GraphAlterationsManager {
 	private int checkBorderNode(int partOrg, int partDes, Map<Integer, String> relCreationQueries) {
 		int borderNodeId;
 
-		if (!mapBorderNodes.contains(partOrg, partDes)) {
+		if (mapBorderNodes.contains(partOrg, partDes)) {
 			// Border node exists
 			return mapBorderNodes.getBorderNodeID(partOrg, partDes);
 		} else {
