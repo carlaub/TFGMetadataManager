@@ -9,7 +9,7 @@ import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 27/06/2018.
- *
+ * <p>
  * QueryStructure.java
  */
 public class QueryStructure {
@@ -56,22 +56,32 @@ public class QueryStructure {
 
 	/**
 	 * Return true if the query structure has a relation as a
+	 *
 	 * @return
 	 */
 	public boolean hasRelation() {
+		List<QSEntity> entityList = null;
+
 		if (queryStructure.containsKey(Type.MATCH)) {
-			List<QSEntity> entityList = queryStructure.get(Type.MATCH);
-			for (QSEntity entity : entityList) {
-				if (entity instanceof QSRelation) {
-					return true;
-				}
+			entityList = queryStructure.get(Type.MATCH);
+		} else if (queryStructure.containsKey(Type.CREATE)) {
+			entityList = queryStructure.get(Type.CREATE);
+		}
+
+		if (entityList == null) return false;
+
+		for (QSEntity entity : entityList) {
+			if (entity instanceof QSRelation) {
+				return true;
 			}
 		}
+
 		return false;
 	}
 
 	/**
 	 * Return the root node of the query string
+	 *
 	 * @return RootNode
 	 */
 	public QSNode getRootNode() {
@@ -95,6 +105,7 @@ public class QueryStructure {
 
 	/**
 	 * Return the root node id from the match clause
+	 *
 	 * @return root node id
 	 */
 	public int getRootNodeId() {
@@ -121,6 +132,7 @@ public class QueryStructure {
 	/**
 	 * Return the [position] QSNode inside the MATCH clause. If there isn't any node at this position, return null.
 	 * This function is useful to recover the node's information/ID when a relation should be created.
+	 *
 	 * @return QSNode if exist node in this position, null if not.
 	 */
 	public QSNode getMatchNodeAt(int position) {
@@ -132,7 +144,7 @@ public class QueryStructure {
 			for (QSEntity entity : list) {
 				if (entity instanceof QSNode) {
 					if (currentPosition == position) return (QSNode) entity;
-					currentPosition ++;
+					currentPosition++;
 				}
 			}
 		}
@@ -142,6 +154,7 @@ public class QueryStructure {
 
 	/**
 	 * Return the QSRelation defined in the CREATE clause. Is a requirement that only one relation be defined in the CREATE clause.
+	 *
 	 * @return The CREATE's relation. If it isn't exists, return null-
 	 */
 	public QSRelation getCreateRelation() {
@@ -192,6 +205,7 @@ public class QueryStructure {
 
 	/**
 	 * Convert the query structure to string. Util to execute the Graph Database Service's "execute" function.
+	 *
 	 * @return Query string
 	 */
 	public String toString() {
@@ -205,7 +219,7 @@ public class QueryStructure {
 			boolean previousEntityNode = false;
 
 			entityList = queryStructure.get(Type.MATCH);
-			if (!entityList.isEmpty()){
+			if (!entityList.isEmpty()) {
 				stringBuilder.append("MATCH ");
 				for (QSEntity entity : entityList) {
 					if (entity instanceof QSNode) {
@@ -214,10 +228,10 @@ public class QueryStructure {
 						if (previousEntityNode) stringBuilder.append(", ");
 						appendNode(node, stringBuilder);
 
-						if (!((QSNode) entity).isRoot()) secondaryNodeVar.add(((QSNode)entity).getVariable());
+						if (!((QSNode) entity).isRoot()) secondaryNodeVar.add(((QSNode) entity).getVariable());
 
 						previousEntityNode = true;
-					} else if (entity instanceof QSRelation){
+					} else if (entity instanceof QSRelation) {
 						// Relationship entity
 						QSRelation qsRelation = (QSRelation) entity;
 						if (qsRelation.getStart() != null) stringBuilder.append(qsRelation.getStart());
@@ -242,8 +256,12 @@ public class QueryStructure {
 						QSNode node = (QSNode) entity;
 						appendNode(node, stringBuilder);
 
-					} else if (entity instanceof QSRelation){
-						// TODO Append relation
+					} else if (entity instanceof QSRelation) {
+						// Relationship entity
+						QSRelation qsRelation = (QSRelation) entity;
+						if (qsRelation.getStart() != null) stringBuilder.append(qsRelation.getStart());
+						if (qsRelation.getRelationInfo() != null) stringBuilder.append(qsRelation.getRelationInfo());
+						if (qsRelation.getEnd() != null) stringBuilder.append(qsRelation.getEnd());
 					}
 				}
 			}
@@ -257,11 +275,11 @@ public class QueryStructure {
 				int size = entityList.size();
 
 				for (int i = 0; i < size - 1; i++) {
-					stringBuilder.append(((QSCondition)entityList.get(i)).getConditions());
+					stringBuilder.append(((QSCondition) entityList.get(i)).getConditions());
 					stringBuilder.append(", ");
 				}
 
-				stringBuilder.append(((QSCondition)entityList.get(size - 1)).getConditions());
+				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
 			}
 
 			if (!secondaryNodeVar.isEmpty()) {
@@ -283,18 +301,18 @@ public class QueryStructure {
 				int size = entityList.size();
 
 				for (int i = 0; i < size - 1; i++) {
-					stringBuilder.append(((QSCondition)entityList.get(i)).getConditions());
+					stringBuilder.append(((QSCondition) entityList.get(i)).getConditions());
 					stringBuilder.append(", ");
 				}
 
-				stringBuilder.append(((QSCondition)entityList.get(size - 1)).getConditions());
+				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
 			}
 		}
 
 		return stringBuilder.toString();
 	}
 
-	public QueryStructure replaceRootNode (int idRootNodeReplace, ResultNode rootNode, int level) {
+	public QueryStructure replaceRootNode(int idRootNodeReplace, ResultNode rootNode, int level) {
 		String varRootNode = "";
 		QueryStructure queryStructureModified = new QueryStructure();
 		Iterator<Map.Entry<Type, List<QSEntity>>> iterator = this.queryStructure.entrySet().iterator();
@@ -310,10 +328,10 @@ public class QueryStructure {
 
 			if (clauseType == Type.MATCH) {
 
-				for (int i = 0 ; i < (level - 1); i++) {
+				for (int i = 0; i < (level - 1); i++) {
 					// Remove node + relation from previous levels
 					// Ej: (n)<--(m)<--(k) [m = level 1] => (m)<--
-					varPrevLevels.add(((QSNode)entities.get(0)).getVariable());
+					varPrevLevels.add(((QSNode) entities.get(0)).getVariable());
 					entities.remove(0); // Node
 					entities.remove(0); // Relation
 				}
@@ -360,15 +378,15 @@ public class QueryStructure {
 							// TODO: permitir mas de un "var." en una misma condicion
 							int i = (index + varRootNode.length() + 1);
 //							for (int i = (index + varRootNode.length() + 1); i < conditionCharArray.length; i++) {
-								do {
-									c = conditionCharArray[i];
-									sbProperty.append(c);
-									i++;
-								} while (GenericConstants.COMMON_CHARS.indexOf(c) != -1 && i < conditionCharArray.length);
+							do {
+								c = conditionCharArray[i];
+								sbProperty.append(c);
+								i++;
+							} while (GenericConstants.COMMON_CHARS.indexOf(c) != -1 && i < conditionCharArray.length);
 
-								System.out.println("Var en clausula WHERE: " + sbProperty.toString());
+							System.out.println("Var en clausula WHERE: " + sbProperty.toString());
 
-								condition = condition.replace((varRootNode + "." + sbProperty.toString()), String.valueOf(rootNode.getProperties().get(sbProperty.toString())));
+							condition = condition.replace((varRootNode + "." + sbProperty.toString()), String.valueOf(rootNode.getProperties().get(sbProperty.toString())));
 //
 // 							}
 
@@ -386,9 +404,9 @@ public class QueryStructure {
 					if (entity instanceof QSCondition) {
 						String condition = ((QSCondition) entity).getConditions();
 						// Root node or prev. levels nodes information has been obtained on the first phase (original query)
-						condition = condition.replaceAll("\\s+","");
+						condition = condition.replaceAll("\\s+", "");
 						if (!(condition.equals(varRootNode) ||
-								condition.matches("^("+ varRootNode +".).*") ||
+								condition.matches("^(" + varRootNode + ".).*") ||
 								varPrevLevels.contains(condition))) {
 							queryStructureModified.addEntity(clauseType, entity);
 						}
@@ -425,10 +443,10 @@ public class QueryStructure {
 			stringBuilder.append("{");
 
 			for (Map.Entry<String, String> entry : set) {
-				stringBuilder.append(entry.getKey()+": ");
+				stringBuilder.append(entry.getKey() + ": ");
 				stringBuilder.append(entry.getValue() + ",");
 			}
-			stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "}" );
+			stringBuilder.replace(stringBuilder.length() - 1, stringBuilder.length(), "}");
 		}
 		stringBuilder.append(")");
 	}
