@@ -53,3 +53,8 @@ BEGIN
 MATCH (n{id:6}), (m{id: 1})
 CREATE (n)-->(m)
 END
+
+BEGIN
+MATCH (n)
+RETURN n
+END
