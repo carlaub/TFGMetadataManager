@@ -62,10 +62,10 @@ public class QueryStructure {
 	public boolean hasRelation() {
 		List<QSEntity> entityList = null;
 
-		if (queryStructure.containsKey(Type.MATCH)) {
-			entityList = queryStructure.get(Type.MATCH);
-		} else if (queryStructure.containsKey(Type.CREATE)) {
+		if (queryStructure.containsKey(Type.CREATE)) {
 			entityList = queryStructure.get(Type.CREATE);
+		} else if (queryStructure.containsKey(Type.MATCH)) {
+			entityList = queryStructure.get(Type.MATCH);
 		}
 		System.out.println("Hola");
 		if (entityList == null) return false;
