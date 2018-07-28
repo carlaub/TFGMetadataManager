@@ -157,6 +157,7 @@ public class Neo4JImport {
 	private void createRelation(String line) {
 		int fromNode;
 		int toNode;
+		RelationshipType type = null;
 
 		Map<String, Object> properties = new HashMap<>();
 
@@ -167,7 +168,9 @@ public class Neo4JImport {
 		toNode = Integer.parseInt(parts[1]);
 
 		// Relationship type
-		RelationshipType type = DynamicRelationshipType.withName(parts[2]);
+		if (numParts >= 3) {
+			type = DynamicRelationshipType.withName(parts[2]);
+		}
 
 		for (int i = 3; i < numParts; i = i + 2) {
 			properties.put(parts[i], parts[i + 1]);
