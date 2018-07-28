@@ -51,7 +51,7 @@ END
 
 BEGIN
 MATCH (n{id:6}), (m{id: 1})
-CREATE (n)-[:WORK WITH]->(m)
+CREATE (n)-[:FRIENDOF]->(m)
 END
 
 BEGIN

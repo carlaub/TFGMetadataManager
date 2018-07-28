@@ -103,7 +103,7 @@ public class GraphAlterationsManager {
 						"CREATE (a)" + qsRelation.toString() + "(x)");
 
 				relationGraphFilesFormat = qsRelation.toGraphFilesFormat(idNodeA, borderIDPartA);
-				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeA + ".txt", relationGraphFilesFormat);
+//				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeA + ".txt", relationGraphFilesFormat);
 
 
 				/* --------------------- */
@@ -115,7 +115,7 @@ public class GraphAlterationsManager {
 						"CREATE (z)" + qsRelation.toString() + "(b)");
 
 				relationGraphFilesFormat = qsRelation.toGraphFilesFormat(borderIDPartB, idNodeB);
-				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeB + ".txt", relationGraphFilesFormat);
+//				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeB + ".txt", relationGraphFilesFormat);
 
 
 			} else {
@@ -127,7 +127,7 @@ public class GraphAlterationsManager {
 						"CREATE (b)" + qsRelation.toString() + "(z)");
 
 				relationGraphFilesFormat = qsRelation.toGraphFilesFormat(idNodeB, borderIDPartB);
-				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeB + ".txt", relationGraphFilesFormat);
+//				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeB + ".txt", relationGraphFilesFormat);
 
 
 				/* --------------------- */
@@ -139,7 +139,7 @@ public class GraphAlterationsManager {
 						"CREATE (x)" + qsRelation.toString() + "(a)");
 
 				relationGraphFilesFormat = qsRelation.toGraphFilesFormat(borderIDPartA, idNodeA);
-				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeA + ".txt", relationGraphFilesFormat);
+//				HadoopUtils.getInstance().writeLineHDFSFile(GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + partitionNodeA + ".txt", relationGraphFilesFormat);
 			}
 		}
 
