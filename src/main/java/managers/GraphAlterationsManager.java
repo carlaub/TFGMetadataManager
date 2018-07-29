@@ -179,6 +179,8 @@ public class GraphAlterationsManager {
 		int nodeToRemovePartition = mapGraphNodes.get(nodeToRemoveID);
 		int borderNodeID;
 
+		nodesToRemove.add(nodeToRemoveID);
+
 		// Add the original query (MATCH DETACH [...]) to the deleteQueries structure that store the sub-queries required to delete the node's relations
 		// in the rest of partitions
 		deleteQueries.put(nodeToRemovePartition, originalQuery);
@@ -215,10 +217,6 @@ public class GraphAlterationsManager {
 
 			}
 		}
-
-
-		// TODO: update relationshipTable border node local
-
 
 		return deleteQueries;
 	}
@@ -270,6 +268,7 @@ public class GraphAlterationsManager {
 
 			// Add new nodes
 			for (Map.Entry entry : set) {
+				System.out.println("--> Add new entry metis file");
 				wMetisTemp.write(entry.getKey() + "\n");
 			}
 

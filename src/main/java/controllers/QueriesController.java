@@ -99,6 +99,9 @@ public class QueriesController {
 				sendByPartitionID(queryStructure, partitionID);
 			}
 
+		} else if (queryType == QueryStructure.QUERY_TYPE_DETACH) {
+			gam.detachDeleteNode(queryStructure.getRootNode(), queryStructure.toString());
+
 		} else if (queryType == QueryStructure.QUERY_TYPE_DEFAULT) {
 			// CASE 1: Query's MATCH clause has a relation
 			int idRootNode = queryStructure.getRootNodeId();

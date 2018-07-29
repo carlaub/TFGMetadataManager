@@ -67,6 +67,7 @@ public class SyntacticAnalyzer {
 						strQuery = strQuery + " " + lookahead.getLexema() + " ";
 
 					} else if (lookahead.getType() == Type.DETACH) {
+						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_DETACH);
 						processClauseDetach(queryStructure, lookahead);
 					} else if (lookahead.getType() == Type.DELETE) {
 						processClauseConditions(queryStructure, lookahead);
