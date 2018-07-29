@@ -58,6 +58,7 @@ public class QueriesController {
 
 	public void manageNewQuery(QueryStructure queryStructure) {
 		int queryType = queryStructure.getQueryType();
+		int partition;
 		GraphAlterationsManager gam = GraphAlterationsManager.getInstance();
 
 		if (queryType == QueryStructure.QUERY_TYPE_CREATE) {
@@ -79,7 +80,13 @@ public class QueriesController {
 					set = relCreationQueries.entrySet();
 					for (Map.Entry<Integer, String> entry : set) {
 						//TODO: TEST Enviar las queries a todas las particiones que sea requerido
-						mmServer.sendStringQuery(entry.getKey(), entry.getValue());
+						partition = entry.getKey();
+						if (partition == 0) {
+							// Local Neo4j DB
+							queryExecutor.processQuery(entry.getValue());
+						} else {
+							mmServer.sendStringQuery(entry.getKey(), entry.getValue());
+						}
 					}
 
 				} else {
@@ -153,7 +160,13 @@ public class QueriesController {
 
 			int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
 			String queryRootInfo = "MATCH (n {id:" + queryStructure.getRootNodeId() + " }) RETURN n;";
-			ResultQuery resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
+			ResultQuery resultQueryRootInfo;
+
+			if (idPartitionLocal == 0) {
+				resultQueryRootInfo = queryExecutor.processQuery(queryRootInfo);
+			} else {
+				resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
+			}
 
 			if (resultQueryRootInfo.getColumnsCount() > 0) {
 				List<ResultEntity> column = resultQueryRootInfo.getColumn(0);

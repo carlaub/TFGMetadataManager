@@ -20,10 +20,18 @@ public class QueryExecutor {
 	}
 
 	public ResultQuery processQuery(QueryStructure query, QueriesController queriesController, boolean trackingMode) {
-		try (Transaction q = graphDatabaseService.beginTx();
-			 Result result = graphDatabaseService.execute(query.toString())) {
+		ResultQuery resultQuery = processQuery(query.toString());
+		queriesController.processQueryResults(resultQuery, query, trackingMode);
 
-			System.out.println("Query enviada a particion MM: \n" + query.toString());
+		return resultQuery;
+
+	}
+
+	public ResultQuery processQuery(String strQuery) {
+		try (Transaction q = graphDatabaseService.beginTx();
+			 Result result = graphDatabaseService.execute(strQuery)) {
+
+			System.out.println("Query enviada a particion MM: \n" + strQuery);
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
 			ResultQuery resultQuery = new ResultQuery(result.columns());
@@ -71,13 +79,12 @@ public class QueryExecutor {
 
 			q.success();
 
-
-			queriesController.processQueryResults(resultQuery, query, trackingMode);
-
 			// Important to avoid unwanted behaviour, such as leaking transactions
 			result.close();
 
 			return resultQuery;
 		}
+
 	}
+
 }
