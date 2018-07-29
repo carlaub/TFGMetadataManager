@@ -278,7 +278,7 @@ public class GraphAlterationsManager {
 			e.printStackTrace();
 		}
 
-		if (!tempFile.renameTo(new File(System.getProperty("user.dir") + GenericConstants.FILE_NAME_METIS))) {
+		if (!tempFile.renameTo(new File(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS))) {
 			System.out.println(ErrorConstants.ERR_UPDATE_METIS_FILE);
 		} else {
 			System.out.println("--> Metis file updated");
