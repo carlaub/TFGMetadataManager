@@ -202,30 +202,33 @@ public class QueriesController {
 
 
 					if (resultNode.isBorderNode()) {
-						int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
+						if (queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) {
 
-						if (!exploredBorderNodes.contains(resultNode.getNodeId() + "-" + matchVarLevel)) {
+							int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
 
-							exploredBorderNodes.add(resultNode.getNodeId() + "-" + matchVarLevel);
-						/*
-						En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
-						Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
-						Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
-						 */
-							int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
-							int idPartitionForeign = resultNode.getForeignPartitionId();
+							if (!exploredBorderNodes.contains(resultNode.getNodeId() + "-" + matchVarLevel)) {
 
-							int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
+								exploredBorderNodes.add(resultNode.getNodeId() + "-" + matchVarLevel);
+								/*
+								En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
+								Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
+								Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
+								 */
+								int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+								int idPartitionForeign = resultNode.getForeignPartitionId();
 
-							QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode, matchVarLevel);
+								int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
 
-							if (idPartitionForeign == 0) {
-								queryExecutor.processQuery(queryStructureModified, this, true);
-							} else {
-								mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+								QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode, matchVarLevel);
+
+								if (idPartitionForeign == 0) {
+									queryExecutor.processQuery(queryStructureModified, this, true);
+								} else {
+									mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+								}
+
+								System.out.println("Salgo de border. Tracking: " + trackingMode);
 							}
-
-							System.out.println("Salgo de border. Tracking: " + trackingMode);
 						}
 					} else {
 						if (trackingMode) {
