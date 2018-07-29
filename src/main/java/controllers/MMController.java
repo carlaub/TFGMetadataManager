@@ -65,6 +65,8 @@ public class MMController {
 			}
 		});
 
+		t.start();
+
 		if (!mmServer.sendStartDB()) {
 			shutdownSystem();
 		}

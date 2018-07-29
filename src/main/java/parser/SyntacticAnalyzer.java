@@ -32,7 +32,7 @@ public class SyntacticAnalyzer {
 		this.mmServer = MMServer.getInstance();
 
 
-		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE);
+		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE, Type.DETACH);
 	}
 
 	public void program() {
@@ -66,6 +66,10 @@ public class SyntacticAnalyzer {
 						processClauseConditions(queryStructure, lookahead);
 						strQuery = strQuery + " " + lookahead.getLexema() + " ";
 
+					} else if (lookahead.getType() == Type.DETACH) {
+						processClauseDetach(queryStructure, lookahead);
+					} else if (lookahead.getType() == Type.DELETE) {
+						processClauseConditions(queryStructure, lookahead);
 					} else {
 						strQuery = strQuery + lookahead.getLexema();
 						lookahead = lex.getToken();
@@ -249,6 +253,15 @@ public class SyntacticAnalyzer {
 			queryStructure.addEntity(clauseToken, qsCondition);
 
 			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken(false);
+		}
+	}
+
+	private void processClauseDetach(QueryStructure queryStructure, Token clauseToken) {
+		queryStructure.addEntity(clauseToken, null);
+
+		lookahead = lex.getToken();
+		if (lookahead.getType() == Type.DELETE) {
+			processClauseConditions(queryStructure, lookahead);
 		}
 	}
 }

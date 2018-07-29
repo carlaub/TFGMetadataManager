@@ -108,6 +108,7 @@ public class QueriesController {
 			if (idRootNode > 0) {
 				sendById(queryStructure, idRootNode);
 			} else {
+				System.out.println("--> BROADCAST");
 				// CASE 2: Query's MATCH clause has not a relation
 				queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
 				mmServer.sendQueryBroadcast(queryStructure, this);
