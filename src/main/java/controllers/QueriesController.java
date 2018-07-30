@@ -324,7 +324,7 @@ public class QueriesController {
 
 		if (!trackingMode && (queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount())) {
 			System.out.println("ENTRAAAA " + (resultQuery.getColumnsName() != null));
-			initialResultQuery.setColumnsName(resultQuery.getColumnsName());
+			initialResultQuery = resultQuery;
 		}
 
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
