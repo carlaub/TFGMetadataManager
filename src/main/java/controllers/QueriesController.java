@@ -322,7 +322,8 @@ public class QueriesController {
 		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
 		// corresponding column to show the results
 
-		if (!trackingMode && queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount()) {
+		if (!trackingMode && (queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount())) {
+			System.out.println("ENTRAAAA");
 			initialResultQuery.setColumnsName(resultQuery.getColumnsName());
 		}
 
@@ -338,7 +339,7 @@ public class QueriesController {
 					ResultNode node = (ResultNode) colResult;
 
 					if (node.isBorderNode()) {
-						int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
+						int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(j));
 						if (!exploredBorderNodes.contains(node.getNodeId() + "-" + matchVarLevel)) {
 							exploredBorderNodes.add(node.getNodeId() + "-" + matchVarLevel);
 
