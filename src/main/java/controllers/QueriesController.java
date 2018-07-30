@@ -11,6 +11,7 @@ import queryStructure.QSNode;
 import queryStructure.QSRelation;
 import queryStructure.QueryStructure;
 import relationsTable.RelationshipsTable;
+import sun.jvm.hotspot.oops.Metadata;
 
 import java.util.*;
 
@@ -31,6 +32,7 @@ public class QueriesController {
 	private GraphAlterationsManager gam;
 	private QueryStructure originalQueryStructure;
 	private int explorationWithResults;
+	private int broadcastsReceived;
 
 
 	public QueriesController() {
@@ -45,19 +47,28 @@ public class QueriesController {
 	}
 
 	public void sendById(QueryStructure queryStructure, int idRootNode) {
+		sendById(queryStructure, idRootNode, false);
+	}
+
+	public void sendById(QueryStructure queryStructure, int idRootNode, boolean trackingMode) {
 		System.out.println("ID Root node: " + idRootNode);
 		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
 
-		sendByPartitionID(queryStructure, partitionID);
+		sendByPartitionID(queryStructure, partitionID, trackingMode);
 	}
 
+
 	public void sendByPartitionID(QueryStructure queryStructure, int partitionID) {
+		sendByPartitionID(queryStructure, partitionID, false);
+	}
+
+	public void sendByPartitionID(QueryStructure queryStructure, int partitionID, boolean trackingMode) {
 		if (partitionID == GenericConstants.MM_SLAVE_NODE_ID) {
 			// Root node is inside MetadataManager's Neo4j instance
-			queryExecutor.processQuery(queryStructure, this, false);
+			queryExecutor.processQuery(queryStructure, this, trackingMode);
 		} else {
 			// Root node is in the slave node with id "partitionID"
-			mmServer.sendQuery(partitionID, queryStructure, this, false);
+			mmServer.sendQuery(partitionID, queryStructure, this, trackingMode);
 		}
 	}
 
@@ -87,6 +98,7 @@ public class QueriesController {
 				} else {
 					System.out.println("--> BROADCAST");
 					// CASE 2: Query's MATCH clause has not a relation
+					broadcastsReceived = 0;
 					queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
 					mmServer.sendQueryBroadcast(queryStructure, this);
 					queryExecutor.processQuery(queryStructure, this, false);
@@ -99,11 +111,15 @@ public class QueriesController {
 				int matchVarsCount = queryStructure.getMatchVariablesCount();
 				System.out.println("Variables Count: " + matchVarsCount);
 
-				for (int i = 1; i < matchVarsCount; i++) {
-					System.out.println("--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
-					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
-
+				// Derived Sub-queries
+				for (int i = 1; i < matchVarsCount - 1; i++) {
+					System.out.println("\n--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
+					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode, true);
 				}
+
+				// Send Original query
+				sendById(queryStructure, idRootNode, false);
+
 
 				break;
 		}
@@ -129,7 +145,6 @@ public class QueriesController {
 				// be executed to create relations with border nodes or insert new border nodes if are required.
 				set = relCreationQueries.entrySet();
 				for (Map.Entry<Integer, String> entry : set) {
-					//TODO: TEST Enviar las queries a todas las particiones que sea requerido
 					partition = entry.getKey();
 					if (partition == 0) {
 						// Local Neo4j DB
@@ -292,7 +307,10 @@ public class QueriesController {
 			}
 		}
 
-		if (!trackingMode) {
+		if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
+
+		if (!trackingMode ||
+				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions())) {
 			// Show result table
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
