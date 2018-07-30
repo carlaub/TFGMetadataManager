@@ -369,9 +369,9 @@ public class QueriesController {
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 								for (Map.Entry<Integer, ResultEntity> result : set) {
-									for (int k = 0; k < explorationWithResults; k++) {
+//									for (int k = 0; k < explorationWithResults; k++) {
 										initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
-									}
+//									}
 								}
 
 								tempResultQuery.clear();
