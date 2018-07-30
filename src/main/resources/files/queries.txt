@@ -40,31 +40,31 @@ MATCH (n {id: 5})<--(m)<--(k)
 RETURN m, n, k
 END
 
-BEGIN
-CREATE (n:person{name: "Carla"})
-RETURN n
-END
+#BEGIN
+#CREATE (n:person{name: "Carla"})
+#RETURN n
+#END
 
-BEGIN
-CREATE (n:person{name: "Fulanito"})
-END
+#BEGIN
+#CREATE (n:person{name: "Fulanito"})
+#END
 
-BEGIN
-MATCH (n{id:6}), (m{id: 1})
-CREATE (n)-[:FRIENDOF]->(m)
-END
+#BEGIN
+#MATCH (n{id:6}), (m{id: 1})
+#CREATE (n)-[:FRIENDOF]->(m)
+#END
 
-BEGIN
-MATCH (n)
-RETURN n
-END
-
-BEGIN
-MATCH (n{id: 5})
-DETACH DELETE n
-END
+#BEGIN
+#MATCH (n{id: 5})
+#DETACH DELETE n
+#END
 
 BEGIN
 MATCH (n)
 RETURN n
+END
+
+BEGIN
+MATCH (n{id: 5})->(m)->(o)
+RETURN n, m, o
 END

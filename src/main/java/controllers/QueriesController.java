@@ -28,6 +28,9 @@ public class QueriesController {
 	private ResultNode rootNode;
 	private RelationshipsTable relationshipsTable;
 	private List<String> exploredBorderNodes;
+	private GraphAlterationsManager gam;
+	private QueryStructure originalQueryStructure;
+	private int explorationWithResults;
 
 
 	public QueriesController() {
@@ -37,6 +40,8 @@ public class QueriesController {
 		rootNode = null;
 		relationshipsTable = MetadataManager.getInstance().getRelationshipsTable();
 		exploredBorderNodes = new ArrayList<>();
+		gam = GraphAlterationsManager.getInstance();
+
 	}
 
 	public void sendById(QueryStructure queryStructure, int idRootNode) {
@@ -58,65 +63,89 @@ public class QueriesController {
 
 	public void manageNewQuery(QueryStructure queryStructure) {
 		int queryType = queryStructure.getQueryType();
-		int partition;
-		GraphAlterationsManager gam = GraphAlterationsManager.getInstance();
+		int idRootNode;
 
-		if (queryType == QueryStructure.QUERY_TYPE_CREATE) {
-			if (queryStructure.hasRelation()) {
+		originalQueryStructure = queryStructure;
 
-				// CREATE RELATION
-				// The nodes of the relationship with their IDs are recovered
-				QSNode qsNodeA = queryStructure.getMatchNodeAt(0);
-				QSNode qsNodeB = queryStructure.getMatchNodeAt(1);
-				QSRelation qsRelation = queryStructure.getCreateRelation();
+		switch (queryType) {
+			case QueryStructure.QUERY_TYPE_CREATE:
+				manageQueryCreate(queryStructure);
+				break;
 
-				if (qsNodeA != null && qsNodeB != null && qsRelation != null) {
-					Map<Integer, String> relCreationQueries;
-					Set<Map.Entry<Integer, String>> set;
-					relCreationQueries = gam.addNewRelation(qsNodeA, qsNodeB, qsRelation);
+			case QueryStructure.QUERY_TYPE_DETACH:
+				gam.detachDeleteNode(queryStructure.getRootNode(), queryStructure.toString());
+				break;
 
-					// If the relation is established between node located in different partitions, some subqueries must
-					// be executed to create relations with border nodes or insert new border nodes if are required.
-					set = relCreationQueries.entrySet();
-					for (Map.Entry<Integer, String> entry : set) {
-						//TODO: TEST Enviar las queries a todas las particiones que sea requerido
-						partition = entry.getKey();
-						if (partition == 0) {
-							// Local Neo4j DB
-							queryExecutor.processQuery(entry.getValue());
-						} else {
-							mmServer.sendStringQuery(entry.getKey(), entry.getValue());
-						}
-					}
+			case QueryStructure.QUERY_TYPE_DEFAULT:
+				// CASE 1: Query's MATCH clause has a relation
+				idRootNode = queryStructure.getRootNodeId();
+				System.out.println("ID root node: " + idRootNode);
 
+
+				if (idRootNode > 0) {
+					sendById(queryStructure, idRootNode);
 				} else {
-					System.out.println(ErrorConstants.ERR_RELATION_CREATION);
+					System.out.println("--> BROADCAST");
+					// CASE 2: Query's MATCH clause has not a relation
+					queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
+					mmServer.sendQueryBroadcast(queryStructure, this);
+					queryExecutor.processQuery(queryStructure, this, false);
 				}
+				break;
+			case QueryStructure.QUERY_TYPE_CHAINED:
+				System.out.println("--> QUERY CHAINED");
+				idRootNode = queryStructure.getRootNodeId();
+				System.out.println("ID root node: " + idRootNode);
+				int matchVarsCount = queryStructure.getMatchVariablesCount();
+
+				for (int i = 1; i < matchVarsCount; i++) {
+					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
+
+					System.out.println("--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
+				}
+
+				break;
+		}
+	}
+
+	private void manageQueryCreate(QueryStructure queryStructure) {
+		int partition;
+
+		if (queryStructure.hasRelation()) {
+
+			// CREATE RELATION
+			// The nodes of the relationship with their IDs are recovered
+			QSNode qsNodeA = queryStructure.getMatchNodeAt(0);
+			QSNode qsNodeB = queryStructure.getMatchNodeAt(1);
+			QSRelation qsRelation = queryStructure.getCreateRelation();
+
+			if (qsNodeA != null && qsNodeB != null && qsRelation != null) {
+				Map<Integer, String> relCreationQueries;
+				Set<Map.Entry<Integer, String>> set;
+				relCreationQueries = gam.addNewRelation(qsNodeA, qsNodeB, qsRelation);
+
+				// If the relation is established between node located in different partitions, some subqueries must
+				// be executed to create relations with border nodes or insert new border nodes if are required.
+				set = relCreationQueries.entrySet();
+				for (Map.Entry<Integer, String> entry : set) {
+					//TODO: TEST Enviar las queries a todas las particiones que sea requerido
+					partition = entry.getKey();
+					if (partition == 0) {
+						// Local Neo4j DB
+						queryExecutor.processQuery(entry.getValue());
+					} else {
+						mmServer.sendStringQuery(entry.getKey(), entry.getValue());
+					}
+				}
+
 			} else {
-				// CREATE NODE
-				int partitionID = gam.addNewNode(queryStructure.getRootNode());
-				System.out.println("\nQuery: " + queryStructure.toString() + "\n");
-				sendByPartitionID(queryStructure, partitionID);
+				System.out.println(ErrorConstants.ERR_RELATION_CREATION);
 			}
-
-		} else if (queryType == QueryStructure.QUERY_TYPE_DETACH) {
-			gam.detachDeleteNode(queryStructure.getRootNode(), queryStructure.toString());
-
-		} else if (queryType == QueryStructure.QUERY_TYPE_DEFAULT) {
-			// CASE 1: Query's MATCH clause has a relation
-			int idRootNode = queryStructure.getRootNodeId();
-			System.out.println("ID root node: " + idRootNode);
-
-
-			if (idRootNode > 0) {
-				sendById(queryStructure, idRootNode);
-			} else {
-				System.out.println("--> BROADCAST");
-				// CASE 2: Query's MATCH clause has not a relation
-				queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
-				mmServer.sendQueryBroadcast(queryStructure, this);
-				queryExecutor.processQuery(queryStructure, this, false);
-			}
+		} else {
+			// CREATE NODE
+			int partitionID = gam.addNewNode(queryStructure.getRootNode());
+			System.out.println("\nQuery: " + queryStructure.toString() + "\n");
+			sendByPartitionID(queryStructure, partitionID);
 		}
 	}
 
@@ -133,17 +162,13 @@ public class QueriesController {
 
 		defaultQueryResult(resultQuery, queryStructure, trackingMode);
 
-//		switch (queryType) {
-//			case QueryStructure.QUERY_TYPE_DEFAULT:
-//				defaultQueryResult(resultQuery, queryStructure, trackingMode);
-//				break;
-//			case QueryStructure.QUERY_TYPE_CREATE:
-//				createQueryResult(resultQuery);
-//				break;
-//			case QueryStructure.QUERY_TYPE_DELETE:
-//				deleteQueryResult(resultQuery, queryStructure);
-//				break;
-//		}
+		switch (queryType) {
+			case QueryStructure.QUERY_TYPE_CHAINED:
+				chainedQueryResult(resultQuery, queryStructure, trackingMode);
+				break;
+			default:
+				defaultQueryResult(resultQuery, queryStructure, trackingMode);
+		}
 	}
 
 
@@ -154,6 +179,8 @@ public class QueriesController {
 		if (!trackingMode &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST)) {
+
+			//TODO: create retrieveRootNodeInformation function
 			// Send a query to the original root node partition to get its information. This information is needed to replace
 			// some conditions in the WHERE clause related with the root node
 			// EX:
@@ -232,6 +259,7 @@ public class QueriesController {
 								}
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode);
+
 							}
 						}
 					} else {
@@ -271,31 +299,93 @@ public class QueriesController {
 		}
 	}
 
-	private int createQueryResult(ResultQuery resultQuery) {
-		List<ResultEntity> columnResults;
-		String nodeGraphFilesFormat;
-
+	private void chainedQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		int columnsCount = resultQuery.getColumnsCount();
+		Map<Integer, ResultEntity> tempResultQuery = new HashMap<>();
 
-		if (columnsCount < 1) {
-			System.out.println(ErrorConstants.ERR_NODE_CREATION);
-			return -1;
+		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
+		// corresponding column to show the results
+
+		if (!trackingMode && queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount()) {
+			initialResultQuery.setColumnsName(resultQuery.getColumnsName());
 		}
 
-		// RETURN n (where n is the node created) is a requirement in the Query format. If the query has been executed correctly
-		// there will always a column "n" with node information
-		columnResults = resultQuery.getColumn(1);
+		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
+		int firstColResultsSize = firstColResults.size();
 
-		for (ResultEntity entity : columnResults) {
-			if (entity instanceof ResultNode) {
-				return 0;
+		for (int i = 0; i < firstColResultsSize; i++) {
+
+			for (int j = 0; j < columnsCount; j++) {
+				ResultEntity colResult = resultQuery.getColumn(j).get(i);
+
+				if (colResult instanceof ResultNode) {
+					ResultNode node = (ResultNode) colResult;
+
+					if (node.isBorderNode()) {
+						int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
+						if (!exploredBorderNodes.contains(node.getNodeId() + "-" + matchVarLevel)) {
+							exploredBorderNodes.add(node.getNodeId() + "-" + matchVarLevel);
+
+							int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+							int idPartitionForeign = node.getForeignPartitionId();
+
+							int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
+
+							int borderVarIndex = queryStructure.getVarIndex(initialResultQuery.getColumnsName().get(j));
+
+							System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  index: " + borderVarIndex);
+							QueryStructure queryStructureModified = queryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
+
+							explorationWithResults = 0;
+
+							if (idPartitionForeign == 0) {
+								queryExecutor.processQuery(queryStructureModified, this, true);
+							} else {
+								mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+							}
+
+							System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
+
+							if (explorationWithResults == 0) {
+								tempResultQuery.clear();
+							} else {
+								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+
+								for (Map.Entry<Integer, ResultEntity> result : set) {
+									for (int k = 0; k < explorationWithResults; k++) {
+										initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+									}
+								}
+
+								tempResultQuery.clear();
+							}
+						}
+
+					} else {
+						tempResultQuery.put(j, node);
+
+						if (j == (columnsCount - 1)) {
+							Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+
+							for (Map.Entry<Integer, ResultEntity> result : set) {
+								initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+							}
+
+							if (trackingMode) explorationWithResults++;
+
+							tempResultQuery.clear();
+
+						}
+					}
+				}
 			}
 		}
 
-		return -1;
-	}
-
-	private void deleteQueryResult(ResultQuery resultQuery, QueryStructure queryStructure) {
-
+		if (!trackingMode) {
+			// Show result table
+			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
+			textTable.printTable();
+			System.out.println("\n\n");
+		}
 	}
 }

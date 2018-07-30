@@ -51,6 +51,10 @@ public class ResultQuery implements Serializable{
 		this.dataList = dataList;
 	}
 
+	public void setColumnsName(List<String> columnsName) {
+		this.columnsName = columnsName;
+	}
+
 	public List<ResultEntity> getColumn(int columnIndex) {
 		if (dataList != null) return dataList.get(columnIndex);
 		return null;

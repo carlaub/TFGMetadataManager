@@ -2,6 +2,7 @@ package queryStructure;
 
 import constants.GenericConstants;
 import neo4j.ResultNode;
+import org.neo4j.cypher.internal.frontend.v2_3.ast.functions.Has;
 import parser.Token;
 import parser.Type;
 
@@ -29,11 +30,6 @@ public class QueryStructure {
 		queryType = QUERY_TYPE_DEFAULT;
 	}
 
-	public QueryStructure(int queryType) {
-		queryStructure = new LinkedHashMap<>();
-		queryType = queryType;
-	}
-
 	public int getQueryType() {
 		return queryType;
 	}
@@ -50,11 +46,6 @@ public class QueryStructure {
 		if (!queryStructure.containsKey(type)) queryStructure.put(type, new ArrayList<QSEntity>());
 		List<QSEntity> list = queryStructure.get(type);
 		list.add(entity);
-	}
-
-	public List<QSEntity> getList(Token tClause) {
-		if (queryStructure.containsKey(tClause)) return queryStructure.get(tClause);
-		return null;
 	}
 
 	/**
@@ -191,18 +182,111 @@ public class QueryStructure {
 		return -1;
 	}
 
-	public boolean hasWhereClauseWithVar() {
-		if (queryStructure.containsKey(Type.WHERE)) {
-			List<QSEntity> whereList = queryStructure.get(Type.WHERE);
+	/**************************************************
+	 * CHAINED QUERY
+	 *******************************************/
 
-			for (QSEntity entity : whereList) {
-				if (entity instanceof QSCondition) {
-					if (((QSCondition) entity).getConditions().contains(getRootNode().getVariable() + ".")) return true;
+	public int getMatchVariablesCount() {
+		int count = 0;
+		if (queryStructure.containsKey(Type.MATCH)) {
+			List<QSEntity> matchList = queryStructure.get(Type.MATCH);
+
+			for (QSEntity entity : matchList) {
+				if (entity instanceof QSNode) {
+					count++;
 				}
 			}
 		}
 
-		return false;
+		return count;
+	}
+
+	public QueryStructure getSubChainQuery(int start, int end, int borderStartID) {
+		int level = 0;
+		boolean rootNodeSet = false;
+		QueryStructure newQueryStructure = new QueryStructure();
+
+		if (queryStructure.containsKey(Type.MATCH)) {
+			List<QSEntity> matchList = queryStructure.get(Type.MATCH);
+			List<QSCondition> returnVariables = new ArrayList<>();
+
+
+			// TODO: El node B ha de ser extra, no la variable m
+
+			// TODO: El end ha de ser o border o node normal
+			newQueryStructure.setQueryType(QUERY_TYPE_CHAINED);
+
+			if (borderStartID > 0) {
+				QSNode borderNodeStart = new QSNode();
+				List<String> labels = new ArrayList<>();
+				Map<String, String> properties = new HashMap<>();
+
+				labels.add(GenericConstants.BORDER_NODE_LABEL);
+				properties.put("id", String.valueOf(borderStartID));
+
+				borderNodeStart.setLabels(labels);
+				borderNodeStart.setProperties(properties);
+				borderNodeStart.setRoot(true);
+				rootNodeSet = true;
+
+				newQueryStructure.addEntity(Type.MATCH, borderNodeStart);
+
+			}
+
+			for (QSEntity entity : matchList) {
+				if (entity instanceof QSNode) {
+					// NODE
+					if (level == start) {
+						if (!rootNodeSet) {
+							rootNodeSet = true;
+							QSNode nodeRoot = new QSNode();
+							nodeRoot.setRoot(true);
+							nodeRoot.setVariable(((QSNode) entity).getVariable());
+							nodeRoot.setLabels(((QSNode) entity).getLabels());
+							nodeRoot.setProperties(((QSNode) entity).getProperties());
+
+
+							newQueryStructure.addEntity(Type.MATCH, nodeRoot);
+						} else {
+							newQueryStructure.addEntity(Type.MATCH, entity);
+						}
+
+						returnVariables.add(new QSCondition(((QSNode) entity).getVariable()));
+					}
+
+					level++;
+				} else if (entity instanceof QSRelation) {
+					// RELATION
+					if (level >= start && level <= end ||
+							((borderStartID > 0) && (level == (start - 1)))) {
+						newQueryStructure.addEntity(Type.MATCH, entity);
+					}
+				}
+			}
+
+			for (QSCondition condition : returnVariables) {
+				newQueryStructure.addEntity(Type.RETURN, condition);
+			}
+		}
+
+		return newQueryStructure;
+	}
+
+	public int getVarIndex(String variable) {
+		int index = 0;
+
+		if (variable.isEmpty() || !queryStructure.containsKey(Type.MATCH)) return -1;
+
+		List<QSEntity> entities = queryStructure.get(Type.MATCH);
+
+		for (QSEntity entity : entities) {
+			if (entity instanceof QSNode) {
+				if (((QSNode) entity).getVariable().equals(variable)) return index;
+				index ++;
+			}
+		}
+
+		return -1;
 	}
 
 

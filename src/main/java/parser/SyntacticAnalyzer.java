@@ -236,6 +236,11 @@ public class SyntacticAnalyzer {
 				System.out.println("--> Add relation");
 			}
 		}
+
+		// Check if there is a chained match
+		if (queryStructure.getMatchVariablesCount() >= 3 && queryStructure.hasRelation()) {
+			queryStructure.setQueryType(QueryStructure.QUERY_TYPE_CHAINED);
+		}
 	}
 
 	private void processClauseConditions(QueryStructure queryStructure, Token clauseToken) {
