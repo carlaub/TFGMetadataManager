@@ -323,7 +323,7 @@ public class QueriesController {
 		// corresponding column to show the results
 
 		if (!trackingMode && (queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount())) {
-			System.out.println("ENTRAAAA " + (resultQuery.getColumnsName() != null));
+			System.out.println("ENTRAAAA " + (resultQuery.getColumnsCount()));
 			initialResultQuery = resultQuery;
 		}
 
