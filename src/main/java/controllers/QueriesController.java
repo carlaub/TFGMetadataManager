@@ -382,7 +382,7 @@ public class QueriesController {
 						// TODO: hacer una funcion getColumnByName
 						tempResultQuery.put(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j)), node);
 
-						if (j == (initialResultQuery.getColumnsCount() - 1)) {
+						if (j == (columnsCount - 1)) {
 							Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 							for (Map.Entry<Integer, ResultEntity> result : set) {
