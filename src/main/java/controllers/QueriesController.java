@@ -111,9 +111,9 @@ public class QueriesController {
 				System.out.println("Variables Count: " + matchVarsCount);
 
 				// Derived Sub-queries
-				for (int i = 1; i < matchVarsCount - 1; i++) {
+				for (int i = (matchVarsCount - 1); i >= 0; i--) {
 					System.out.println("\n--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
-					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode, true);
+					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
 				}
 
 				// Send Original query
@@ -306,8 +306,8 @@ public class QueriesController {
 
 		if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
 
-		if (!trackingMode ||
-				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions())) {
+		if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
+				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
 			// Show result table
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
@@ -397,7 +397,8 @@ public class QueriesController {
 			}
 		}
 
-		if (!trackingMode) {
+		// Is the last derived sub-query sent
+		if (!trackingMode && (queryStructure.getMatchVariablesCount() == 2)) {
 			// Show result table
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
