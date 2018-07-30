@@ -7,6 +7,8 @@ package queryStructure;
 public class QSCondition extends QSEntity {
 	String condition;
 
+	public QSCondition() { }
+
 	public QSCondition(String condition) {
 		this.condition = condition;
 	}
