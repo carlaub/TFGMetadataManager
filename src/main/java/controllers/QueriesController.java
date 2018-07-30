@@ -176,8 +176,6 @@ public class QueriesController {
 			this.initialResultQuery = new ResultQuery(resultQuery.getColumnsName());
 		}
 
-		defaultQueryResult(resultQuery, queryStructure, trackingMode);
-
 		switch (queryType) {
 			case QueryStructure.QUERY_TYPE_CHAINED:
 				chainedQueryResult(resultQuery, queryStructure, trackingMode);
