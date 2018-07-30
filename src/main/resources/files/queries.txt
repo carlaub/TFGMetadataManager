@@ -60,6 +60,6 @@ RETURN n
 END
 
 BEGIN
-MATCH (n{id: 5})->(m)->(o)
+MATCH (n{id: 5})-->(m)-->(o)
 RETURN n, m, o
 END
