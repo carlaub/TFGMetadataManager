@@ -11,7 +11,6 @@ import queryStructure.QSNode;
 import queryStructure.QSRelation;
 import queryStructure.QueryStructure;
 import relationsTable.RelationshipsTable;
-import sun.jvm.hotspot.oops.Metadata;
 
 import java.util.*;
 
