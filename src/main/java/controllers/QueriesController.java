@@ -100,9 +100,9 @@ public class QueriesController {
 				System.out.println("Variables Count: " + matchVarsCount);
 
 				for (int i = 1; i < matchVarsCount; i++) {
+					System.out.println("--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
 					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
 
-					System.out.println("--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
 				}
 
 				break;

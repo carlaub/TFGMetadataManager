@@ -210,10 +210,6 @@ public class QueryStructure {
 			List<QSEntity> matchList = queryStructure.get(Type.MATCH);
 			List<QSCondition> returnVariables = new ArrayList<>();
 
-
-			// TODO: El node B ha de ser extra, no la variable m
-
-			// TODO: El end ha de ser o border o node normal
 			newQueryStructure.setQueryType(QUERY_TYPE_CHAINED);
 
 			if (borderStartID > 0) {
@@ -236,7 +232,7 @@ public class QueryStructure {
 			for (QSEntity entity : matchList) {
 				if (entity instanceof QSNode) {
 					// NODE
-					if (level == start) {
+					if (level >= start && level <= end) {
 						if (!rootNodeSet) {
 							rootNodeSet = true;
 							QSNode nodeRoot = new QSNode();
