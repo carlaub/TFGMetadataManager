@@ -15,6 +15,7 @@ public class QSNode extends QSEntity {
 	public QSNode() {
 		labels = new ArrayList<>();
 		properties = new HashMap<>();
+		variable = "";
 	}
 
 	public String getVariable() {
