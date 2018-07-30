@@ -97,6 +97,7 @@ public class QueriesController {
 				idRootNode = queryStructure.getRootNodeId();
 				System.out.println("ID root node: " + idRootNode);
 				int matchVarsCount = queryStructure.getMatchVariablesCount();
+				System.out.println("Variables Count: " + matchVarsCount);
 
 				for (int i = 1; i < matchVarsCount; i++) {
 					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
