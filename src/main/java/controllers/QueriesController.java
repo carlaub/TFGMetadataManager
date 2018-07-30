@@ -350,7 +350,7 @@ public class QueriesController {
 
 							int borderVarIndex = queryStructure.getVarIndex(initialResultQuery.getColumnsName().get(j));
 
-							System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  index: " + borderVarIndex);
+							System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  id Foreign: " + idForeignBorderNode);
 							QueryStructure queryStructureModified = queryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
 							System.out.println("--> QueryModified: " + queryStructureModified);
 							explorationWithResults = 0;
@@ -380,7 +380,7 @@ public class QueriesController {
 
 					} else {
 						// TODO: hacer una funcion getColumnByName
-						tempResultQuery.put(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j)), node);
+						tempResultQuery.put(j , node);
 
 						if (j == (columnsCount - 1)) {
 							Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
