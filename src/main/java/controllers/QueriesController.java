@@ -339,7 +339,7 @@ public class QueriesController {
 					ResultNode node = (ResultNode) colResult;
 
 					if (node.isBorderNode()) {
-						int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(j));
+						int matchVarLevel = queryStructure.getMatchVariablesCount();
 						if (!exploredBorderNodes.contains(node.getNodeId() + "-" + matchVarLevel)) {
 							exploredBorderNodes.add(node.getNodeId() + "-" + matchVarLevel);
 
@@ -352,7 +352,7 @@ public class QueriesController {
 
 							System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  index: " + borderVarIndex);
 							QueryStructure queryStructureModified = queryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
-
+							System.out.println("--> QueryModified: " + queryStructureModified);
 							explorationWithResults = 0;
 
 							if (idPartitionForeign == 0) {
