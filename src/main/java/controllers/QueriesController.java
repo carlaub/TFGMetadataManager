@@ -116,7 +116,7 @@ public class QueriesController {
 				System.out.println("Variables Count: " + matchVarsCount);
 
 				// Derived Sub-queries
-				for (int i = (matchVarsCount - 1); i >= 0; i--) {
+				for (int i = (matchVarsCount - 1); i > 0; i--) {
 					chainedLastNodeId = originalQueryStructure.getRootNodeId();
 					System.out.println("\n--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
 					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
@@ -344,46 +344,47 @@ public class QueriesController {
 					ResultNode node = (ResultNode) colResult;
 
 					if (node.isBorderNode()) {
+						if (j == (columnsCount - 1)) {
+							System.out.println("\n--> Border Node id: " + node.getNodeId() + " partition fore: " + node.getProperties().get("partition"));
 
-						System.out.println("\n--> Border Node id: " + node.getNodeId() + " partition fore: " + node.getProperties().get("partition"));
+							int matchVarLevel = queryStructure.getMatchVariablesCount();
+							if (!exploredBorderNodes.contains(node.getNodeId() + "-" + matchVarLevel)) {
+								exploredBorderNodes.add(node.getNodeId() + "-" + matchVarLevel);
+								System.out.println("---> Explored: " + node.getNodeId() + "-" + matchVarLevel);
 
-						int matchVarLevel = queryStructure.getMatchVariablesCount();
-						if (!exploredBorderNodes.contains(node.getNodeId() + "-" + matchVarLevel)) {
-							exploredBorderNodes.add(node.getNodeId() + "-" + matchVarLevel);
-							System.out.println("---> Explored: " + node.getNodeId() + "-" + matchVarLevel);
+								int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+								int idPartitionForeign = node.getForeignPartitionId();
 
-							int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
-							int idPartitionForeign = node.getForeignPartitionId();
+								int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
 
-							int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
+								int borderVarIndex = queryStructure.getVarIndex(initialResultQuery.getColumnsName().get(j));
 
-							int borderVarIndex = queryStructure.getVarIndex(initialResultQuery.getColumnsName().get(j));
+								System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  id Foreign: " + idForeignBorderNode);
+								QueryStructure queryStructureModified = queryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
+								System.out.println("--> QueryModified: " + queryStructureModified);
+								explorationWithResults = 0;
 
-							System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  id Foreign: " + idForeignBorderNode);
-							QueryStructure queryStructureModified = queryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
-							System.out.println("--> QueryModified: " + queryStructureModified);
-							explorationWithResults = 0;
-
-							if (idPartitionForeign == 0) {
-								queryExecutor.processQuery(queryStructureModified, this, true);
-							} else {
-								mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
-							}
-
-							System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
-
-							if (explorationWithResults == 0) {
-								tempResultQuery.clear();
-							} else {
-								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
-
-								for (Map.Entry<Integer, ResultEntity> result : set) {
-//									for (int k = 0; k < explorationWithResults; k++) {
-										initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
-//									}
+								if (idPartitionForeign == 0) {
+									queryExecutor.processQuery(queryStructureModified, this, true);
+								} else {
+									mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 								}
 
-								tempResultQuery.clear();
+								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
+
+								if (explorationWithResults == 0) {
+									tempResultQuery.clear();
+								} else {
+									Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+
+									for (Map.Entry<Integer, ResultEntity> result : set) {
+										for (int k = 0; k < explorationWithResults; k++) {
+											initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+										}
+									}
+
+									tempResultQuery.clear();
+								}
 							}
 						}
 
