@@ -259,7 +259,7 @@ public class QueryStructure {
 				} else if (entity instanceof QSRelation) {
 					// RELATION
 					if (((level >= start && level <= end) && nodeAdded) ||
-							((borderStartID > 0) && (level == (start - 1))) ) {
+							((borderStartID > 0) && (level == (start))) ) {
 						newQueryStructure.addEntity(Type.MATCH, entity);
 						System.out.println("Add relation: " + ((QSRelation) entity).getStart());
 					}
