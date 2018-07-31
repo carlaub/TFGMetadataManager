@@ -395,6 +395,8 @@ public class QueriesController {
 						MapBorderNodes mapBorderNodes = MetadataManager.getInstance().getMapBoarderNodes();
 
 						int partitionCurrentNode = mapGraphNodes.get(currentNodeID);
+						System.out.println("\n--> ChainedLastNode ID: " + chainedLastNodeId);
+
 						int partitionChainedLastNode = mapGraphNodes.get(chainedLastNodeId);
 
 
