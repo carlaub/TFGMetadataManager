@@ -367,7 +367,7 @@ public class QueriesController {
 								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
 								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
 								System.out.println("--> QueryModified: " + queryStructureModified);
-								explorationWithResults = 0;
+//								explorationWithResults = 0;
 
 								if (idPartitionForeign == 0) {
 									queryExecutor.processQuery(queryStructureModified, this, true);
