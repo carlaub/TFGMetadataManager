@@ -342,6 +342,9 @@ public class QueriesController {
 
 		for (int i = 0; i < firstColResultsSize; i++) {
 
+			explorationWithResults = 0;
+
+
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
@@ -367,7 +370,6 @@ public class QueriesController {
 								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
 								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
 								System.out.println("--> QueryModified: " + queryStructureModified);
-								explorationWithResults = 0;
 
 								if (idPartitionForeign == 0) {
 									queryExecutor.processQuery(queryStructureModified, this, true);
@@ -376,7 +378,7 @@ public class QueriesController {
 								}
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
-
+								System.out.println("De la query: " + queryStructure.toString());
 								if (explorationWithResults == 0) {
 									tempResultQuery.clear();
 								} else {
