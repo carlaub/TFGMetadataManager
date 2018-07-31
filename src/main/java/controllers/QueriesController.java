@@ -362,9 +362,9 @@ public class QueriesController {
 
 								int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
 
-								int borderVarIndex = queryStructure.getVarIndex(initialResultQuery.getColumnsName().get(j));
+								int borderVarIndex = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j));
 
-								System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  id Foreign: " + idForeignBorderNode);
+								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
 								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
 								System.out.println("--> QueryModified: " + queryStructureModified);
 								explorationWithResults = 0;
@@ -391,6 +391,9 @@ public class QueriesController {
 									tempResultQuery.clear();
 								}
 							}
+						} else {
+							tempResultQuery.clear();
+							break;
 						}
 
 					} else {
