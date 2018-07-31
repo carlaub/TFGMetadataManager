@@ -101,7 +101,6 @@ public class QueriesController {
 					System.out.println("--> BROADCAST");
 					// CASE 2: Query's MATCH clause has not a relation
 					broadcastsReceived = 0;
-					chainedLastNodeId = originalQueryStructure.getRootNodeId();
 
 					queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
 					mmServer.sendQueryBroadcast(queryStructure, this);
@@ -110,6 +109,7 @@ public class QueriesController {
 				break;
 			case QueryStructure.QUERY_TYPE_CHAINED:
 				System.out.println("--> QUERY CHAINED");
+
 				idRootNode = queryStructure.getRootNodeId();
 				System.out.println("ID root node: " + idRootNode);
 				int matchVarsCount = queryStructure.getMatchVariablesCount();
@@ -117,6 +117,7 @@ public class QueriesController {
 
 				// Derived Sub-queries
 				for (int i = (matchVarsCount - 1); i >= 0; i--) {
+					chainedLastNodeId = originalQueryStructure.getRootNodeId();
 					System.out.println("\n--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
 					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
 				}
