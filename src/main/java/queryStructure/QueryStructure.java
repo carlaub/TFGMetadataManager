@@ -204,6 +204,7 @@ public class QueryStructure {
 	public QueryStructure getSubChainQuery(int start, int end, int borderStartID) {
 		int level = 0;
 		boolean rootNodeSet = false;
+		boolean nodeAdded = false;
 		QueryStructure newQueryStructure = new QueryStructure();
 
 		if (queryStructure.containsKey(Type.MATCH)) {
@@ -249,12 +250,15 @@ public class QueryStructure {
 						}
 
 						returnVariables.add(new QSCondition(((QSNode) entity).getVariable()));
+						nodeAdded = true;
+					} else {
+						nodeAdded = false;
 					}
 
 					level++;
 				} else if (entity instanceof QSRelation) {
 					// RELATION
-					if (level >= start && level <= end ||
+					if (((level >= start && level <= end) && nodeAdded) ||
 							((borderStartID > 0) && (level == (start - 1)))) {
 						newQueryStructure.addEntity(Type.MATCH, entity);
 					}
