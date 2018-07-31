@@ -360,7 +360,7 @@ public class QueriesController {
 								int borderVarIndex = queryStructure.getVarIndex(initialResultQuery.getColumnsName().get(j));
 
 								System.out.println("--> Border Var Index: " + initialResultQuery.getColumnsName().get(j) + "  -  id Foreign: " + idForeignBorderNode);
-								QueryStructure queryStructureModified = queryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
+								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
 								System.out.println("--> QueryModified: " + queryStructureModified);
 								explorationWithResults = 0;
 
