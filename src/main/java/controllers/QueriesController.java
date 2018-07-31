@@ -3,6 +3,7 @@ package controllers;
 import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
+import data.MapBorderNodes;
 import dnl.utils.text.table.TextTable;
 import managers.GraphAlterationsManager;
 import neo4j.*;
@@ -30,8 +31,10 @@ public class QueriesController {
 	private List<String> exploredBorderNodes;
 	private GraphAlterationsManager gam;
 	private QueryStructure originalQueryStructure;
-	private int explorationWithResults;
 	private int broadcastsReceived;
+
+	private int explorationWithResults;
+	private int chainedLastNodeId;
 
 
 	public QueriesController() {
@@ -98,6 +101,8 @@ public class QueriesController {
 					System.out.println("--> BROADCAST");
 					// CASE 2: Query's MATCH clause has not a relation
 					broadcastsReceived = 0;
+					chainedLastNodeId = originalQueryStructure.getRootNodeId();
+
 					queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
 					mmServer.sendQueryBroadcast(queryStructure, this);
 					queryExecutor.processQuery(queryStructure, this, false);
@@ -323,8 +328,7 @@ public class QueriesController {
 		// corresponding column to show the results
 
 		if (!trackingMode && (queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount())) {
-			System.out.println("ENTRAAAA " + (resultQuery.getColumnsCount()));
-			initialResultQuery = resultQuery;
+			initialResultQuery.setColumnsName(resultQuery.getColumnsName());
 		}
 
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
@@ -339,9 +343,13 @@ public class QueriesController {
 					ResultNode node = (ResultNode) colResult;
 
 					if (node.isBorderNode()) {
+
+						System.out.println("\n--> Border Node id: " + node.getNodeId() + " partition fore: " + node.getProperties().get("partition"));
+
 						int matchVarLevel = queryStructure.getMatchVariablesCount();
 						if (!exploredBorderNodes.contains(node.getNodeId() + "-" + matchVarLevel)) {
 							exploredBorderNodes.add(node.getNodeId() + "-" + matchVarLevel);
+							System.out.println("---> Explored: " + node.getNodeId() + "-" + matchVarLevel);
 
 							int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
 							int idPartitionForeign = node.getForeignPartitionId();
@@ -380,19 +388,44 @@ public class QueriesController {
 
 					} else {
 						// TODO: hacer una funcion getColumnByName
-						tempResultQuery.put(j , node);
+						// TODO: check si el nodo tiene relacion con el ultimo nodo procesado
+						int currentNodeID = node.getNodeId();
+						RelationshipsTable relationshipsTable = MetadataManager.getInstance().getRelationshipsTable();
+						Map<Integer, Integer> mapGraphNodes = MetadataManager.getInstance().getMapGraphNodes();
+						MapBorderNodes mapBorderNodes = MetadataManager.getInstance().getMapBoarderNodes();
 
-						if (j == (columnsCount - 1)) {
-							Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+						int partitionCurrentNode = mapGraphNodes.get(currentNodeID);
+						int partitionChainedLastNode = mapGraphNodes.get(chainedLastNodeId);
 
-							for (Map.Entry<Integer, ResultEntity> result : set) {
-								initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+
+						if ((partitionChainedLastNode == partitionCurrentNode) ||
+								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId)) {
+
+							tempResultQuery.put(j , node);
+
+							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);
+
+							chainedLastNodeId = node.getNodeId();
+							System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
+
+							if (j == (columnsCount - 1)) {
+								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+
+								for (Map.Entry<Integer, ResultEntity> result : set) {
+									initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+								}
+
+								if (trackingMode) explorationWithResults++;
+
+								tempResultQuery.clear();
+
+								// Reset to the initial id
+								chainedLastNodeId = originalQueryStructure.getRootNodeId();
 							}
 
-							if (trackingMode) explorationWithResults++;
-
+						} else {
 							tempResultQuery.clear();
-
+							break;
 						}
 					}
 				}

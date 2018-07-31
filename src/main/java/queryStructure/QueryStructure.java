@@ -222,6 +222,7 @@ public class QueryStructure {
 
 				borderNodeStart.setLabels(labels);
 				borderNodeStart.setProperties(properties);
+				borderNodeStart.setVariable("b");
 				borderNodeStart.setRoot(true);
 				rootNodeSet = true;
 
