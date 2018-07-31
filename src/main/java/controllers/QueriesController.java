@@ -335,6 +335,11 @@ public class QueriesController {
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
 		int firstColResultsSize = firstColResults.size();
 
+		System.out.println("\nResults: ");
+		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+		textTable2.printTable();
+		System.out.println("\n\n");
+
 		for (int i = 0; i < firstColResultsSize; i++) {
 
 			for (int j = 0; j < columnsCount; j++) {
