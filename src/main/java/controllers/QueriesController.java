@@ -380,7 +380,8 @@ public class QueriesController {
 								if (explorationWithResults == 0) {
 									tempResultQuery.clear();
 								} else {
-									int difference = initialResultQuery.getColumn(j + 1).size() - initialResultQuery.getColumn(j).size();
+									int difference = initialResultQuery.getColumn(j-1).size() - initialResultQuery.getColumn(j).size();
+									System.out.println("DIF: " + difference);
 									Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 									for (Map.Entry<Integer, ResultEntity> result : set) {
