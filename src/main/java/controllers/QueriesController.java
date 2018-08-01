@@ -394,7 +394,7 @@ public class QueriesController {
 									System.out.println("Size col j + 1 " + (j+1) + ": " + initialResultQuery.getColumn(j).size() + " ; Size col j " + j + initialResultQuery.getColumn(j-1).size());
 									System.out.println("DIF: " + difference);
 
-									for (int k = (initialResultQuery.getColumnsCount() - 1); k > 0; k--) {
+									for (int k = (initialResultQuery.getColumnsCount() - 1); k > 1; k--) {
 										difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
 
 										for (int l = 0; l < difference; l++) {
