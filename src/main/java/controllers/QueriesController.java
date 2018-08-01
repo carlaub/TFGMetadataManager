@@ -381,12 +381,13 @@ public class QueriesController {
 									tempResultQuery.clear();
 								} else {
 									int difference = initialResultQuery.getColumn(j).size() - initialResultQuery.getColumn(j-1).size();
-									System.out.println("Size col j " + j + ": " + initialResultQuery.getColumn(j).size() + " ; Size col j-1 " + (j-1) + initialResultQuery.getColumn(j-1).size());
+									System.out.println("Size col j + 1 " + (j+1) + ": " + initialResultQuery.getColumn(j).size() + " ; Size col j " + j + initialResultQuery.getColumn(j-1).size());
 									System.out.println("DIF: " + difference);
 									Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 									for (Map.Entry<Integer, ResultEntity> result : set) {
 										for (int k = 0; k < difference; k++) {
+											System.out.println("Add entity column: " + result.getKey() + " - " + result.getValue());
 											initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
 										}
 									}
