@@ -380,10 +380,11 @@ public class QueriesController {
 								if (explorationWithResults == 0) {
 									tempResultQuery.clear();
 								} else {
+									int difference = initialResultQuery.getColumn(j + 1).size() - initialResultQuery.getColumn(j).size();
 									Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 									for (Map.Entry<Integer, ResultEntity> result : set) {
-										for (int k = 0; k < explorationWithResults; k++) {
+										for (int k = 0; k < difference; k++) {
 											initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
 										}
 									}
