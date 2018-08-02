@@ -432,7 +432,7 @@ public class QueriesController {
 						if ((partitionChainedLastNode == partitionCurrentNode) ||
 								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
 
-
+							fetchedResults ++;
 							tempResultQuery.put(j , node);
 
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);

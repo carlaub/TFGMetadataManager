@@ -47,7 +47,10 @@ public class RelationshipsTable {
 	}
 
 	public boolean existsRelationship(int borderNodeId, int idNode1, int idNode2, int fetchedResults) {
+		System.out.println("Exist rel entre " + idNode1 + " y " + idNode2);
 		if (existsRelationship(borderNodeId, idNode1, idNode2)) {
+
+			System.out.println("Count relations: " + countRelationships(borderNodeId, idNode1, idNode2));
 			if (countRelationships(borderNodeId, idNode1, idNode2) <= fetchedResults) {
 				return true;
 			}
