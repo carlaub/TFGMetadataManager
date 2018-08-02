@@ -459,10 +459,10 @@ public class QueriesController {
 								tempResultQuery.clear();
 
 								// Reset to the initial id
-								chainedLastNodeId = originalQueryStructure.getRootNodeId();
+//								chainedLastNodeId = originalQueryStructure.getRootNodeId();
 							} else {
 								chainedLastNodeId = node.getNodeId();
-								System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
+								System.out.println("-> ChainedLastNode ID ELSE: " + chainedLastNodeId);
 							}
 
 						} else {
