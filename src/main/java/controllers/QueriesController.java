@@ -342,9 +342,10 @@ public class QueriesController {
 
 		int fetchedResults = 0;
 
+		chainedLastNodeId = originalQueryStructure.getRootNodeId();
+
 		for (int i = 0; i < firstColResultsSize; i++) {
 			// Reset to the initial id
-			chainedLastNodeId = originalQueryStructure.getRootNodeId();
 
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
