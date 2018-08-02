@@ -403,6 +403,9 @@ public class QueriesController {
 										for (int l = 0; l < difference; l++) {
 											if (initialResultQuery.getColumn(k-1).size() > 0) {
 												initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+
+												System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+
 											}
 										}
 									}
@@ -440,7 +443,7 @@ public class QueriesController {
 							System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
 
 //							if (j == (columnsCount - 1)) {
-							System.out.println("\n --> PROB: " + resultQuery.getColumn(j) + " equals " + initialResultQuery.getColumn(initialResultQuery.getColumnsCount() - 1));
+							System.out.println("\n --> PROB: " + resultQuery.getColumnsName().get(j) + " equals " + initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1));
 
 							if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))){
 								fetchedResults ++;
@@ -448,6 +451,7 @@ public class QueriesController {
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 								for (Map.Entry<Integer, ResultEntity> result : set) {
+									System.out.println("Add part 2, col: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
 									initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
 								}
 
