@@ -432,7 +432,6 @@ public class QueriesController {
 						if ((partitionChainedLastNode == partitionCurrentNode) ||
 								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
 
-							fetchedResults ++;
 							tempResultQuery.put(j , node);
 
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);
@@ -441,6 +440,8 @@ public class QueriesController {
 							System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
 
 							if (j == (columnsCount - 1)) {
+								fetchedResults ++;
+
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 								for (Map.Entry<Integer, ResultEntity> result : set) {

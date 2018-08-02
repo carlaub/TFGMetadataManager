@@ -51,7 +51,7 @@ public class RelationshipsTable {
 		if (existsRelationship(borderNodeId, idNode1, idNode2)) {
 
 			System.out.println("Count relations: " + countRelationships(borderNodeId, idNode1, idNode2));
-			if (countRelationships(borderNodeId, idNode1, idNode2) <= fetchedResults) {
+			if ( fetchedResults <= countRelationships(borderNodeId, idNode1, idNode2)) {
 				return true;
 			}
 		}
