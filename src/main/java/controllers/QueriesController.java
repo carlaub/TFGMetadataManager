@@ -373,6 +373,7 @@ public class QueriesController {
 //								explorationWithResults = 0;
 
 								localLastChainedId = chainedLastNodeId;
+								chainedLastNodeId = node.getNodeId();
 								if (idPartitionForeign == 0) {
 									queryExecutor.processQuery(queryStructureModified, this, true);
 								} else {
@@ -466,7 +467,7 @@ public class QueriesController {
 								// Reset to the initial id
 //								chainedLastNodeId = originalQueryStructure.getRootNodeId();
 							} else {
-								chainedLastNodeId = node.getNodeId();
+//								chainedLastNodeId = node.getNodeId();
 								System.out.println("-> ChainedLastNode ID ELSE: " + chainedLastNodeId);
 							}
 
