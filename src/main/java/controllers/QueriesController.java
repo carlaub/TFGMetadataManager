@@ -324,6 +324,7 @@ public class QueriesController {
 	private void chainedQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		int columnsCount = resultQuery.getColumnsCount();
 		Map<Integer, ResultEntity> tempResultQuery = new HashMap<>();
+		int localLastChainedId;
 
 		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
 		// corresponding column to show the results
@@ -371,6 +372,7 @@ public class QueriesController {
 								System.out.println("--> QueryModified: " + queryStructureModified);
 //								explorationWithResults = 0;
 
+								localLastChainedId = chainedLastNodeId;
 								if (idPartitionForeign == 0) {
 									queryExecutor.processQuery(queryStructureModified, this, true);
 								} else {
@@ -378,6 +380,8 @@ public class QueriesController {
 								}
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
+
+								chainedLastNodeId = localLastChainedId;
 
 								System.out.println("De la query: " + queryStructure.toString());
 								if (explorationWithResults == 0) {
