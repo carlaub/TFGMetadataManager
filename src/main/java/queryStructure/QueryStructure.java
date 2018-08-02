@@ -262,7 +262,7 @@ public class QueryStructure {
 						newQueryStructure.addEntity(Type.MATCH, entity);
 						System.out.println("Add relation: " + ((QSRelation) entity).getStart());
 
-					} else if (((borderStartID > 0) && (level == (start)) && idRelForeignNode > 0)) {
+					} else if ((borderStartID > 0) && (level == (start)) && idRelForeignNode >= 0) {
 						QSRelation qsRelation = new QSRelation();
 
 						qsRelation.setVariable("r");
@@ -275,6 +275,8 @@ public class QueryStructure {
 							qsRelation.setStart("<-");
 							qsRelation.setEnd("-");
 						}
+
+						newQueryStructure.addEntity(Type.MATCH, qsRelation);
 					}
 				}
 			}
