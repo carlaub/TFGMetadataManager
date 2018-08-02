@@ -442,7 +442,7 @@ public class QueriesController {
 //							if (j == (columnsCount - 1)) {
 							System.out.println("\n --> PROB: " + resultQuery.getColumn(j) + " equals " + initialResultQuery.getColumn(initialResultQuery.getColumnsCount() - 1));
 
-							if (resultQuery.getColumn(j).equals(initialResultQuery.getColumn(initialResultQuery.getColumnsCount() - 1))){
+							if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))){
 								fetchedResults ++;
 
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
