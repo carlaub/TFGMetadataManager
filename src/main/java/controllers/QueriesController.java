@@ -438,9 +438,12 @@ public class QueriesController {
 						int partitionChainedLastNode = mapGraphNodes.get(chainedLastNodeId);
 
 
-						if ((partitionChainedLastNode == partitionCurrentNode) ||
-								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
+//						if ((partitionChainedLastNode == partitionCurrentNode) ||
+//								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
 
+						if ((j == 0 && relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)
+						 || (j > 0))) {
+							System.out.println("add");
 							tempResultQuery.put(j , node);
 
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);
