@@ -340,6 +340,8 @@ public class QueriesController {
 		textTable2.printTable();
 		System.out.println("\n\n");
 
+		int fetchedResults = 0;
+
 		for (int i = 0; i < firstColResultsSize; i++) {
 
 			for (int j = 0; j < columnsCount; j++) {
@@ -428,8 +430,9 @@ public class QueriesController {
 
 
 						if ((partitionChainedLastNode == partitionCurrentNode) ||
-								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId)) {
+								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
 
+							fetchedResults ++;
 							tempResultQuery.put(j , node);
 
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);

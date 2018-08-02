@@ -46,6 +46,16 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 		return false;
 	}
 
+	public int countRelations(int idNode1, int idNode2) {
+		int count = 0;
+
+		for (Relationship relationship : list) {
+			if (relationship.contains(idNode1, idNode2)) count++;
+		}
+
+		return count;
+	}
+
 	public void print() {
 		for (Relationship relationship : list) {
 			System.out.println("\tOrigin: " + relationship.getIdNodeOrg() + "  Destination: " + relationship.getIdNodeDest());
