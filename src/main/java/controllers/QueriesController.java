@@ -378,7 +378,6 @@ public class QueriesController {
 								}
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
-								chainedLastNodeId = originalQueryStructure.getRootNodeId();
 
 								System.out.println("De la query: " + queryStructure.toString());
 								if (explorationWithResults == 0) {
