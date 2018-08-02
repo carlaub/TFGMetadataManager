@@ -235,7 +235,14 @@ public class MetisAdapter {
 		for (String part : partsEdgeInformation) {
 			newEdgeInformation = newEdgeInformation + part + "\t";
 		}
-		newEdgeInformation = newEdgeInformation + "idRelForeignNode	" + Integer.valueOf(origNodeId);
+
+		if (relationDirection) {
+			newEdgeInformation = newEdgeInformation + "idRelForeignNode	" + destNodeId;
+
+		} else {
+			newEdgeInformation = newEdgeInformation + "idRelForeignNode	" + origNodeId;
+
+		}
 		// Add the ID of the original destination node located in a different partition
 //		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + destNodeId;
 

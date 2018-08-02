@@ -266,7 +266,7 @@ public class QueryStructure {
 						QSRelation qsRelation = new QSRelation();
 
 						qsRelation.setVariable("r");
-						qsRelation.setRelationInfo("[r {idRelForeignNode: " + idRelForeignNode + "}]");
+						qsRelation.setRelationInfo("[r {idRelForeignNode: " + String.valueOf(idRelForeignNode) + "}]");
 
 						if (((QSRelation) entity).isRelationLTR()) {
 							qsRelation.setStart("-");
