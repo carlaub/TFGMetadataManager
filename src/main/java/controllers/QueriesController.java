@@ -385,7 +385,7 @@ public class QueriesController {
 
 									for (Map.Entry<Integer, ResultEntity> result : set) {
 //										for (int k = 0; k < difference; k++) {
-											System.out.println("Add entity column: " + result.getKey() + " - " + result.getValue());
+											System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
 											initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
 //										}
 									}
@@ -397,8 +397,11 @@ public class QueriesController {
 									for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
 										difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
 
+										System.out.println("col j-1: " + j + " size: " + initialResultQuery.getColumn(k-1).size());
 										for (int l = 0; l < difference; l++) {
-											initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+											if (initialResultQuery.getColumn(k-1).size() > 0) {
+												initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+											}
 										}
 									}
 
