@@ -439,8 +439,7 @@ public class QueriesController {
 
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);
 
-							chainedLastNodeId = node.getNodeId();
-							System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
+
 
 //							if (j == (columnsCount - 1)) {
 							System.out.println("\n --> PROB: " + resultQuery.getColumnsName().get(j) + " equals " + initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1));
@@ -461,11 +460,12 @@ public class QueriesController {
 
 								// Reset to the initial id
 								chainedLastNodeId = originalQueryStructure.getRootNodeId();
+							} else {
+								chainedLastNodeId = node.getNodeId();
+								System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
 							}
 
 						} else {
-							chainedLastNodeId = originalQueryStructure.getRootNodeId();
-
 							tempResultQuery.clear();
 							break;
 						}
