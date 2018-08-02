@@ -439,7 +439,8 @@ public class QueriesController {
 							chainedLastNodeId = node.getNodeId();
 							System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
 
-							if (j == (columnsCount - 1) && (j == (initialResultQuery.getColumnsCount() - 1))) {
+//							if (j == (columnsCount - 1)) {
+							if (resultQuery.getColumn(j).equals(initialResultQuery.getColumn(initialResultQuery.getColumnsCount() - 1))){
 								fetchedResults ++;
 
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
