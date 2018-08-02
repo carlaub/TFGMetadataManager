@@ -118,8 +118,8 @@ public class QueriesController {
 				// Derived Sub-queries
 				for (int i = (matchVarsCount - 1); i > 0; i--) {
 					chainedLastNodeId = originalQueryStructure.getRootNodeId();
-					System.out.println("\n--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1).toString());
-					sendById(queryStructure.getSubChainQuery(0, i, -1), idRootNode);
+					System.out.println("\n--> Subquery chained: \n" + queryStructure.getSubChainQuery(0, i, -1, -1).toString());
+					sendById(queryStructure.getSubChainQuery(0, i, -1, -1), idRootNode);
 				}
 
 				// Send Original query
@@ -367,13 +367,15 @@ public class QueriesController {
 
 								int borderVarIndex = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j));
 
-								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
-								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode);
-								System.out.println("--> QueryModified: " + queryStructureModified);
-//								explorationWithResults = 0;
 
 								localLastChainedId = chainedLastNodeId;
 								chainedLastNodeId = (int)tempResultQuery.get(j-1).getProperties().get("id");
+
+								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
+								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode, chainedLastNodeId);
+								System.out.println("--> QueryModified: " + queryStructureModified);
+//								explorationWithResults = 0;
+
 								if (idPartitionForeign == 0) {
 									queryExecutor.processQuery(queryStructureModified, this, true);
 								} else {

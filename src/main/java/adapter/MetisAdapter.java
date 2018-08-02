@@ -200,6 +200,11 @@ public class MetisAdapter {
 		// Check if the first partition have or not a border node for the specific partition
 		idBoarderNode = mapBorderNodes.getBorderNodeID(localPartition, foreignPartition);
 
+		partsEdgeInformation = edgeInformation.split("\\t");
+
+		String origNodeId = partsEdgeInformation[0];
+		String destNodeId = partsEdgeInformation[1];
+
 		if (idBoarderNode == -1) {
 			// There isn't any boarder node connecting these two partitions
 			// Insert new node information into node files of the two partitions
@@ -207,7 +212,7 @@ public class MetisAdapter {
 			idBoarderNode = maxNodeId;
 			System.out.println("Create border node.... " + idBoarderNode);
 
-			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + foreignPartition, localPartition);
+			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + foreignPartition + "	idRelForeignNode	" + origNodeId, localPartition);
 			mapBorderNodes.addNewBorderNode(localPartition, foreignPartition, idBoarderNode);
 
 			mapGraphNodes.put(idBoarderNode, localPartition);
@@ -215,10 +220,6 @@ public class MetisAdapter {
 
 		System.out.println("ID BORDER " + idBoarderNode);
 
-		partsEdgeInformation = edgeInformation.split("\\t");
-
-		String origNodeId = partsEdgeInformation[0];
-		String destNodeId = partsEdgeInformation[1];
 
 		// Insert the border node's relation in the relationshipsTable
 		relationshipsTable.addRelation(idBoarderNode, new Relationship(Integer.parseInt(origNodeId), Integer.parseInt(destNodeId)));

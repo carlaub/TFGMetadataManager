@@ -201,7 +201,7 @@ public class QueryStructure {
 		return count;
 	}
 
-	public QueryStructure getSubChainQuery(int start, int end, int borderStartID) {
+	public QueryStructure getSubChainQuery(int start, int end, int borderStartID, int idRelForeignNode) {
 		int level = 0;
 		boolean rootNodeSet = false;
 		boolean nodeAdded = false;
@@ -258,10 +258,23 @@ public class QueryStructure {
 					level++;
 				} else if (entity instanceof QSRelation) {
 					// RELATION
-					if (((level >= start && level <= end) && nodeAdded) ||
-							((borderStartID > 0) && (level == (start))) ) {
+					if (((level >= start && level <= end) && nodeAdded)) {
 						newQueryStructure.addEntity(Type.MATCH, entity);
 						System.out.println("Add relation: " + ((QSRelation) entity).getStart());
+
+					} else if (((borderStartID > 0) && (level == (start)) && idRelForeignNode > 0)) {
+						QSRelation qsRelation = new QSRelation();
+
+						qsRelation.setVariable("r");
+						qsRelation.setRelationInfo("[r {idRelForeignNode: " + idRelForeignNode + "}]");
+
+						if (((QSRelation) entity).isRelationLTR()) {
+							qsRelation.setStart("-");
+							qsRelation.setEnd("->");
+						} else {
+							qsRelation.setStart("<-");
+							qsRelation.setEnd("-");
+						}
 					}
 				}
 			}

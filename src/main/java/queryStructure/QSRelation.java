@@ -111,6 +111,10 @@ public class QSRelation extends QSEntity {
 		this.properties = properties;
 	}
 
+	public void setRelationInfo(String relationInfo) {
+		this.relationInfo = relationInfo;
+	}
+
 	public String toString() {
 		StringBuilder strBuilder = new StringBuilder();
 		strBuilder.append(start);
