@@ -212,7 +212,7 @@ public class MetisAdapter {
 			idBoarderNode = maxNodeId;
 			System.out.println("Create border node.... " + idBoarderNode);
 
-			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + foreignPartition + "	idRelForeignNode	" + origNodeId, localPartition);
+			writeNodeInPartFile(idBoarderNode + "	1	border	partition	" + foreignPartition, localPartition);
 			mapBorderNodes.addNewBorderNode(localPartition, foreignPartition, idBoarderNode);
 
 			mapGraphNodes.put(idBoarderNode, localPartition);
@@ -235,6 +235,7 @@ public class MetisAdapter {
 		for (String part : partsEdgeInformation) {
 			newEdgeInformation = newEdgeInformation + part + "\t";
 		}
+		newEdgeInformation = partsEdgeInformation + "	idRelForeignNode	" + origNodeId;
 		// Add the ID of the original destination node located in a different partition
 //		newEdgeInformation = newEdgeInformation + "idOriginalNode" + "\t" + destNodeId;
 
