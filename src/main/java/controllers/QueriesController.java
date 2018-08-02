@@ -343,6 +343,8 @@ public class QueriesController {
 		int fetchedResults = 0;
 
 		for (int i = 0; i < firstColResultsSize; i++) {
+			// Reset to the initial id
+			chainedLastNodeId = originalQueryStructure.getRootNodeId();
 
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
@@ -457,9 +459,6 @@ public class QueriesController {
 								if (trackingMode) explorationWithResults++;
 
 								tempResultQuery.clear();
-
-								// Reset to the initial id
-								chainedLastNodeId = originalQueryStructure.getRootNodeId();
 							} else {
 								chainedLastNodeId = node.getNodeId();
 								System.out.println("-> ChainedLastNode ID: " + chainedLastNodeId);
