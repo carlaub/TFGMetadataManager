@@ -441,7 +441,7 @@ public class QueriesController {
 //						if ((partitionChainedLastNode == partitionCurrentNode) ||
 //								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
 
-						if ((trackingMode && j == 0 && relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)
+						if ((trackingMode && j == 0 && relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId)
 						 || !trackingMode)) {
 							System.out.println("add");
 							tempResultQuery.put(j , node);
