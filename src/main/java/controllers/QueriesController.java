@@ -492,20 +492,23 @@ tempResultQuery.clear();
 //				}
 			}
 
-								int difference;
+			if (!trackingMode) {
 
-					for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
-						difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
+				int difference;
 
-						for (int l = 0; l < difference; l++) {
-							if (initialResultQuery.getColumn(k-1).size() > 0) {
-								initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+				for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
+					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
 
-								System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+					for (int l = 0; l < difference; l++) {
+						if (initialResultQuery.getColumn(k-1).size() > 0) {
+							initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
 
-							}
+							System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+
 						}
 					}
+				}
+			}
 		}
 
 		// Is the last derived sub-query sent
