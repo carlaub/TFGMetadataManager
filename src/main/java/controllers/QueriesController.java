@@ -344,7 +344,7 @@ public class QueriesController {
 		int fetchedResults = 0;
 
 		for (int i = 0; i < firstColResultsSize; i++) {
-
+tempResultQuery.clear();
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
