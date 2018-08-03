@@ -467,14 +467,31 @@ public class QueriesController {
 					}
 				}
 
-				if (j == 0) {
+//				if (j == 0) {
+//
+//					int difference;
+//
+//					for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
+//						difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
+//
+//						System.out.println("col j-1: " + j + " size: " + initialResultQuery.getColumn(k-1).size());
+//						for (int l = 0; l < difference; l++) {
+//							if (initialResultQuery.getColumn(k-1).size() > 0) {
+//								initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+//
+//								System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+//
+//							}
+//						}
+//					}
+//				}
+			}
 
-					int difference;
+								int difference;
 
 					for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
 						difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
 
-						System.out.println("col j-1: " + j + " size: " + initialResultQuery.getColumn(k-1).size());
 						for (int l = 0; l < difference; l++) {
 							if (initialResultQuery.getColumn(k-1).size() > 0) {
 								initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
@@ -484,8 +501,6 @@ public class QueriesController {
 							}
 						}
 					}
-				}
-			}
 		}
 
 		// Is the last derived sub-query sent
