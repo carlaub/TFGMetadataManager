@@ -421,7 +421,7 @@ public class QueriesController {
 
 						int partitionChainedLastNode = mapGraphNodes.get(chainedLastNodeId);
 
-						if (j == (resultQuery.getColumnsCount() - 1) && (j != (initialResultQuery.getColumnsCount() - 1))) {
+						if (j == (resultQuery.getColumnsCount() - 1) && !(resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1)))) {
 							tempResultQuery.clear();
 							break;
 						}
