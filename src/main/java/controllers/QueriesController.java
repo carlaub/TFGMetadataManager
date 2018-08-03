@@ -421,6 +421,11 @@ public class QueriesController {
 
 						int partitionChainedLastNode = mapGraphNodes.get(chainedLastNodeId);
 
+						if (j == (resultQuery.getColumnsCount() - 1) && (j != (initialResultQuery.getColumnsCount() - 1))) {
+							tempResultQuery.clear();
+							break;
+						}
+
 
 //						if ((partitionChainedLastNode == partitionCurrentNode) ||
 //								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
