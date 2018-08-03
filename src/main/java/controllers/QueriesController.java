@@ -400,20 +400,21 @@ public class QueriesController {
 //										}
 									}
 
-									int difference = initialResultQuery.getColumn(j).size() - initialResultQuery.getColumn(j-1).size();
-									System.out.println("Size col j " + j + ": " + initialResultQuery.getColumn(j).size() + " ; Size col j-1 " + (j-1) + initialResultQuery.getColumn(j-1).size());
-									System.out.println("DIF: " + difference);
+									if (j == 0) {
 
-									for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
-										difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
+										int difference;
 
-										System.out.println("col j-1: " + j + " size: " + initialResultQuery.getColumn(k-1).size());
-										for (int l = 0; l < difference; l++) {
-											if (initialResultQuery.getColumn(k-1).size() > 0) {
-												initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+										for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
+											difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
 
-												System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+											System.out.println("col j-1: " + j + " size: " + initialResultQuery.getColumn(k-1).size());
+											for (int l = 0; l < difference; l++) {
+												if (initialResultQuery.getColumn(k-1).size() > 0) {
+													initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
 
+													System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+
+												}
 											}
 										}
 									}
