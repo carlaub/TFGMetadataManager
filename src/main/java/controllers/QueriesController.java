@@ -386,7 +386,7 @@ tempResultQuery.clear();
 										mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 									}
 									end --;
-								} while ((borderVarIndex - end) >= 2);
+								} while ((end - borderVarIndex) >= 2);
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
 
