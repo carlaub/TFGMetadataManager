@@ -83,3 +83,8 @@ BEGIN
 MATCH (n{id: 6})-->(m)-->(o)-->(z)
 RETURN n, m, o, z
 END
+
+BEGIN
+MATCH (n{id: 7})<--(m)-->(o)
+RETURN n, m, o
+END

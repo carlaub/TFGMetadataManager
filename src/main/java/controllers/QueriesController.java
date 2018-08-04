@@ -372,15 +372,21 @@ tempResultQuery.clear();
 								chainedLastNodeId = (int)tempResultQuery.get(j-1).getProperties().get("id");
 
 								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
-								QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, originalQueryStructure.getMatchVariablesCount() - 1, idForeignBorderNode, chainedLastNodeId);
-								System.out.println("--> QueryModified: " + queryStructureModified);
-//								explorationWithResults = 0;
 
-								if (idPartitionForeign == 0) {
-									queryExecutor.processQuery(queryStructureModified, this, true);
-								} else {
-									mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
-								}
+								int end = originalQueryStructure.getMatchVariablesCount();
+
+								do {
+									QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, end - 1, idForeignBorderNode, chainedLastNodeId);
+									System.out.println("--> QueryModified: " + queryStructureModified);
+	//								explorationWithResults = 0;
+
+									if (idPartitionForeign == 0) {
+										queryExecutor.processQuery(queryStructureModified, this, true);
+									} else {
+										mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+									}
+									end --;
+								} while ((borderVarIndex - end) >= 2);
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
 
