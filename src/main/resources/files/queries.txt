@@ -68,3 +68,8 @@ BEGIN
 MATCH (n{id: 6})<--(m)<--(o)
 RETURN n, m, o
 END
+
+BEGIN
+MATCH (n{id: 1})-->(m)-->(o)
+RETURN n, m, o
+END

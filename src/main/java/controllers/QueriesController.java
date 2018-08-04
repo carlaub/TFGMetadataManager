@@ -53,7 +53,7 @@ public class QueriesController {
 	}
 
 	public void sendById(QueryStructure queryStructure, int idRootNode, boolean trackingMode) {
-		System.out.println("ID Root node: " + idRootNode);
+//		System.out.println("ID Root node: " + idRootNode);
 		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
 
 		sendByPartitionID(queryStructure, partitionID, trackingMode);
@@ -92,7 +92,7 @@ public class QueriesController {
 			case QueryStructure.QUERY_TYPE_DEFAULT:
 				// CASE 1: Query's MATCH clause has a relation
 				idRootNode = queryStructure.getRootNodeId();
-				System.out.println("ID root node: " + idRootNode);
+//				System.out.println("ID root node: " + idRootNode);
 
 
 				if (idRootNode > 0) {
@@ -111,9 +111,9 @@ public class QueriesController {
 				System.out.println("--> QUERY CHAINED");
 
 				idRootNode = queryStructure.getRootNodeId();
-				System.out.println("ID root node: " + idRootNode);
+//				System.out.println("ID root node: " + idRootNode);
 				int matchVarsCount = queryStructure.getMatchVariablesCount();
-				System.out.println("Variables Count: " + matchVarsCount);
+//				System.out.println("Variables Count: " + matchVarsCount);
 
 				// Derived Sub-queries
 				for (int i = (matchVarsCount - 1); i > 0; i--) {
@@ -335,11 +335,11 @@ public class QueriesController {
 
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
 		int firstColResultsSize = firstColResults.size();
-
-		System.out.println("\nResults: ");
-		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-		textTable2.printTable();
-		System.out.println("\n\n");
+//
+//		System.out.println("\nResults: ");
+//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+//		textTable2.printTable();
+//		System.out.println("\n\n");
 
 		int fetchedResults = 0;
 
