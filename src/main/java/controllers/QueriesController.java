@@ -336,10 +336,10 @@ public class QueriesController {
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
 		int firstColResultsSize = firstColResults.size();
 //
-//		System.out.println("\nResults: ");
-//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-//		textTable2.printTable();
-//		System.out.println("\n\n");
+		System.out.println("\nResults: ");
+		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+		textTable2.printTable();
+		System.out.println("\n\n");
 
 		int fetchedResults = 0;
 
