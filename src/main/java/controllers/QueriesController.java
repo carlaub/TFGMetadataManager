@@ -79,6 +79,7 @@ public class QueriesController {
 		int idRootNode;
 
 		originalQueryStructure = queryStructure;
+		System.out.println("Query Type: " + queryStructure.getQueryType());
 
 		switch (queryType) {
 			case QueryStructure.QUERY_TYPE_CREATE:
@@ -89,26 +90,6 @@ public class QueriesController {
 				gam.detachDeleteNode(queryStructure.getRootNode(), queryStructure.toString());
 				break;
 
-			case QueryStructure.QUERY_TYPE_DEFAULT:
-			case QueryStructure.QUERY_TYPE_UPDATE:
-
-				// CASE 1: Query's MATCH clause has a relation
-				idRootNode = queryStructure.getRootNodeId();
-//				System.out.println("ID root node: " + idRootNode);
-
-
-				if (idRootNode > 0) {
-					sendById(queryStructure, idRootNode);
-				} else {
-					System.out.println("--> BROADCAST");
-					// CASE 2: Query's MATCH clause has not a relation
-					broadcastsReceived = 0;
-
-					queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
-					mmServer.sendQueryBroadcast(queryStructure, this);
-					queryExecutor.processQuery(queryStructure, this, false);
-				}
-				break;
 			case QueryStructure.QUERY_TYPE_CHAINED:
 				System.out.println("--> QUERY CHAINED");
 
@@ -127,8 +108,27 @@ public class QueriesController {
 				// Send Original query
 				sendById(queryStructure, idRootNode, false);
 
-
 				break;
+
+			default:
+				// CASE 1: Query's MATCH clause has a relation
+				idRootNode = queryStructure.getRootNodeId();
+				System.out.println("ID root node: " + idRootNode);
+
+
+				if (idRootNode > 0) {
+					sendById(queryStructure, idRootNode);
+				} else {
+					System.out.println("--> BROADCAST");
+					// CASE 2: Query's MATCH clause has not a relation
+					broadcastsReceived = 0;
+
+					queryStructure.setQueryType(QueryStructure.QUERY_TYPE_BROADCAST);
+					mmServer.sendQueryBroadcast(queryStructure, this);
+					queryExecutor.processQuery(queryStructure, this, false);
+				}
+				break;
+
 		}
 	}
 
