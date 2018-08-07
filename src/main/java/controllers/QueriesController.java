@@ -306,8 +306,8 @@ public class QueriesController {
 					System.out.println("Hay relacion tracking mode: " + trackingMode);
 					if (!trackingMode) {
 						System.out.println("Entro en la relacion");
-
-						it = result.getProperties().entrySet().iterator();
+						ResultRelation resultRelation = (ResultRelation) result;
+						it = resultRelation.getProperties().entrySet().iterator();
 						while (it.hasNext()) {
 							Map.Entry entry = (Map.Entry) it.next();
 							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
@@ -381,7 +381,9 @@ tempResultQuery.clear();
 
 
 								localLastChainedId = chainedLastNodeId;
-								chainedLastNodeId = (int)tempResultQuery.get(j-1).getProperties().get("id");
+								if (tempResultQuery.get(j-1) instanceof ResultNode) {
+									chainedLastNodeId = (int)((ResultNode)tempResultQuery.get(j-1)).getProperties().get("id");
+								}
 
 								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
 
