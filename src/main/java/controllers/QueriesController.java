@@ -90,6 +90,8 @@ public class QueriesController {
 				break;
 
 			case QueryStructure.QUERY_TYPE_DEFAULT:
+			case QueryStructure.QUERY_TYPE_UPDATE:
+
 				// CASE 1: Query's MATCH clause has a relation
 				idRootNode = queryStructure.getRootNodeId();
 //				System.out.println("ID root node: " + idRootNode);
