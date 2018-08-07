@@ -55,11 +55,6 @@ END
 #END
 
 BEGIN
-MATCH (n)
-RETURN n
-END
-
-BEGIN
 MATCH (n{id: 5})-->(m)-->(o)
 RETURN n, m, o
 END
@@ -87,4 +82,15 @@ END
 BEGIN
 MATCH (n{id: 7})<--(m)-->(o)
 RETURN n, m, o
+END
+
+BEGIN
+MATCH (n{id: 5})
+SET n.name = 'LisaPisa'
+RETURN n.name, n.age
+END
+
+BEGIN
+MATCH (n)
+RETURN n
 END

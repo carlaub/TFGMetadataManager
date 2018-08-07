@@ -115,6 +115,8 @@ public class LexicographicAnalyzer {
 						return new Token(Type.DELETE, lexema);
 					} else if (lexema.equalsIgnoreCase("DETACH")) {
 						return new Token(Type.DETACH, lexema);
+					} else if (lexema.equalsIgnoreCase("SET")) {
+						return new Token(Type.SET, lexema);
 					} else if (lexema.equals("-")) {
 						return new Token(Type.DASH, lexema);
 					} else if (lexema.equals("<")) {

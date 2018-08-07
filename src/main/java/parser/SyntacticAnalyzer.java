@@ -32,7 +32,7 @@ public class SyntacticAnalyzer {
 		this.mmServer = MMServer.getInstance();
 
 
-		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE, Type.DETACH);
+		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE, Type.DETACH, Type.SET);
 	}
 
 	public void program() {
@@ -62,7 +62,8 @@ public class SyntacticAnalyzer {
 						processClauseMatch(queryStructure, lookahead);
 
 					} else if (lookahead.getType() == Type.WHERE ||
-							lookahead.getType() == Type.RETURN) {
+							lookahead.getType() == Type.RETURN ||
+							lookahead.getType() == Type.SET) {
 						processClauseConditions(queryStructure, lookahead);
 						strQuery = strQuery + " " + lookahead.getLexema() + " ";
 
