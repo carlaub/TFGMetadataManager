@@ -117,6 +117,7 @@ public class QueriesController {
 
 
 				if (idRootNode > 0) {
+					System.out.println("\n--> ENVIO: \n" + queryStructure.toString());
 					sendById(queryStructure, idRootNode);
 				} else {
 					System.out.println("--> BROADCAST");
