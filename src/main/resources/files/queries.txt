@@ -87,13 +87,7 @@ END
 BEGIN
 MATCH (n{id: 5})
 SET n.name = "LisaPisa"
-RETURN n.name
-END
-
-BEGIN
-MATCH (n{id: 5})
-SET n.name = "LisaPisa"
-RETURN n
+RETURN n.name, n.age
 END
 
 BEGIN
