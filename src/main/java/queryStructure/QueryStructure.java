@@ -436,8 +436,8 @@ public class QueryStructure {
 		}
 
 		// SET clause
-		if (queryStructure.containsKey(Type.WHERE)) {
-			entityList = queryStructure.get(Type.WHERE);
+		if (queryStructure.containsKey(Type.SET)) {
+			entityList = queryStructure.get(Type.SET);
 			if (!entityList.isEmpty()) {
 				stringBuilder.append("\nSET ");
 				int size = entityList.size();
