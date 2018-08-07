@@ -315,6 +315,9 @@ public class QueriesController {
 						System.out.println("\n");
 						initialResultQuery.addEntity(i, result);
 					}
+				} else {
+					// Value
+					initialResultQuery.addEntity(i, result);
 				}
 			}
 		}
