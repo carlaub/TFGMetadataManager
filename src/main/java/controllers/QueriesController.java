@@ -197,7 +197,8 @@ public class QueriesController {
 
 		if (!trackingMode &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
-				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST)) {
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) &&
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_UPDATE)) {
 
 			//TODO: create retrieveRootNodeInformation function
 			// Send a query to the original root node partition to get its information. This information is needed to replace
@@ -231,6 +232,11 @@ public class QueriesController {
 		int columnsCount = resultQuery.getColumnsCount();
 		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
 		// corresponding column to show the results
+
+		System.out.println("\nResults default: ");
+		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+		textTable2.printTable();
+		System.out.println("\n\n");
 
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
@@ -336,10 +342,10 @@ public class QueriesController {
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
 		int firstColResultsSize = firstColResults.size();
 //
-//		System.out.println("\nResults: ");
-//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-//		textTable2.printTable();
-//		System.out.println("\n\n");
+		System.out.println("\nResults: ");
+		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+		textTable2.printTable();
+		System.out.println("\n\n");
 
 		int fetchedResults = 0;
 

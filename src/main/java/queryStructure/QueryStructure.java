@@ -20,6 +20,7 @@ public class QueryStructure {
 	public static final int QUERY_TYPE_CHAINED = 3;
 	public static final int QUERY_TYPE_BROADCAST = 4;
 	public static final int QUERY_TYPE_DETACH = 5;
+	public static final int QUERY_TYPE_UPDATE = 6;
 
 
 	private LinkedHashMap<Type, List<QSEntity>> queryStructure;
@@ -433,6 +434,8 @@ public class QueryStructure {
 				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
 			}
 		}
+
+		// SET clause
 
 		return stringBuilder.toString();
 	}

@@ -91,6 +91,12 @@ RETURN n.name, n.age
 END
 
 BEGIN
+MATCH (n{id: 5})
+SET n.name = 'LisaPisa'
+RETURN n.
+END
+
+BEGIN
 MATCH (n)
 RETURN n
 END
