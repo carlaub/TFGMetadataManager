@@ -8,9 +8,8 @@ import dnl.utils.text.table.TextTable;
 import managers.GraphAlterationsManager;
 import neo4j.*;
 import network.MMServer;
-import queryStructure.QSNode;
-import queryStructure.QSRelation;
-import queryStructure.QueryStructure;
+import parser.Type;
+import queryStructure.*;
 import relationsTable.RelationshipsTable;
 
 import java.util.*;
@@ -87,7 +86,7 @@ public class QueriesController {
 				break;
 
 			case QueryStructure.QUERY_TYPE_DETACH:
-				gam.detachDeleteNode(queryStructure.getRootNode(), queryStructure.toString());
+				manageQueryDelete(queryStructure);
 				break;
 
 			case QueryStructure.QUERY_TYPE_CHAINED:
@@ -108,6 +107,10 @@ public class QueriesController {
 				// Send Original query
 				sendById(queryStructure, idRootNode, false);
 
+				break;
+
+			case QueryStructure.QUERY_TYPE_UPDATE:
+				manageQuerySet(queryStructure);
 				break;
 
 			default:
@@ -158,7 +161,7 @@ public class QueriesController {
 						// Local Neo4j DB
 						queryExecutor.processQuery(entry.getValue());
 					} else {
-						mmServer.sendStringQuery(entry.getKey(), entry.getValue());
+						mmServer.sendStringQuery(partition, entry.getValue());
 					}
 				}
 
@@ -171,6 +174,37 @@ public class QueriesController {
 			System.out.println("\nQuery: " + queryStructure.toString() + "\n");
 			sendByPartitionID(queryStructure, partitionID);
 		}
+	}
+
+	public void manageQueryDelete(QueryStructure queryStructure) {
+		Map<Integer, String> queriesDelete = gam.detachDeleteNode(queryStructure.getRootNode(), queryStructure.toString());
+		Set<Map.Entry<Integer, String>> set = queriesDelete.entrySet();
+		int partition;
+
+		for (Map.Entry<Integer, String> entry : set) {
+			partition = entry.getKey();
+			if (partition == 0) {
+				// Local Neo4j DB
+				queryExecutor.processQuery(entry.getValue());
+			} else {
+				mmServer.sendStringQuery(partition, entry.getValue());
+			}
+		}
+	}
+
+	public void manageQuerySet(QueryStructure queryStructure) {
+		int idRootNode = queryStructure.getRootNodeId();
+		QSSet qsSet;
+
+		List<QSEntity> listQsSet = queryStructure.getList(Type.SET);
+
+		for (QSEntity entity : listQsSet) {
+			qsSet = (QSSet) entity;
+
+			gam.recordUpdate(idRootNode, qsSet.getProperty(), qsSet.getNewValue());
+		}
+
+		sendById(queryStructure, idRootNode);
 	}
 
 	public void processQueryResults(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
@@ -200,8 +234,7 @@ public class QueriesController {
 
 		if (!trackingMode &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
-				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) &&
-				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_UPDATE)) {
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST)) {
 
 			//TODO: create retrieveRootNodeInformation function
 			// Send a query to the original root node partition to get its information. This information is needed to replace
@@ -236,10 +269,10 @@ public class QueriesController {
 		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
 		// corresponding column to show the results
 
-		System.out.println("\nResults default: ");
-		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-		textTable2.printTable();
-		System.out.println("\n\n");
+//		System.out.println("\nResults default: ");
+//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+//		textTable2.printTable();
+//		System.out.println("\n\n");
 
 		for (int i = 0; i < columnsCount; i++) {
 			List<ResultEntity> columnResults = resultQuery.getColumn(i);
@@ -348,10 +381,10 @@ public class QueriesController {
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
 		int firstColResultsSize = firstColResults.size();
 //
-		System.out.println("\nResults: ");
-		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-		textTable2.printTable();
-		System.out.println("\n\n");
+//		System.out.println("\nResults: ");
+//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+//		textTable2.printTable();
+//		System.out.println("\n\n");
 
 		int fetchedResults = 0;
 

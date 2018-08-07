@@ -4,6 +4,9 @@ import application.MetadataManager;
 import constants.ErrorConstants;
 import constants.GenericConstants;
 import data.MapBorderNodes;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.hadoop.yarn.api.records.NodeId;
+import org.neo4j.register.Register;
 import queryStructure.QSNode;
 import queryStructure.QSRelation;
 import relationsTable.Relationship;
@@ -27,6 +30,7 @@ public class GraphAlterationsManager {
 	private List<Integer> nodesToRemove;
 	private List<String> relationshipsToAdd;
 	private Map<Integer, String> nodesToAdd;
+	private Map<Integer, Map<String, String>> nodesToUpdate;
 
 
 	public static GraphAlterationsManager getInstance() {
@@ -40,7 +44,7 @@ public class GraphAlterationsManager {
 		nodesToRemove = new ArrayList<>();
 		relationshipsToAdd = new ArrayList<>();
 		nodesToAdd = new HashMap<>();
-
+		nodesToUpdate = new HashMap<>();
 	}
 
 	/**
@@ -166,6 +170,15 @@ public class GraphAlterationsManager {
 		return partition;
 	}
 
+	public void recordUpdate(int nodeID, String property, String value) {
+		if (!nodesToUpdate.containsKey(nodeID)) {
+			Map<String, String> updates = new HashMap<>();
+			nodesToUpdate.put(nodeID, updates);
+		}
+
+		nodesToUpdate.get(nodeID).put(property, value);
+	}
+
 
 	public Map<Integer, String> detachDeleteNode(QSNode qsNode, String originalQuery) {
 
@@ -259,10 +272,34 @@ public class GraphAlterationsManager {
 		try {
 			wMetisTemp = new BufferedWriter(new FileWriter(tempFile));
 			brMetis = new BufferedReader(new FileReader(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS));
+			String[] parts;
+			int partsLenght;
+			int nodeID;
 
 			while ((currentLine = brMetis.readLine()) != null) {
 
 				if (numLinesRemoved.contains(numCurrentLine)) continue;
+
+				// Check nodes to update
+				parts = currentLine.split("\\t");
+				partsLenght = parts.length;
+				nodeID = Integer.valueOf(parts[0]);
+
+				if (nodesToUpdate.containsKey(nodeID)) {
+					int numLabels = Integer.valueOf(parts[1]);
+					int i = numLabels + 2;
+
+					while (i < partsLenght) {
+						if (nodesToUpdate.get(nodeID).containsKey(parts[i])) {
+							parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]);
+
+							i += 2;
+						}
+					}
+
+					currentLine = StringUtils.join("\\t", parts);
+				}
+
 				wMetisTemp.write(currentLine + "\n");
 			}
 

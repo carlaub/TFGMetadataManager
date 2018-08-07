@@ -49,6 +49,14 @@ public class QueryStructure {
 		list.add(entity);
 	}
 
+	public List<QSEntity> getList(Type type) {
+		if (queryStructure.containsKey(type)) {
+			return queryStructure.get(type);
+		}
+
+		return null;
+	}
+
 	/**
 	 * Return true if the query structure has a relation as a
 	 *
@@ -406,7 +414,9 @@ public class QueryStructure {
 				int size = entityList.size();
 
 				for (int i = 0; i < size - 1; i++) {
-					stringBuilder.append(((QSCondition) entityList.get(i)).getConditions());
+					stringBuilder.append(((QSSet) entityList.get(i)).getProperty());
+					stringBuilder.append(" = ");
+					stringBuilder.append(((QSSet) entityList.get(i)).getNewValue());
 					stringBuilder.append(", ");
 				}
 

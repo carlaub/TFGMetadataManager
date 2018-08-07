@@ -2,10 +2,7 @@ package parser;
 
 import controllers.QueriesController;
 import network.MMServer;
-import queryStructure.QSCondition;
-import queryStructure.QSNode;
-import queryStructure.QSRelation;
-import queryStructure.QueryStructure;
+import queryStructure.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,7 +15,6 @@ import java.util.List;
 public class SyntacticAnalyzer {
 	private static SyntacticAnalyzer instance;
 	private LexicographicAnalyzer lex;
-	private MMServer mmServer;
 	private Token lookahead;
 	private List<Type> clausesTypes;
 
@@ -29,7 +25,6 @@ public class SyntacticAnalyzer {
 
 	private SyntacticAnalyzer() {
 		this.lex = LexicographicAnalyzer.getInstance();
-		this.mmServer = MMServer.getInstance();
 
 
 		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE, Type.DETACH, Type.SET);
@@ -76,7 +71,7 @@ public class SyntacticAnalyzer {
 					} else if (lookahead.getType() == Type.SET) {
 						System.out.println("----> Set query");
 						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_UPDATE);
-						processClauseConditions(queryStructure, lookahead);
+						processClauseSet(queryStructure, lookahead);
 					} else {
 						strQuery = strQuery + lookahead.getLexema();
 						lookahead = lex.getToken();
@@ -274,6 +269,34 @@ public class SyntacticAnalyzer {
 		lookahead = lex.getToken();
 		if (lookahead.getType() == Type.DELETE) {
 			processClauseConditions(queryStructure, lookahead);
+		}
+	}
+
+	private void processClauseSet(QueryStructure queryStructure, Token clauseToken) {
+		QSSet qsSet;
+		lookahead = lex.getToken();
+
+		while (!clausesTypes.contains(lookahead.getType())) {
+			qsSet = new QSSet();
+
+			while (!lookahead.getLexema().equals(".")) {
+				lookahead = lex.getToken();
+			}
+			lookahead = lex.getToken();
+
+			qsSet.setProperty(lookahead.getLexema());
+
+			lookahead = lex.getToken();
+
+			if (lookahead.getType() == Type.EQUAL) {
+				lookahead = lex.getToken();
+				qsSet.setNewValue(lookahead.getLexema());
+
+				queryStructure.addEntity(clauseToken, qsSet);
+			}
+
+			lookahead = lex.getToken();
+
 		}
 	}
 }
