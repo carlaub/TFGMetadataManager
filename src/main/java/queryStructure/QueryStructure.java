@@ -427,6 +427,7 @@ public class QueryStructure {
 				}
 
 				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
+				stringBuilder.append(";");
 			}
 		}
 

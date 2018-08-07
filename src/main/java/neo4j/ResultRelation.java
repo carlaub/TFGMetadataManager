@@ -1,6 +1,5 @@
 package neo4j;
 
-import java.util.Iterator;
 import java.util.Map;
 
 /**
