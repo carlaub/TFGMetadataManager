@@ -3,10 +3,7 @@ package neo4j;
 import constants.GenericConstants;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 25/06/2018.
@@ -15,11 +12,27 @@ import java.util.Map;
  */
 public class ResultNode extends ResultEntity implements Serializable {
 	private List<String> labels;
+	protected HashMap<String, Object> properties;
+
 
 	public ResultNode() {
 		super();
 		this.labels = new ArrayList<>();
+		this.properties = new HashMap<>();
 	}
+
+	public void addProperty(String propertyKey, Object value) {
+		properties.put(propertyKey, value);
+	}
+
+	public HashMap<String, Object> getProperties() {
+		return properties;
+	}
+
+	public void setProperties(HashMap<String, Object> properties) {
+		this.properties = properties;
+	}
+
 
 	public void addLabel(String label) {
 		labels.add(label);

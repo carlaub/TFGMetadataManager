@@ -1,5 +1,7 @@
 package neo4j;
 
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -12,9 +14,20 @@ public class ResultRelation extends ResultEntity {
 
 	private long startNodeId;
 	private long endNodeId;
+	protected HashMap<String, Object> properties;
+
 
 	public ResultRelation() {
 		super();
+		this.properties = new HashMap<>();
+	}
+
+	public void addProperty(String propertyKey, Object value) {
+		properties.put(propertyKey, value);
+	}
+
+	public HashMap<String, Object> getProperties() {
+		return properties;
 	}
 
 	public long getStartNodeId() {
@@ -49,7 +62,7 @@ public class ResultRelation extends ResultEntity {
 			strBuilder.append(",");
 		}
 
-		strBuilder.replace(strBuilder.length() - 1, strBuilder.length(), "]");
+		strBuilder.replace(strBuilder.length() - 2, strBuilder.length(), "]");
 
 		return strBuilder.toString();
 	}

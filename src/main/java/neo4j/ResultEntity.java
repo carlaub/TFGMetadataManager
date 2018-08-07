@@ -13,18 +13,6 @@ public abstract class ResultEntity implements Serializable {
 	public abstract String toString();
 
 	public ResultEntity() {
-		this.properties = new HashMap<>();
-	}
 
-	public void addProperty(String propertyKey, Object value) {
-		properties.put(propertyKey, value);
-	}
-
-	public HashMap<String, Object> getProperties() {
-		return properties;
-	}
-
-	public void setProperties(HashMap<String, Object> properties) {
-		this.properties = properties;
 	}
 }
