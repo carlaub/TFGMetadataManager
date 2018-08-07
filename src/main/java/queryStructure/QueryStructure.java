@@ -398,6 +398,22 @@ public class QueryStructure {
 			}
 		}
 
+		// SET clause
+		if (queryStructure.containsKey(Type.SET)) {
+			entityList = queryStructure.get(Type.SET);
+			if (!entityList.isEmpty()) {
+				stringBuilder.append("\nSET ");
+				int size = entityList.size();
+
+				for (int i = 0; i < size - 1; i++) {
+					stringBuilder.append(((QSCondition) entityList.get(i)).getConditions());
+					stringBuilder.append(", ");
+				}
+
+				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
+			}
+		}
+
 		// RETURN clause
 		if (queryStructure.containsKey(Type.RETURN)) {
 			entityList = queryStructure.get(Type.RETURN);
@@ -424,22 +440,6 @@ public class QueryStructure {
 			entityList = queryStructure.get(Type.DELETE);
 			if (!entityList.isEmpty()) {
 				stringBuilder.append("DELETE ");
-				int size = entityList.size();
-
-				for (int i = 0; i < size - 1; i++) {
-					stringBuilder.append(((QSCondition) entityList.get(i)).getConditions());
-					stringBuilder.append(", ");
-				}
-
-				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
-			}
-		}
-
-		// SET clause
-		if (queryStructure.containsKey(Type.SET)) {
-			entityList = queryStructure.get(Type.SET);
-			if (!entityList.isEmpty()) {
-				stringBuilder.append("\nSET ");
 				int size = entityList.size();
 
 				for (int i = 0; i < size - 1; i++) {
