@@ -62,15 +62,19 @@ public class SyntacticAnalyzer {
 						processClauseMatch(queryStructure, lookahead);
 
 					} else if (lookahead.getType() == Type.WHERE ||
-							lookahead.getType() == Type.RETURN ||
-							lookahead.getType() == Type.SET) {
+							lookahead.getType() == Type.RETURN) {
 						processClauseConditions(queryStructure, lookahead);
 						strQuery = strQuery + " " + lookahead.getLexema() + " ";
 
 					} else if (lookahead.getType() == Type.DETACH) {
 						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_DETACH);
 						processClauseDetach(queryStructure, lookahead);
+
 					} else if (lookahead.getType() == Type.DELETE) {
+						processClauseConditions(queryStructure, lookahead);
+
+					} else if (lookahead.getType() == Type.SET) {
+						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_UPDATE);
 						processClauseConditions(queryStructure, lookahead);
 					} else {
 						strQuery = strQuery + lookahead.getLexema();

@@ -55,7 +55,7 @@ public class QueriesController {
 	public void sendById(QueryStructure queryStructure, int idRootNode, boolean trackingMode) {
 //		System.out.println("ID Root node: " + idRootNode);
 		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
-
+		System.out.println("\nSend to partition: " + partitionID);
 		sendByPartitionID(queryStructure, partitionID, trackingMode);
 	}
 
