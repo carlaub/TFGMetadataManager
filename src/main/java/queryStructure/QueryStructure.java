@@ -436,6 +436,20 @@ public class QueryStructure {
 		}
 
 		// SET clause
+		if (queryStructure.containsKey(Type.WHERE)) {
+			entityList = queryStructure.get(Type.WHERE);
+			if (!entityList.isEmpty()) {
+				stringBuilder.append("\nSET ");
+				int size = entityList.size();
+
+				for (int i = 0; i < size - 1; i++) {
+					stringBuilder.append(((QSCondition) entityList.get(i)).getConditions());
+					stringBuilder.append(", ");
+				}
+
+				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
+			}
+		}
 
 		return stringBuilder.toString();
 	}

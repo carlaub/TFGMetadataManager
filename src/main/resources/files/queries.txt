@@ -86,13 +86,13 @@ END
 
 BEGIN
 MATCH (n{id: 5})
-SET n.name = 'LisaPisa'
-RETURN n.name, n.age
+SET n.name = "LisaPisa"
+RETURN n.name
 END
 
 BEGIN
 MATCH (n{id: 5})
-SET n.name = 'LisaPisa'
+SET n.name = "LisaPisa"
 RETURN n
 END
 

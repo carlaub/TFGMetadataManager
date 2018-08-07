@@ -74,6 +74,7 @@ public class SyntacticAnalyzer {
 						processClauseConditions(queryStructure, lookahead);
 
 					} else if (lookahead.getType() == Type.SET) {
+						System.out.println("----> Set query");
 						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_UPDATE);
 						processClauseConditions(queryStructure, lookahead);
 					} else {
