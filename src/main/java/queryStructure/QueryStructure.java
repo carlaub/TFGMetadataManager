@@ -420,8 +420,9 @@ public class QueryStructure {
 					stringBuilder.append(", ");
 				}
 
-				stringBuilder.append(((QSCondition) entityList.get(size - 1)).getConditions());
-			}
+				stringBuilder.append(((QSSet) entityList.get(size - 1)).getProperty());
+				stringBuilder.append(" = ");
+				stringBuilder.append(((QSSet) entityList.get(size - 1)).getNewValue());			}
 		}
 
 		// RETURN clause
