@@ -417,7 +417,10 @@ public class QueriesController {
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
-				if (colResult instanceof ResultNode) {
+				if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
+
+
+					if (colResult instanceof ResultNode) {
 					System.out.println("Entra en node");
 
 					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
