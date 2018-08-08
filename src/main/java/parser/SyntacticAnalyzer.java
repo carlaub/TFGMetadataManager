@@ -279,9 +279,13 @@ public class SyntacticAnalyzer {
 		while (!clausesTypes.contains(lookahead.getType())) {
 			qsSet = new QSSet();
 
-			while (!lookahead.getLexema().equals(".")) {
-				lookahead = lex.getToken();
-			}
+			lookahead = lex.getToken();
+
+			// var
+			qsSet.setVar(lookahead.getLexema());
+			// ,
+			lookahead = lex.getToken();
+			// property
 			lookahead = lex.getToken();
 
 			qsSet.setProperty(lookahead.getLexema());
@@ -296,6 +300,8 @@ public class SyntacticAnalyzer {
 			}
 
 			lookahead = lex.getToken();
+
+			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken();
 
 		}
 	}

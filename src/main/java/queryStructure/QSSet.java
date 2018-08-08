@@ -6,6 +6,7 @@ package queryStructure;
 public class QSSet extends QSEntity {
 	String property;
 	String newValue;
+	String var;
 
 	public QSSet() {}
 
@@ -28,5 +29,13 @@ public class QSSet extends QSEntity {
 
 	public void setNewValue(String newValue) {
 		this.newValue = newValue;
+	}
+
+	public String getVar() {
+		return var;
+	}
+
+	public void setVar(String var) {
+		this.var = var;
 	}
 }
