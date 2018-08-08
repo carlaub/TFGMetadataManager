@@ -422,6 +422,8 @@ public class QueryStructure {
 					stringBuilder.append(", ");
 				}
 
+				stringBuilder.append(((QSSet) entityList.get(size - 1)).getVar());
+				stringBuilder.append(".");
 				stringBuilder.append(((QSSet) entityList.get(size - 1)).getProperty());
 				stringBuilder.append(" = ");
 				stringBuilder.append(((QSSet) entityList.get(size - 1)).getNewValue());			}

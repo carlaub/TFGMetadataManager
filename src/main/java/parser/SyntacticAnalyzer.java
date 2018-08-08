@@ -279,6 +279,11 @@ public class SyntacticAnalyzer {
 		while (!clausesTypes.contains(lookahead.getType())) {
 			qsSet = new QSSet();
 
+			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken();
+
+
+			System.out.println("Entra en set");
+
 			lookahead = lex.getToken();
 
 			// var
@@ -300,8 +305,6 @@ public class SyntacticAnalyzer {
 			}
 
 			lookahead = lex.getToken();
-
-			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken();
 
 		}
 	}
