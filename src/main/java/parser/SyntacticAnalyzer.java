@@ -281,8 +281,9 @@ public class SyntacticAnalyzer {
 
 			System.out.println("Entra en set");
 
+			if (lookahead.getType() == Type.COMA)lookahead = lex.getToken();
+
 			// var
-			lookahead = lex.getToken();
 			qsSet.setVar(lookahead.getLexema());
 			// ,
 			lookahead = lex.getToken();
