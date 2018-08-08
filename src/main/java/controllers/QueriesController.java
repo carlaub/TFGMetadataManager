@@ -468,7 +468,6 @@ public class QueriesController {
 								initialResultQuery.addEntity(indexOrgColumn, resultNode);
 							}
 						} else {
-							System.out.println("Add entity: " + i);
 							initialResultQuery.addEntity(j, resultNode);
 						}
 					}
@@ -484,11 +483,11 @@ public class QueriesController {
 							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 						}
 						System.out.println("\n");
-						initialResultQuery.addEntity(i, colResult);
+						initialResultQuery.addEntity(j, colResult);
 					}
 				} else {
 					// Value
-					initialResultQuery.addEntity(i, colResult);
+					initialResultQuery.addEntity(j, colResult);
 				}
 
 
