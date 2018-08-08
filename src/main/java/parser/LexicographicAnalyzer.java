@@ -167,7 +167,7 @@ public class LexicographicAnalyzer {
 
 	public Token getToken(boolean ignoreSpaces) {
 		Token token = nextToken(ignoreSpaces);
-		System.out.println("Token: " + token.getLexema());
+//		System.out.println("Token: " + token.getLexema());
 		return token;
 	}
 
