@@ -369,7 +369,6 @@ public class QueriesController {
 	private void defaultQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
 		int indexOrgColumn = 0;
-		Map<Integer, ResultEntity> tempResultQuery = new HashMap<>();
 		int columnsCount = resultQuery.getColumnsCount();
 
 		if (!trackingMode &&
@@ -411,10 +410,10 @@ public class QueriesController {
 		}
 
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
-		int firstColResultsSize = firstColResults.size();
+		int firstColResultsSize = 0;
+		if (firstColResults != null) firstColResultsSize = firstColResults.size();
 
 		for (int i = 0; i < firstColResultsSize; i++) {
-			tempResultQuery.clear();
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
@@ -518,8 +517,10 @@ public class QueriesController {
 		}
 
 		// Is the last derived sub-query sent
-		if (!trackingMode) {
-			// Show result table
+		if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
+				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
+
+				// Show result table
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
@@ -648,8 +649,6 @@ public class QueriesController {
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);
 
 
-
-//							if (j == (columnsCount - 1)) {
 							System.out.println("\n --> PROB: " + resultQuery.getColumnsName().get(j) + " equals " + initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1));
 
 							if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))){
