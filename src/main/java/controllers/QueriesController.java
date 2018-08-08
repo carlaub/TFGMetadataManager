@@ -371,6 +371,8 @@ public class QueriesController {
 		int indexOrgColumn = 0;
 		int columnsCount = resultQuery.getColumnsCount();
 
+		if (resultQuery.getColumnsCount() <= 0) return;
+
 		if (!trackingMode &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) &&
