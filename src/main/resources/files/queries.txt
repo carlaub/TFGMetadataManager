@@ -101,6 +101,6 @@ DETACH DELETE n
 END
 
 BEGIN
-MATCH (n)
-RETURN n
+MATCH (n)-[r]->(m)
+RETURN n, r
 END

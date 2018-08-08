@@ -5,8 +5,6 @@ import constants.ErrorConstants;
 import constants.GenericConstants;
 import data.MapBorderNodes;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.yarn.api.records.NodeId;
-import org.neo4j.register.Register;
 import queryStructure.QSNode;
 import queryStructure.QSRelation;
 import relationsTable.Relationship;
@@ -176,6 +174,7 @@ public class GraphAlterationsManager {
 			nodesToUpdate.put(nodeID, updates);
 		}
 
+		System.out.println("Add record, property: " + property + ", value: " + value);
 		nodesToUpdate.get(nodeID).put(property, value);
 	}
 
@@ -286,11 +285,14 @@ public class GraphAlterationsManager {
 				nodeID = Integer.valueOf(parts[0]);
 
 				if (nodesToUpdate.containsKey(nodeID)) {
+					System.out.println("\n-> Entra");
+
 					int numLabels = Integer.valueOf(parts[1]);
 					int i = numLabels + 2;
 
 					while (i < partsLenght) {
 						if (nodesToUpdate.get(nodeID).containsKey(parts[i])) {
+							System.out.println("-> Entra en un update");
 							parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]);
 
 							i += 2;
@@ -298,6 +300,7 @@ public class GraphAlterationsManager {
 					}
 
 					currentLine = StringUtils.join("\\t", parts);
+					System.out.println("Cur line: " + currentLine);
 				}
 
 				wMetisTemp.write(currentLine + "\n");

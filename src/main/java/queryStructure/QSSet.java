@@ -4,16 +4,11 @@ package queryStructure;
  * Created by Carla Urrea Blázquez on 07/08/2018.
  */
 public class QSSet extends QSEntity {
-	String property;
-	String newValue;
-	String var;
+	private String property;
+	private String newValue;
+	private String var;
 
 	public QSSet() {}
-
-	public QSSet(String property, String newValue) {
-		this.property = property;
-		this.newValue = newValue;
-	}
 
 	public String getProperty() {
 		return property;
@@ -31,11 +26,7 @@ public class QSSet extends QSEntity {
 		this.newValue = newValue;
 	}
 
-	public String getVar() {
-		return var;
-	}
+	public String getVar() { return var; }
 
-	public void setVar(String var) {
-		this.var = var;
-	}
+	public void setVar(String var) { this.var = var; }
 }
