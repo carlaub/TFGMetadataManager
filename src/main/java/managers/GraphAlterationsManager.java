@@ -214,7 +214,7 @@ public class GraphAlterationsManager {
 				for (Relationship relation : relationsremovedNode) {
 
 					if (relation.getIdNodeOrg() == nodeToRemoveID) {
-						deleteQueries.put(iPart, "MATCH (n{id: " + borderNodeID + "})-[r]->(m{id: " + relation.getIdNodeDest() + ") DELETE r");
+						deleteQueries.put(iPart, "MATCH (n{id: " + borderNodeID + "})-[r]->(m{id: " + relation.getIdNodeDest() + "}) DELETE r");
 					} else {
 						deleteQueries.put(iPart, "MATCH (m{id: " + relation.getIdNodeOrg() + "})-[r]->(n{id: " + borderNodeID + "}) DELETE r");
 					}
