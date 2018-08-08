@@ -73,9 +73,6 @@ public class QueryExecutor {
 						resultRelation.setEndNodeId(relationship.getEndNodeId());
 
 						resultQuery.addEntity(i, resultRelation);
-					} else {
-						// Is a value
-						resultQuery.addEntity(i, new ResultValue(o));
 					}
 				}
 			}
