@@ -228,13 +228,154 @@ public class QueriesController {
 	}
 
 
+//	private void defaultQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
+//		Iterator it;
+//		int indexOrgColumn = 0;
+//
+//		if (!trackingMode &&
+//				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
+//				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST)) {
+//
+//			//TODO: create retrieveRootNodeInformation function
+//			// Send a query to the original root node partition to get its information. This information is needed to replace
+//			// some conditions in the WHERE clause related with the root node
+//			// EX:
+//			//	ORG Query				MOD Query
+//			// (root.age > m.age)	=>	(14 > m.age)
+//
+//			System.out.println("Search for root node id: " + queryStructure.getRootNodeId());
+//
+//			int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+//			String queryRootInfo = "MATCH (n {id:" + queryStructure.getRootNodeId() + " }) RETURN n;";
+//			ResultQuery resultQueryRootInfo;
+//
+//			if (idPartitionLocal == 0) {
+//				resultQueryRootInfo = queryExecutor.processQuery(queryRootInfo);
+//			} else {
+//				resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
+//			}
+//
+//			if (resultQueryRootInfo.getColumnsCount() > 0) {
+//				List<ResultEntity> column = resultQueryRootInfo.getColumn(0);
+//
+//				if (column.size() > 0) {
+//					rootNode = (ResultNode) column.get(0);
+//				}
+//			}
+//
+//		}
+//
+//		int columnsCount = resultQuery.getColumnsCount();
+//		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
+//		// corresponding column to show the results
+//
+////		System.out.println("\nResults default: ");
+////		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
+////		textTable2.printTable();
+////		System.out.println("\n\n");
+//
+//		for (int i = 0; i < columnsCount; i++) {
+//			List<ResultEntity> columnResults = resultQuery.getColumn(i);
+//			System.out.println("Column " + i + " size: " + columnResults.size() + " " + trackingMode);
+//
+//			if (trackingMode)
+//				indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
+//
+//			for (ResultEntity result : columnResults) {
+//
+//				if (result instanceof ResultNode) {
+//
+//					System.out.println("Entra en node");
+//
+//					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
+//					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
+//
+//					ResultNode resultNode = (ResultNode) result;
+//
+//
+//					if (resultNode.isBorderNode()) {
+//						if (queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) {
+//
+//							int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
+//
+//							if (!exploredBorderNodes.contains(resultNode.getNodeId() + "-" + matchVarLevel)) {
+//
+//								exploredBorderNodes.add(resultNode.getNodeId() + "-" + matchVarLevel);
+//								/*
+//								En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
+//								Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
+//								Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
+//								 */
+//								int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+//								int idPartitionForeign = resultNode.getForeignPartitionId();
+//
+//								int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
+//
+//								QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode, matchVarLevel);
+//
+//								if (idPartitionForeign == 0) {
+//									queryExecutor.processQuery(queryStructureModified, this, true);
+//								} else {
+//									mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
+//								}
+//
+//								System.out.println("Salgo de border. Tracking: " + trackingMode);
+//
+//							}
+//						}
+//					} else {
+//						if (trackingMode) {
+//							// Add only the node if has relation with the root node
+//							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
+//								initialResultQuery.addEntity(indexOrgColumn, result);
+//							}
+//						} else {
+//							System.out.println("Add entity: " + i);
+//							initialResultQuery.addEntity(i, result);
+//						}
+//					}
+//
+//				} else if (result instanceof ResultRelation) {
+//					System.out.println("Hay relacion tracking mode: " + trackingMode);
+//					if (!trackingMode) {
+//						System.out.println("Entro en la relacion");
+//						ResultRelation resultRelation = (ResultRelation) result;
+//						it = resultRelation.getProperties().entrySet().iterator();
+//						while (it.hasNext()) {
+//							Map.Entry entry = (Map.Entry) it.next();
+//							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
+//						}
+//						System.out.println("\n");
+//						initialResultQuery.addEntity(i, result);
+//					}
+//				} else {
+//					// Value
+//					initialResultQuery.addEntity(i, result);
+//				}
+//			}
+//		}
+//
+//		if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
+//
+//		if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
+//				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
+//			// Show result table
+//			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
+//			textTable.printTable();
+//			System.out.println("\n\n");
+//		}
+//	}
+
 	private void defaultQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
 		int indexOrgColumn = 0;
+		Map<Integer, ResultEntity> tempResultQuery = new HashMap<>();
+		int columnsCount = resultQuery.getColumnsCount();
 
 		if (!trackingMode &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
-				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST)) {
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) &&
+				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_UPDATE)) {
 
 			//TODO: create retrieveRootNodeInformation function
 			// Send a query to the original root node partition to get its information. This information is needed to replace
@@ -265,32 +406,25 @@ public class QueriesController {
 
 		}
 
-		int columnsCount = resultQuery.getColumnsCount();
-		// The subqueries may not have the same number of column as the original query. Is important add the new result in the
-		// corresponding column to show the results
+		if (!trackingMode && (queryStructure.getMatchVariablesCount() == originalQueryStructure.getMatchVariablesCount())) {
+			initialResultQuery.setColumnsName(resultQuery.getColumnsName());
+		}
 
-//		System.out.println("\nResults default: ");
-//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-//		textTable2.printTable();
-//		System.out.println("\n\n");
+		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
+		int firstColResultsSize = firstColResults.size();
 
-		for (int i = 0; i < columnsCount; i++) {
-			List<ResultEntity> columnResults = resultQuery.getColumn(i);
-			System.out.println("Column " + i + " size: " + columnResults.size() + " " + trackingMode);
+		for (int i = 0; i < firstColResultsSize; i++) {
+			tempResultQuery.clear();
+			for (int j = 0; j < columnsCount; j++) {
+				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
-			if (trackingMode)
-				indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
-
-			for (ResultEntity result : columnResults) {
-
-				if (result instanceof ResultNode) {
-
+				if (colResult instanceof ResultNode) {
 					System.out.println("Entra en node");
 
 					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
 					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
 
-					ResultNode resultNode = (ResultNode) result;
+					ResultNode resultNode = (ResultNode) colResult;
 
 
 					if (resultNode.isBorderNode()) {
@@ -327,38 +461,64 @@ public class QueriesController {
 						if (trackingMode) {
 							// Add only the node if has relation with the root node
 							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
-								initialResultQuery.addEntity(indexOrgColumn, result);
+								initialResultQuery.addEntity(indexOrgColumn, resultNode);
 							}
 						} else {
 							System.out.println("Add entity: " + i);
-							initialResultQuery.addEntity(i, result);
+							initialResultQuery.addEntity(i, resultNode);
 						}
 					}
 
-				} else if (result instanceof ResultRelation) {
+				} else if (colResult instanceof  ResultRelation) {
 					System.out.println("Hay relacion tracking mode: " + trackingMode);
 					if (!trackingMode) {
 						System.out.println("Entro en la relacion");
-						ResultRelation resultRelation = (ResultRelation) result;
+						ResultRelation resultRelation = (ResultRelation) colResult;
 						it = resultRelation.getProperties().entrySet().iterator();
 						while (it.hasNext()) {
 							Map.Entry entry = (Map.Entry) it.next();
 							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 						}
 						System.out.println("\n");
-						initialResultQuery.addEntity(i, result);
+						initialResultQuery.addEntity(i, colResult);
 					}
 				} else {
 					// Value
-					initialResultQuery.addEntity(i, result);
+					initialResultQuery.addEntity(i, colResult);
+				}
+
+
+				if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
+
+				if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
+						(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
+					// Show result table
+					TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
+					textTable.printTable();
+					System.out.println("\n\n");
+				}
+			}
+
+			if (!trackingMode) {
+				int difference;
+
+				for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
+					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
+
+					for (int l = 0; l < difference; l++) {
+						if (initialResultQuery.getColumn(k-1).size() > 0) {
+							initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+
+							System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+
+						}
+					}
 				}
 			}
 		}
 
-		if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
-
-		if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
-				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
+		// Is the last derived sub-query sent
+		if (!trackingMode) {
 			// Show result table
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
@@ -389,7 +549,7 @@ public class QueriesController {
 		int fetchedResults = 0;
 
 		for (int i = 0; i < firstColResultsSize; i++) {
-tempResultQuery.clear();
+			tempResultQuery.clear();
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
@@ -479,10 +639,6 @@ tempResultQuery.clear();
 							break;
 						}
 
-
-//						if ((partitionChainedLastNode == partitionCurrentNode) ||
-//								relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId, fetchedResults)) {
-
 						if ((trackingMode && j == 0 && relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId)
 						 || (trackingMode && j > 0)
 								|| !trackingMode)) {
@@ -524,25 +680,6 @@ tempResultQuery.clear();
 						}
 					}
 				}
-
-//				if (j == 0) {
-//
-//					int difference;
-//
-//					for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
-//						difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
-//
-//						System.out.println("col j-1: " + j + " size: " + initialResultQuery.getColumn(k-1).size());
-//						for (int l = 0; l < difference; l++) {
-//							if (initialResultQuery.getColumn(k-1).size() > 0) {
-//								initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
-//
-//								System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
-//
-//							}
-//						}
-//					}
-//				}
 			}
 
 			if (!trackingMode) {

@@ -174,7 +174,7 @@ public class GraphAlterationsManager {
 			nodesToUpdate.put(nodeID, updates);
 		}
 
-		System.out.println("Add record, property: " + property + ", value: " + value);
+		System.out.println(nodeID + " - Add record, property: " + property + ", value: " + value);
 		nodesToUpdate.get(nodeID).put(property, value);
 	}
 
@@ -280,9 +280,10 @@ public class GraphAlterationsManager {
 				if (numLinesRemoved.contains(numCurrentLine)) continue;
 
 				// Check nodes to update
-				parts = currentLine.split("\\t");
+				parts = currentLine.split("\t");
 				partsLenght = parts.length;
 				nodeID = Integer.valueOf(parts[0]);
+				System.out.println("nod ID: " + nodeID );
 
 				if (nodesToUpdate.containsKey(nodeID)) {
 					System.out.println("\n-> Entra");

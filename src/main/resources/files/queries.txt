@@ -95,10 +95,10 @@ MATCH (n)
 RETURN n
 END
 
-BEGIN
-MATCH (n{id: 6)
-DETACH DELETE n
-END
+#BEGIN
+#MATCH (n{id: 6)
+#DETACH DELETE n
+#END
 
 BEGIN
 MATCH (n)-[r]->(m)
