@@ -279,25 +279,21 @@ public class SyntacticAnalyzer {
 		while (!clausesTypes.contains(lookahead.getType())) {
 			qsSet = new QSSet();
 
-			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken();
-
-
 			System.out.println("Entra en set");
 
-			lookahead = lex.getToken();
-
 			// var
+			lookahead = lex.getToken();
 			qsSet.setVar(lookahead.getLexema());
 			// ,
 			lookahead = lex.getToken();
 			// property
 			lookahead = lex.getToken();
-
 			qsSet.setProperty(lookahead.getLexema());
 
 			lookahead = lex.getToken();
 
 			if (lookahead.getType() == Type.EQUAL) {
+				System.out.println("Entra en equal");
 				lookahead = lex.getToken();
 				qsSet.setNewValue(lookahead.getLexema());
 
@@ -305,7 +301,6 @@ public class SyntacticAnalyzer {
 			}
 
 			lookahead = lex.getToken();
-
 		}
 	}
 }
