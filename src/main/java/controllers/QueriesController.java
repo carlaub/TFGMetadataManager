@@ -419,7 +419,7 @@ public class QueriesController {
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
-				if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(i));
+				if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j));
 
 
 					if (colResult instanceof ResultNode) {
@@ -469,7 +469,7 @@ public class QueriesController {
 							}
 						} else {
 							System.out.println("Add entity: " + i);
-							initialResultQuery.addEntity(i, resultNode);
+							initialResultQuery.addEntity(j, resultNode);
 						}
 					}
 
