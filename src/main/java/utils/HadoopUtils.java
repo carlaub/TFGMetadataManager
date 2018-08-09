@@ -153,8 +153,8 @@ public class HadoopUtils {
 									System.out.println("-> Entra en un update");
 									parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]);
 
-									i += 2;
 								}
+								i = i + 2;
 							}
 
 							line = StringUtils.join("\\t", parts);
