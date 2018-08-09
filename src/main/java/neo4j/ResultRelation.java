@@ -62,7 +62,7 @@ public class ResultRelation extends ResultEntity {
 			strBuilder.append(",");
 		}
 
-		strBuilder.replace(strBuilder.length() - 2, strBuilder.length(), "]");
+		strBuilder.replace(strBuilder.length() - 1, strBuilder.length(), "]");
 
 		return strBuilder.toString();
 	}

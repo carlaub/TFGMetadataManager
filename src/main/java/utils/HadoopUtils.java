@@ -157,8 +157,8 @@ public class HadoopUtils {
 								i = i + 2;
 							}
 
-							line = StringUtils.join("\\t", parts);
-							System.out.println("Cur line: " + currentLine);
+							line = StringUtils.join(parts, "\\t");
+							System.out.println("Cur line: " + line);
 						}
 						bos.write((line + "\n").getBytes("UTF-8"));
 					} else {
