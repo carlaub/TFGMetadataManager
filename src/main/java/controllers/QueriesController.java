@@ -403,6 +403,11 @@ public class QueriesController {
 		int indexOrgColumn = 0;
 		int columnsCount = resultQuery.getColumnsCount();
 
+		System.out.println("\nResults: ");
+		TextTable textTable2 = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
+		textTable2.printTable();
+		System.out.println("\n\n");
+
 		if (resultQuery.getColumnsCount() <= 0) return;
 
 		if (!trackingMode &&
@@ -430,8 +435,6 @@ public class QueriesController {
 
 
 				if (colResult instanceof ResultNode) {
-					System.out.println("Entra en node");
-
 					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
 					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
 
