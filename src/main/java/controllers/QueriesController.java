@@ -467,7 +467,7 @@ public class QueriesController {
 						}
 					} else {
 						if (trackingMode) {
-							sou
+							System.out.println("\n-->Entra a track");
 							// Add only the node if has relation with the root node
 							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
 								initialResultQuery.addEntity(indexOrgColumn, resultNode);
