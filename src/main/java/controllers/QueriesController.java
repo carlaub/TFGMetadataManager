@@ -366,6 +366,38 @@ public class QueriesController {
 //		}
 //	}
 
+	/**
+	 * Send a query to the original root node partition to get its information. This information is needed to replace
+	 * some conditions in the WHERE clause related with the root node
+	 * EX:
+	 * ORG Query				MOD Query
+	 * (root.age > m.age)	=>	(14 > m.age)
+	 *
+	 * @param queryStructure
+	 */
+	private void getRootNodeDetails(QueryStructure queryStructure) {
+		System.out.println("Search for root node id: " + queryStructure.getRootNodeId());
+
+		int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+		String queryRootInfo = "MATCH (n {id:" + queryStructure.getRootNodeId() + " }) RETURN n;";
+		ResultQuery resultQueryRootInfo;
+
+		if (idPartitionLocal == 0) {
+			resultQueryRootInfo = queryExecutor.processQuery(queryRootInfo);
+		} else {
+			resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
+		}
+
+		if (resultQueryRootInfo.getColumnsCount() > 0) {
+			List<ResultEntity> column = resultQueryRootInfo.getColumn(0);
+
+			if (column.size() > 0) {
+				rootNode = (ResultNode) column.get(0);
+			}
+		}
+	}
+
+
 	private void defaultQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
 		int indexOrgColumn = 0;
@@ -378,32 +410,7 @@ public class QueriesController {
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_UPDATE)) {
 
-			//TODO: create retrieveRootNodeInformation function
-			// Send a query to the original root node partition to get its information. This information is needed to replace
-			// some conditions in the WHERE clause related with the root node
-			// EX:
-			//	ORG Query				MOD Query
-			// (root.age > m.age)	=>	(14 > m.age)
-
-			System.out.println("Search for root node id: " + queryStructure.getRootNodeId());
-
-			int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
-			String queryRootInfo = "MATCH (n {id:" + queryStructure.getRootNodeId() + " }) RETURN n;";
-			ResultQuery resultQueryRootInfo;
-
-			if (idPartitionLocal == 0) {
-				resultQueryRootInfo = queryExecutor.processQuery(queryRootInfo);
-			} else {
-				resultQueryRootInfo = mmServer.sendStringQuery(idPartitionLocal, queryRootInfo);
-			}
-
-			if (resultQueryRootInfo.getColumnsCount() > 0) {
-				List<ResultEntity> column = resultQueryRootInfo.getColumn(0);
-
-				if (column.size() > 0) {
-					rootNode = (ResultNode) column.get(0);
-				}
-			}
+			getRootNodeDetails(queryStructure);
 
 		}
 
@@ -419,10 +426,10 @@ public class QueriesController {
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
-				if (trackingMode) indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j));
+				indexOrgColumn = initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(j));
 
 
-					if (colResult instanceof ResultNode) {
+				if (colResult instanceof ResultNode) {
 					System.out.println("Entra en node");
 
 					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
@@ -436,30 +443,27 @@ public class QueriesController {
 
 							int matchVarLevel = queryStructure.getNodeLevel(initialResultQuery.getColumnsName().get(i));
 
-							if (!exploredBorderNodes.contains(resultNode.getNodeId() + "-" + matchVarLevel)) {
+							/*
+							En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
+							Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
+							Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
+							 */
+							int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
+							int idPartitionForeign = resultNode.getForeignPartitionId();
 
-								exploredBorderNodes.add(resultNode.getNodeId() + "-" + matchVarLevel);
-								/*
-								En el border node actual tengo información del id de la particion a la cual esta sirviendo como embajador.
-								Usando el objeto queryStructure podemos recuperar en id del Root node actual y con este id obtener la partición actual
-								Con ambas particiones tenemos la key para recuperar el id del border node en la partición forastera
-								 */
-								int idPartitionLocal = MetadataManager.getInstance().getMapGraphNodes().get(queryStructure.getRootNodeId());
-								int idPartitionForeign = resultNode.getForeignPartitionId();
+							int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
 
-								int idForeignBorderNode = MetadataManager.getInstance().getMapBoarderNodes().getBorderNodeID(idPartitionForeign, idPartitionLocal);
+							QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode, matchVarLevel);
 
-								QueryStructure queryStructureModified = queryStructure.replaceRootNode(idForeignBorderNode, rootNode, matchVarLevel);
-
-								if (idPartitionForeign == 0) {
-									queryExecutor.processQuery(queryStructureModified, this, true);
-								} else {
-									mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
-								}
-
-								System.out.println("Salgo de border. Tracking: " + trackingMode);
-
+							if (idPartitionForeign == 0) {
+								queryExecutor.processQuery(queryStructureModified, this, true);
+							} else {
+								mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 							}
+
+							System.out.println("Salgo de border. Tracking: " + trackingMode);
+
+
 						}
 					} else {
 						if (trackingMode) {
@@ -472,7 +476,7 @@ public class QueriesController {
 						}
 					}
 
-				} else if (colResult instanceof  ResultRelation) {
+				} else if (colResult instanceof ResultRelation) {
 					System.out.println("Hay relacion tracking mode: " + trackingMode);
 					if (!trackingMode) {
 						System.out.println("Entro en la relacion");
@@ -483,36 +487,29 @@ public class QueriesController {
 							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 						}
 						System.out.println("\n");
-						initialResultQuery.addEntity(j, colResult);
+						initialResultQuery.addEntity(indexOrgColumn, colResult);
 					}
 				} else {
 					// Value
-					initialResultQuery.addEntity(j, colResult);
+					initialResultQuery.addEntity(indexOrgColumn, colResult);
 				}
 
 
 				if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
 
-				if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
-						(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
-					// Show result table
-					TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
-					textTable.printTable();
-					System.out.println("\n\n");
-				}
 			}
 
 			if (!trackingMode) {
 				int difference;
 
 				for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
-					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
+					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k - 1).size();
 
 					for (int l = 0; l < difference; l++) {
-						if (initialResultQuery.getColumn(k-1).size() > 0) {
-							initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+						if (initialResultQuery.getColumn(k - 1).size() > 0) {
+							initialResultQuery.addEntity(k - 1, initialResultQuery.getColumn(k - 1).get(initialResultQuery.getColumn(k - 1).size() - 1));
 
-							System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+							System.out.println("Add entity col rep : " + (k - 1) + " - " + initialResultQuery.getColumn(k - 1).get(initialResultQuery.getColumn(k - 1).size() - 1));
 
 						}
 					}
@@ -520,11 +517,9 @@ public class QueriesController {
 			}
 		}
 
-		// Is the last derived sub-query sent
 		if ((!trackingMode && queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST ||
 				(queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST && broadcastsReceived == MetadataManager.getInstance().getMMInformation().getNumberPartitions()))) {
-
-				// Show result table
+			// Show result table
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
@@ -579,8 +574,8 @@ public class QueriesController {
 
 
 								localLastChainedId = chainedLastNodeId;
-								if (tempResultQuery.get(j-1) instanceof ResultNode) {
-									chainedLastNodeId = (int)((ResultNode)tempResultQuery.get(j-1)).getProperties().get("id");
+								if (tempResultQuery.get(j - 1) instanceof ResultNode) {
+									chainedLastNodeId = (int) ((ResultNode) tempResultQuery.get(j - 1)).getProperties().get("id");
 								}
 
 								System.out.println("--> Border Var Index: " + borderVarIndex + "  -  id Foreign: " + idForeignBorderNode);
@@ -590,14 +585,14 @@ public class QueriesController {
 								do {
 									QueryStructure queryStructureModified = originalQueryStructure.getSubChainQuery(borderVarIndex, end - 1, idForeignBorderNode, chainedLastNodeId);
 									System.out.println("--> QueryModified: " + queryStructureModified);
-	//								explorationWithResults = 0;
+									//								explorationWithResults = 0;
 
 									if (idPartitionForeign == 0) {
 										queryExecutor.processQuery(queryStructureModified, this, true);
 									} else {
 										mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 									}
-									end --;
+									end--;
 								} while ((end - borderVarIndex) >= 2);
 
 								System.out.println("Salgo de border. Tracking: " + trackingMode + " exploration count: " + explorationWithResults);
@@ -613,8 +608,8 @@ public class QueriesController {
 
 									for (Map.Entry<Integer, ResultEntity> result : set) {
 //										for (int k = 0; k < difference; k++) {
-											System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
-											initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+										System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
+										initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
 //										}
 									}
 
@@ -645,18 +640,18 @@ public class QueriesController {
 						}
 
 						if ((trackingMode && j == 0 && relationshipsTable.existsRelationship(mapBorderNodes.getBorderNodeID(partitionChainedLastNode, partitionCurrentNode), currentNodeID, chainedLastNodeId)
-						 || (trackingMode && j > 0)
+								|| (trackingMode && j > 0)
 								|| !trackingMode)) {
 							System.out.println("add");
-							tempResultQuery.put(j , node);
+							tempResultQuery.put(j, node);
 
 							System.out.println("\n--> PastChainedLastNode ID: " + chainedLastNodeId);
 
 
 							System.out.println("\n --> PROB: " + resultQuery.getColumnsName().get(j) + " equals " + initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1));
 
-							if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))){
-								fetchedResults ++;
+							if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))) {
+								fetchedResults++;
 
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
@@ -690,13 +685,13 @@ public class QueriesController {
 				int difference;
 
 				for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
-					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k-1).size();
+					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k - 1).size();
 
 					for (int l = 0; l < difference; l++) {
-						if (initialResultQuery.getColumn(k-1).size() > 0) {
-							initialResultQuery.addEntity(k-1, initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+						if (initialResultQuery.getColumn(k - 1).size() > 0) {
+							initialResultQuery.addEntity(k - 1, initialResultQuery.getColumn(k - 1).get(initialResultQuery.getColumn(k - 1).size() - 1));
 
-							System.out.println("Add entity col rep : " + (k-1) + " - " + initialResultQuery.getColumn(k-1).get(initialResultQuery.getColumn(k-1).size()-1));
+							System.out.println("Add entity col rep : " + (k - 1) + " - " + initialResultQuery.getColumn(k - 1).get(initialResultQuery.getColumn(k - 1).size() - 1));
 
 						}
 					}
