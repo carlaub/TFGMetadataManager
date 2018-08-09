@@ -409,6 +409,7 @@ public class QueriesController {
 		System.out.println("\n\n");
 
 		if (resultQuery.getColumnsCount() <= 0) return;
+		if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
 
 		if (!trackingMode &&
 				(queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_CREATE) &&
@@ -497,10 +498,6 @@ public class QueriesController {
 					// Value
 					initialResultQuery.addEntity(indexOrgColumn, colResult);
 				}
-
-
-				if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
-
 			}
 
 			if (!trackingMode) {
