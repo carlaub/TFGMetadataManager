@@ -151,7 +151,7 @@ public class HadoopUtils {
 							while (i < partsLenght) {
 								if (nodesToUpdate.get(nodeID).containsKey(parts[i])) {
 									System.out.println("-> Entra en un update");
-									parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]);
+									parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]).replace("\"", "");
 
 								}
 								i = i + 2;
