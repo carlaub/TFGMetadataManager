@@ -260,7 +260,7 @@ public class GraphAlterationsManager {
 
 
 		// General graph nodes file
-		numLinesRemoved = HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_NODES, nodesToRemove, new ArrayList<>(nodesToAdd.values()));
+		numLinesRemoved = HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_NODES, nodesToRemove, nodesToUpdate, new ArrayList<>(nodesToAdd.values()));
 
 		// Metis output file
 
@@ -278,31 +278,6 @@ public class GraphAlterationsManager {
 			while ((currentLine = brMetis.readLine()) != null) {
 
 				if (numLinesRemoved.contains(numCurrentLine)) continue;
-
-				// Check nodes to update
-				parts = currentLine.split("\t");
-				partsLenght = parts.length;
-				nodeID = Integer.valueOf(parts[0]);
-				System.out.println("nod ID: " + nodeID );
-
-				if (nodesToUpdate.containsKey(nodeID)) {
-					System.out.println("\n-> Entra");
-
-					int numLabels = Integer.valueOf(parts[1]);
-					int i = numLabels + 2;
-
-					while (i < partsLenght) {
-						if (nodesToUpdate.get(nodeID).containsKey(parts[i])) {
-							System.out.println("-> Entra en un update");
-							parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]);
-
-							i += 2;
-						}
-					}
-
-					currentLine = StringUtils.join("\\t", parts);
-					System.out.println("Cur line: " + currentLine);
-				}
 
 				wMetisTemp.write(currentLine + "\n");
 			}
@@ -328,7 +303,7 @@ public class GraphAlterationsManager {
 
 	public void updateEdgesFiles() {
 		// General graph nodes file
-		HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_EDGES, nodesToRemove, relationshipsToAdd);
+		HadoopUtils.getInstance().updateGraphFile(GenericConstants.FILE_NAME_EDGES, nodesToRemove, null, relationshipsToAdd);
 	}
 
 	public void closeResources() {

@@ -2,6 +2,7 @@ package utils;
 
 import application.MetadataManager;
 import constants.GenericConstants;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -11,6 +12,7 @@ import org.apache.hadoop.fs.Path;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 26/04/2018.
@@ -103,7 +105,7 @@ public class HadoopUtils {
 //		}
 //	}
 
-	public List<Integer> updateGraphFile(String fileName, List<Integer> nodesToRemove, List<String> elementsToAdd) {
+	public List<Integer> updateGraphFile(String fileName, List<Integer> nodesToRemove, Map<Integer, Map<String, String>> nodesToUpdate, List<String> elementsToAdd) {
 		BufferedOutputStream bos;
 		BufferedReader br;
 		String line;
@@ -122,6 +124,8 @@ public class HadoopUtils {
 			br = new BufferedReader(new InputStreamReader(fsDataInputStream));
 
 			String[] parts;
+			int partsLenght;
+			int nodeID;
 
 			// Add existing nodes not removed
 			while ((line = br.readLine()) != null) {
@@ -132,6 +136,30 @@ public class HadoopUtils {
 					int id = Integer.valueOf(parts[0]);
 
 					if (!nodesToRemove.contains(id)) {
+
+						// Check nodes to update
+						partsLenght = parts.length;
+						nodeID = Integer.valueOf(parts[0]);
+						System.out.println("nod ID: " + nodeID );
+
+						if (nodesToUpdate.containsKey(nodeID)) {
+							System.out.println("\n-> Entra");
+
+							int numLabels = Integer.valueOf(parts[1]);
+							int i = numLabels + 2;
+
+							while (i < partsLenght) {
+								if (nodesToUpdate.get(nodeID).containsKey(parts[i])) {
+									System.out.println("-> Entra en un update");
+									parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]);
+
+									i += 2;
+								}
+							}
+
+							line = StringUtils.join("\\t", parts);
+							System.out.println("Cur line: " + currentLine);
+						}
 						bos.write((line + "\n").getBytes("UTF-8"));
 					} else {
 						numLinesRemoved.add(currentLine);
