@@ -402,6 +402,7 @@ public class QueriesController {
 		Iterator it;
 		int indexOrgColumn = 0;
 		int columnsCount = resultQuery.getColumnsCount();
+		ResultNode resultNode = null;
 
 //		System.out.println("\nResults: ");
 //		TextTable textTable2 = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
@@ -439,7 +440,7 @@ public class QueriesController {
 					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
 					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
 
-					ResultNode resultNode = (ResultNode) colResult;
+					resultNode = (ResultNode) colResult;
 
 
 					if (resultNode.isBorderNode()) {
@@ -482,8 +483,7 @@ public class QueriesController {
 					}
 
 				} else if (colResult instanceof ResultRelation) {
-					System.out.println("Hay relacion tracking mode: " + trackingMode);
-					if (!trackingMode) {
+					if (!trackingMode && !resultNode.isBorderNode()) {
 						System.out.println("Entro en la relacion");
 						ResultRelation resultRelation = (ResultRelation) colResult;
 						it = resultRelation.getProperties().entrySet().iterator();
