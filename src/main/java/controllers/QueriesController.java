@@ -403,6 +403,8 @@ public class QueriesController {
 		int indexOrgColumn = 0;
 		int columnsCount = resultQuery.getColumnsCount();
 		ResultNode resultNode = null;
+		Map<Integer, ResultEntity> tempResultQuery = new HashMap<>();
+
 
 //		System.out.println("\nResults: ");
 //		TextTable textTable2 = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
@@ -430,6 +432,8 @@ public class QueriesController {
 		if (firstColResults != null) firstColResultsSize = firstColResults.size();
 
 		for (int i = 0; i < firstColResultsSize; i++) {
+			tempResultQuery.clear();
+
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
@@ -468,10 +472,13 @@ public class QueriesController {
 						if (trackingMode) {
 							// Add only the node if has relation with the root node
 							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
-								initialResultQuery.addEntity(indexOrgColumn, resultNode);
+//								initialResultQuery.addEntity(indexOrgColumn, resultNode);
+								tempResultQuery.put(indexOrgColumn, resultNode);
 							}
 						} else {
-							initialResultQuery.addEntity(j, resultNode);
+//							initialResultQuery.addEntity(j, resultNode);
+							tempResultQuery.put(indexOrgColumn, resultNode);
+
 						}
 					}
 
@@ -486,13 +493,30 @@ public class QueriesController {
 
 						// If one of the nodes is border, delete the property related with the foreign node.
 						if (resultRelation.getProperties().containsKey("idRelForeignNode")) resultRelation.getProperties().remove("idRelForeignNode");
-						initialResultQuery.addEntity(indexOrgColumn, colResult);
+//						initialResultQuery.addEntity(indexOrgColumn, colResult);
+						tempResultQuery.put(indexOrgColumn, resultRelation);
+
 					}
 				} else {
 					// Value
-					initialResultQuery.addEntity(indexOrgColumn, colResult);
+//					initialResultQuery.addEntity(indexOrgColumn, colResult);
+					tempResultQuery.put(indexOrgColumn, colResult);
+				}
+
+				if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))) {
+					Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+
+					for (Map.Entry<Integer, ResultEntity> result : set) {
+	//										for (int k = 0; k < difference; k++) {
+						System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
+						initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+	//										}
+					}
+
+					tempResultQuery.clear();
 				}
 			}
+
 
 			if (!trackingMode) {
 				int difference;
@@ -542,6 +566,7 @@ public class QueriesController {
 
 		for (int i = 0; i < firstColResultsSize; i++) {
 			tempResultQuery.clear();
+
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
 
