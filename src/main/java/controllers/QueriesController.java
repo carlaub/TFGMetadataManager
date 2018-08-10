@@ -437,11 +437,7 @@ public class QueriesController {
 
 
 				if (colResult instanceof ResultNode) {
-					// TODO: Si es un nodo frontera, hacer el sendById query pasando la misma instanci y borrar el nodo frontera de la query,
-					// activar el modo tracking de sendQuery para concatenar los nuevos resultados y no mostrar aun la tabla al usuario.
-
 					resultNode = (ResultNode) colResult;
-
 
 					if (resultNode.isBorderNode()) {
 						if (queryStructure.getQueryType() != QueryStructure.QUERY_TYPE_BROADCAST) {
@@ -466,13 +462,10 @@ public class QueriesController {
 								mmServer.sendQuery(idPartitionForeign, queryStructureModified, this, true);
 							}
 
-							System.out.println("Salgo de border. Tracking: " + trackingMode);
-
-
+//							System.out.println("Salgo de border. Tracking: " + trackingMode);
 						}
 					} else {
 						if (trackingMode) {
-							System.out.println("\n-->Entra a track");
 							// Add only the node if has relation with the root node
 							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
 								initialResultQuery.addEntity(indexOrgColumn, resultNode);
@@ -484,14 +477,15 @@ public class QueriesController {
 
 				} else if (colResult instanceof ResultRelation) {
 					if (!trackingMode && !resultNode.isBorderNode()) {
-						System.out.println("Entro en la relacion");
 						ResultRelation resultRelation = (ResultRelation) colResult;
 						it = resultRelation.getProperties().entrySet().iterator();
 						while (it.hasNext()) {
 							Map.Entry entry = (Map.Entry) it.next();
-							System.out.println("- " + entry.getKey() + ": " + entry.getValue());
 						}
 						System.out.println("\n");
+
+						// If one of the nodes is border, delete the property related with the foreign node.
+						if (resultRelation.getProperties().containsKey("idRelForeignNode")) resultRelation.getProperties().remove("idRelForeignNode");
 						initialResultQuery.addEntity(indexOrgColumn, colResult);
 					}
 				} else {
@@ -509,9 +503,6 @@ public class QueriesController {
 					for (int l = 0; l < difference; l++) {
 						if (initialResultQuery.getColumn(k - 1).size() > 0) {
 							initialResultQuery.addEntity(k - 1, initialResultQuery.getColumn(k - 1).get(initialResultQuery.getColumn(k - 1).size() - 1));
-
-							System.out.println("Add entity col rep : " + (k - 1) + " - " + initialResultQuery.getColumn(k - 1).get(initialResultQuery.getColumn(k - 1).size() - 1));
-
 						}
 					}
 				}
