@@ -15,7 +15,7 @@
 
 BEGIN
 MATCH (n {id: 2})<-[r]-(m)
-RETURN n, m, r
+RETURN n, r, m
 END
 
 BEGIN
@@ -26,7 +26,7 @@ END
 BEGIN
 MATCH (n {id: 5})<--(m)
 WHERE m.age > n.age
-RETURN m, n
+RETURN n, m
 END
 
 BEGIN
