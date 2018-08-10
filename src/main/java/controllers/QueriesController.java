@@ -403,8 +403,6 @@ public class QueriesController {
 		int indexOrgColumn = 0;
 		int columnsCount = resultQuery.getColumnsCount();
 		ResultNode resultNode = null;
-		Map<Integer, ResultEntity> tempResultQuery = new HashMap<>();
-
 
 //		System.out.println("\nResults: ");
 //		TextTable textTable2 = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
@@ -432,7 +430,6 @@ public class QueriesController {
 		if (firstColResults != null) firstColResultsSize = firstColResults.size();
 
 		for (int i = 0; i < firstColResultsSize; i++) {
-			tempResultQuery.clear();
 
 			for (int j = 0; j < columnsCount; j++) {
 				ResultEntity colResult = resultQuery.getColumn(j).get(i);
@@ -472,14 +469,11 @@ public class QueriesController {
 						if (trackingMode) {
 							// Add only the node if has relation with the root node
 							if (relationshipsTable.existsRelationship(queryStructure.getRootNodeId(), resultNode.getNodeId(), rootNode.getNodeId())) {
-//								initialResultQuery.addEntity(indexOrgColumn, resultNode);
-								tempResultQuery.put(indexOrgColumn, resultNode);
+								initialResultQuery.addEntity(indexOrgColumn, resultNode);
 							}
 						} else {
-//							initialResultQuery.addEntity(j, resultNode);
-							tempResultQuery.put(indexOrgColumn, resultNode);
+							initialResultQuery.addEntity(j, resultNode);
 						}
-						checkCopyToInitial(resultQuery, j, tempResultQuery);
 					}
 
 				} else if (colResult instanceof ResultRelation) {
@@ -493,15 +487,11 @@ public class QueriesController {
 
 						// If one of the nodes is border, delete the property related with the foreign node.
 						if (resultRelation.getProperties().containsKey("idRelForeignNode")) resultRelation.getProperties().remove("idRelForeignNode");
-//						initialResultQuery.addEntity(indexOrgColumn, colResult);
-						tempResultQuery.put(indexOrgColumn, resultRelation);
-						checkCopyToInitial(resultQuery, j, tempResultQuery);
+						initialResultQuery.addEntity(indexOrgColumn, colResult);
 					}
 				} else {
 					// Value
-//					initialResultQuery.addEntity(indexOrgColumn, colResult);
-					tempResultQuery.put(indexOrgColumn, colResult);
-					checkCopyToInitial(resultQuery, j, tempResultQuery);
+					resultQuery.addEntity(indexOrgColumn, colResult);
 				}
 			}
 
@@ -511,6 +501,11 @@ public class QueriesController {
 
 				for (int k = (initialResultQuery.getColumnsCount() - 1); k >= 1; k--) {
 					difference = initialResultQuery.getColumn(k).size() - initialResultQuery.getColumn(k - 1).size();
+
+					// No results in the last column
+					if (difference < 0) {
+						initialResultQuery.removeLast(k - 1);
+					}
 
 					for (int l = 0; l < difference; l++) {
 						if (initialResultQuery.getColumn(k - 1).size() > 0) {
@@ -527,21 +522,6 @@ public class QueriesController {
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
-		}
-	}
-
-	private void checkCopyToInitial(ResultQuery resultQuery, int numCol, Map<Integer, ResultEntity> tempResultQuery) {
-		if (resultQuery.getColumnsName().get(numCol).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))) {
-			Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
-
-			for (Map.Entry<Integer, ResultEntity> result : set) {
-				//										for (int k = 0; k < difference; k++) {
-				System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
-				initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
-				//										}
-			}
-
-			tempResultQuery.clear();
 		}
 	}
 

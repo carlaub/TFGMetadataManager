@@ -68,6 +68,13 @@ public class ResultQuery implements Serializable{
 		if (column.size() > maxRowCount) maxRowCount = column.size();
 	}
 
+	public void removeLast(int columnIndex) {
+		List<ResultEntity> column = dataList.get(columnIndex);
+		if (column.size() > 0) {
+			column.remove(column.size() - 1);
+		}
+	}
+
 	public Object[][] getDataTable() {
 		if (dataList == null || dataList.size() == 0) return null;
 
