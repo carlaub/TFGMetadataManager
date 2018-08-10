@@ -478,8 +478,8 @@ public class QueriesController {
 						} else {
 //							initialResultQuery.addEntity(j, resultNode);
 							tempResultQuery.put(indexOrgColumn, resultNode);
-
 						}
+						checkCopyToInitial(resultQuery, j, tempResultQuery);
 					}
 
 				} else if (colResult instanceof ResultRelation) {
@@ -495,25 +495,13 @@ public class QueriesController {
 						if (resultRelation.getProperties().containsKey("idRelForeignNode")) resultRelation.getProperties().remove("idRelForeignNode");
 //						initialResultQuery.addEntity(indexOrgColumn, colResult);
 						tempResultQuery.put(indexOrgColumn, resultRelation);
-
+						checkCopyToInitial(resultQuery, j, tempResultQuery);
 					}
 				} else {
 					// Value
 //					initialResultQuery.addEntity(indexOrgColumn, colResult);
 					tempResultQuery.put(indexOrgColumn, colResult);
-				}
-
-				if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))) {
-					Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
-
-					for (Map.Entry<Integer, ResultEntity> result : set) {
-	//										for (int k = 0; k < difference; k++) {
-						System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
-						initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
-	//										}
-					}
-
-					tempResultQuery.clear();
+					checkCopyToInitial(resultQuery, j, tempResultQuery);
 				}
 			}
 
@@ -539,6 +527,21 @@ public class QueriesController {
 			TextTable textTable = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
 			textTable.printTable();
 			System.out.println("\n\n");
+		}
+	}
+
+	private void checkCopyToInitial(ResultQuery resultQuery, int numCol, Map<Integer, ResultEntity> tempResultQuery) {
+		if (resultQuery.getColumnsName().get(numCol).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))) {
+			Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
+
+			for (Map.Entry<Integer, ResultEntity> result : set) {
+				//										for (int k = 0; k < difference; k++) {
+				System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
+				initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
+				//										}
+			}
+
+			tempResultQuery.clear();
 		}
 	}
 
