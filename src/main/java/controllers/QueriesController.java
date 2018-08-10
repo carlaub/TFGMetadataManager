@@ -403,10 +403,10 @@ public class QueriesController {
 		int indexOrgColumn = 0;
 		int columnsCount = resultQuery.getColumnsCount();
 
-		System.out.println("\nResults: ");
-		TextTable textTable2 = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
-		textTable2.printTable();
-		System.out.println("\n\n");
+//		System.out.println("\nResults: ");
+//		TextTable textTable2 = new TextTable((String[]) initialResultQuery.getColumnsName().toArray(), initialResultQuery.getDataTable());
+//		textTable2.printTable();
+//		System.out.println("\n\n");
 
 		if (resultQuery.getColumnsCount() <= 0) return;
 		if (queryStructure.getQueryType() == QueryStructure.QUERY_TYPE_BROADCAST) broadcastsReceived++;
