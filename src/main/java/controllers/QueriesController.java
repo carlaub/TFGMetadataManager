@@ -539,13 +539,6 @@ public class QueriesController {
 
 		List<ResultEntity> firstColResults = resultQuery.getColumn(0);
 		int firstColResultsSize = firstColResults.size();
-//
-//		System.out.println("\nResults: ");
-//		TextTable textTable2 = new TextTable((String[]) resultQuery.getColumnsName().toArray(), resultQuery.getDataTable());
-//		textTable2.printTable();
-//		System.out.println("\n\n");
-
-		int fetchedResults = 0;
 
 		for (int i = 0; i < firstColResultsSize; i++) {
 			tempResultQuery.clear();
@@ -607,10 +600,8 @@ public class QueriesController {
 									Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
 									for (Map.Entry<Integer, ResultEntity> result : set) {
-//										for (int k = 0; k < difference; k++) {
 										System.out.println("Add entity column: " + initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())) + " - " + result.getValue());
 										initialResultQuery.addEntity(initialResultQuery.getColumnsName().indexOf(resultQuery.getColumnsName().get(result.getKey())), result.getValue());
-//										}
 									}
 
 									tempResultQuery.clear();
@@ -651,7 +642,6 @@ public class QueriesController {
 							System.out.println("\n --> PROB: " + resultQuery.getColumnsName().get(j) + " equals " + initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1));
 
 							if (resultQuery.getColumnsName().get(j).equals(initialResultQuery.getColumnsName().get(initialResultQuery.getColumnsCount() - 1))) {
-								fetchedResults++;
 
 								Set<Map.Entry<Integer, ResultEntity>> set = tempResultQuery.entrySet();
 
