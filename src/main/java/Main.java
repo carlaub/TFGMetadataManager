@@ -1,11 +1,8 @@
 import constants.MsgConstants;
 import controllers.MMController;
-import neo4j.Neo4JImport;
 import application.MetadataManager;
 import constants.ErrorConstants;
 import model.MMInformation;
-import network.MMServer;
-import utils.Menu;
 import utils.ParserConf;
 
 import java.io.IOException;
@@ -37,15 +34,6 @@ public class Main {
             e.printStackTrace();
         }
 
-//        System.out.println(MsgConstants.MSG_PROC_QUERIES);
-//        MMController mmController = new MMController();
-//        mmController.queriesFileExecution();
-//        System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
-
-        // Show the menu
-//        Menu menu = new Menu();
-//        menu.showMenu();
-
         MMController mmController = new MMController();
 
 
@@ -58,6 +46,5 @@ public class Main {
         System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
 
         mmController.shutdownSystem();
-
     }
 }

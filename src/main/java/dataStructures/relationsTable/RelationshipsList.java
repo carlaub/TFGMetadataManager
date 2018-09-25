@@ -1,24 +1,34 @@
-package relationsTable;
+package dataStructures.relationsTable;
 
 import java.util.*;
 
 /**
  * Created by Carla Urrea Blázquez on 21/06/2018.
  *
- * RelationshipsList.java
+ * This class provides a custom list of relations with functions and methods specifically designed for the application.
  */
 public class RelationshipsList extends AbstractSequentialList<Relationship> {
 	public List<Relationship> list;
 
-	public RelationshipsList() {
+	RelationshipsList() {
 		list = new LinkedList();
 	}
 
+	/**
+	 * Add a new relationship.
+	 * @param relationship that want to be inserted.
+	 * @return true if the relation has been inserted successfully.
+	 */
 	public boolean add(Relationship relationship) {
 		return list.add(relationship);
 	}
 
-	public List<Relationship> getRelationsByIdNodeOrg(int idNodeOrg) {
+	/**
+	 * Get a relation by its node origin ID.
+	 * @param idNodeOrg origin node's ID.
+	 * @return a list of Relationships that match with the search criteria.
+	 */
+	List<Relationship> getRelationsByIdNodeOrg(int idNodeOrg) {
 		return getRelationsById(idNodeOrg, true);
 	}
 
@@ -38,7 +48,13 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 		return results;
 	}
 
-	public boolean containRelation(int idNode1, int idNode2) {
+	/**
+	 * Check if a relation exists in the structure.
+	 * @param idNode1 ID of one of the nodes.
+	 * @param idNode2 ID of the other node in the relationship.
+	 * @return true if the relationship exists in the structure.
+	 */
+	boolean containRelation(int idNode1, int idNode2) {
 		for (Relationship relationship : list) {
 			if (relationship.contains(idNode1, idNode2)) return true;
 		}
@@ -46,7 +62,13 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 		return false;
 	}
 
-	public int countRelations(int idNode1, int idNode2) {
+	/**
+	 *
+	 * @param idNode1 ID of one of the nodes.
+	 * @param idNode2 ID of the other node in the relationship.
+	 * @return the count of relations that matches the criteria.
+	 */
+	int countRelations(int idNode1, int idNode2) {
 		int count = 0;
 
 		for (Relationship relationship : list) {
@@ -56,25 +78,16 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 		return count;
 	}
 
-	public void print() {
-		for (Relationship relationship : list) {
-			System.out.println("\tOrigin: " + relationship.getIdNodeOrg() + "  Destination: " + relationship.getIdNodeDest());
-		}
-	}
-
-	public boolean containNode(int idNode) {
-		for (Relationship relationship : list) {
-			if (relationship.containNode(idNode)) return true;
-		}
-
-		return false;
-	}
-
-	public List<Relationship> getNodeRelationships(int idNode) {
+	/**
+	 * Get relationships that have the [idNode] as origin or destination
+	 * @param idNode ID of the node
+	 * @return a list of relations that match the search criteria
+	 */
+	List<Relationship> getNodeRelationships(int idNode) {
 		List<Relationship> listNodeRelationships = new ArrayList<>();
 
 		for (Relationship relationship : list) {
-			if (relationship.containNode(idNode)) {
+			if (relationship.containsNode(idNode)) {
 				listNodeRelationships.add(relationship);
 			}
 		}
@@ -82,7 +95,11 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 		return listNodeRelationships;
 	}
 
-	public void removeNodeRelations(int nodeID) {
+	/**
+	 * Remove all the relationships that contains a node with ID [nodeID] as origin or destination.
+	 * @param nodeID the node's ID.
+	 */
+	void removeNodeRelations(int nodeID) {
 		ListIterator<Relationship> listIterator = list.listIterator();
 		Relationship relationship;
 
@@ -93,6 +110,15 @@ public class RelationshipsList extends AbstractSequentialList<Relationship> {
 					(relationship.getIdNodeOrg() == nodeID)) {
 				listIterator.remove();
 			}
+		}
+	}
+
+	/**
+	 * Debug function that prints the information off the structure's relations.
+	 */
+	void print() {
+		for (Relationship relationship : list) {
+			System.out.println("\tOrigin: " + relationship.getIdNodeOrg() + "  Destination: " + relationship.getIdNodeDest());
 		}
 	}
 

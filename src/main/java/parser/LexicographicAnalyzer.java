@@ -9,8 +9,8 @@ import java.util.Scanner;
 
 /**
  * Created by Carla Urrea Blázquez on 23/06/2018.
- * <p>
- * LexicographicAnalyzer.java
+ *
+ * Module of lexicographic analysis. This process is a part of the query's parser. This module identify and store the minim unit known as Token.
  */
 public class LexicographicAnalyzer {
 
@@ -24,6 +24,9 @@ public class LexicographicAnalyzer {
 		return instance;
 	}
 
+	/**
+	 * Initialize the line variable from the querie's file.
+	 */
 	private LexicographicAnalyzer() {
 		nChar = 0;
 
@@ -43,6 +46,13 @@ public class LexicographicAnalyzer {
 		}
 	}
 
+	/**
+	 * Return the next token of the query.
+	 * @param ignoreSpaces indicates if, during the process, the spaces must be ignored. For example, where a name or property
+	 *                     value is processed is necessary to preserve the spaces.
+	 *
+	 * @return a new Token.
+	 */
 	private Token nextToken(boolean ignoreSpaces) {
 		char character;
 		String lexema = "";
@@ -74,7 +84,6 @@ public class LexicographicAnalyzer {
 					} else {
 						// Unknown character
 						ParserError.showCharError(character);
-
 					}
 					break;
 
@@ -87,14 +96,13 @@ public class LexicographicAnalyzer {
 								lexema = lexema + character;
 								nChar++;
 								character = line.charAt(nChar);
-							} while((character != '\'') && (character != '\"'));
+							} while ((character != '\'') && (character != '\"'));
 							character = line.charAt(nChar);
 						}
 
 						lexema = lexema + character;
 						nChar++;
 						character = line.charAt(nChar);
-
 
 
 					} while (GenericConstants.COMMON_CHARS.indexOf(character) != -1);
@@ -129,7 +137,7 @@ public class LexicographicAnalyzer {
 
 				case 2:
 					lexema = lexema + character;
-					nChar ++;
+					nChar++;
 					if (character == '(') {
 						return new Token(Type.OPAREN, lexema);
 					} else if (character == ')') {
@@ -161,18 +169,21 @@ public class LexicographicAnalyzer {
 		}
 	}
 
-	public Token getToken() {
+	/**
+	 * Get the next token.
+	 * @return The next token.
+	 */
+	Token getToken() {
 		return getToken(true);
 	}
 
-	public Token getToken(boolean ignoreSpaces) {
+	/**
+	 * Get the next token specifying if space must to be ignore or not.
+	 * @param ignoreSpaces true if the spaces are to be ignored.
+	 * @return The next token.
+	 */
+	Token getToken(boolean ignoreSpaces) {
 		Token token = nextToken(ignoreSpaces);
-//		System.out.println("Token: " + token.getLexema());
 		return token;
-	}
-
-
-	public void close() {
-		scnQueries.close();
 	}
 }

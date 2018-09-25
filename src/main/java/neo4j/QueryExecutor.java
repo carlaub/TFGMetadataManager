@@ -9,8 +9,8 @@ import java.util.Map;
 
 /**
  * Created by Carla Urrea Blázquez on 06/06/2018.
- * <p>
- * QueryExecutor.java
+ *
+ * This class make possible the query execution in the instance that hosts the machine.
  */
 public class QueryExecutor {
 	private GraphDatabaseService graphDatabaseService;
@@ -19,19 +19,20 @@ public class QueryExecutor {
 		graphDatabaseService = GraphDatabase.getInstance().getDataBaseGraphService();
 	}
 
-	public ResultQuery processQuery(QueryStructure query, QueriesController queriesController, boolean trackingMode) {
+	public void processQuery(QueryStructure query, QueriesController queriesController, boolean trackingMode) {
 		ResultQuery resultQuery = processQuery(query.toString());
 		queriesController.processQueryResults(resultQuery, query, trackingMode);
-
-		return resultQuery;
-
 	}
 
+	/**
+	 * Base function, process query and execute it.
+	 * @param strQuery string query to process.
+	 * @return the result of the query to be executed.
+	 */
 	public ResultQuery processQuery(String strQuery) {
 		try (Transaction q = graphDatabaseService.beginTx();
 			 Result result = graphDatabaseService.execute(strQuery)) {
 
-			System.out.println("Query enviada a particion MM: \n" + strQuery);
 			List<String> columnNames = result.columns();
 			int columnsCount = columnNames.size();
 			ResultQuery resultQuery = new ResultQuery(result.columns());
@@ -87,7 +88,5 @@ public class QueryExecutor {
 
 			return resultQuery;
 		}
-
 	}
-
 }

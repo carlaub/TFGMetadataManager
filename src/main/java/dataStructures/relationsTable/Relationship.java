@@ -1,7 +1,9 @@
-package relationsTable;
+package dataStructures.relationsTable;
 
 /**
  * Created by Carla Urrea Blázquez on 27/07/2018.
+ *
+ * This class model a relationship with a origin and destination node's IDs
  */
 public class Relationship {
 
@@ -34,7 +36,7 @@ public class Relationship {
 				(idNodeDest == idNode2 && idNodeOrg == idNode1));
 	}
 
-	public boolean containNode(int idNode) {
+	boolean containsNode(int idNode) {
 		return ((idNodeDest == idNode) || (idNodeOrg == idNode));
 	}
 }

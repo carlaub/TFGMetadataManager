@@ -1,7 +1,6 @@
 package parser;
 
 import controllers.QueriesController;
-import network.MMServer;
 import queryStructure.*;
 
 import java.util.Arrays;
@@ -9,8 +8,9 @@ import java.util.List;
 
 /**
  * Created by Carla Urrea Blázquez on 23/06/2018.
- * <p>
- * SyntacticAnalyzer.java
+ *
+ * Lexicographic analyzer used in the parsing process. This module work's with the token identified in the lexicographic
+ * analyzer.
  */
 public class SyntacticAnalyzer {
 	private static SyntacticAnalyzer instance;
@@ -26,23 +26,23 @@ public class SyntacticAnalyzer {
 	private SyntacticAnalyzer() {
 		this.lex = LexicographicAnalyzer.getInstance();
 
-
 		clausesTypes = Arrays.asList(Type.MATCH, Type.WHERE, Type.RETURN, Type.END, Type.CREATE, Type.DELETE, Type.DETACH, Type.SET);
 	}
 
+	/**
+	 * Is the main function of the parser. This contains the main logic of the process: read and classify
+	 * the different types of tokens.
+	 */
 	public void program() {
 		String strQuery = "";
 		QueryStructure queryStructure = null;
 
 		lookahead = lex.getToken();
 
-
 		while (lookahead.getType() != Type.EOF) {
 			// New Query
 			if (lookahead.getType() == Type.BEGIN) {
 				lookahead = lex.getToken();
-
-				System.out.println("Token: " + lookahead.getLexema());
 
 				queryStructure = new QueryStructure();
 
@@ -69,7 +69,6 @@ public class SyntacticAnalyzer {
 						processClauseConditions(queryStructure, lookahead);
 
 					} else if (lookahead.getType() == Type.SET) {
-						System.out.println("----> Set query");
 						queryStructure.setQueryType(QueryStructure.QUERY_TYPE_UPDATE);
 						processClauseSet(queryStructure, lookahead);
 					} else {
@@ -80,7 +79,6 @@ public class SyntacticAnalyzer {
 			}
 
 			lookahead = lex.getToken();
-			if (queryStructure != null) System.out.println("\nQuery: " + queryStructure.toString() + "\n");
 
 			QueriesController queriesController = new QueriesController();
 			queriesController.manageNewQuery(queryStructure);
@@ -89,7 +87,13 @@ public class SyntacticAnalyzer {
 		}
 	}
 
-	public void processClauseMatch(QueryStructure queryStructure, Token clauseToken) {
+	/**
+	 * This function is focused in the MATCH processing clause. Analyze and model, in the data structures, the nodes and
+	 * relations from the MATCH clause.
+	 * @param queryStructure query structure where the information of the clause MATCH will be stored.
+	 * @param clauseToken the token processed that defines the clause.
+	 */
+	private void processClauseMatch(QueryStructure queryStructure, Token clauseToken) {
 		boolean parsingLabels = true;
 		boolean rootNodeAssigned = false;
 
@@ -103,7 +107,6 @@ public class SyntacticAnalyzer {
 				// New Node
 				lookahead = lex.getToken();
 				qsNode.setRoot(!rootNodeAssigned);
-				System.out.println("Lo pone en root? " + lookahead.getLexema() + " - " + !rootNodeAssigned);
 				if (!rootNodeAssigned) rootNodeAssigned = true;
 
 				qsNode.setVariable(lookahead.getLexema());
@@ -167,7 +170,6 @@ public class SyntacticAnalyzer {
 					lookahead = lex.getToken();
 				}
 
-				System.out.println("START: " + relationStart);
 				qsRelation.setStart(relationStart);
 
 				String propKey;
@@ -215,12 +217,6 @@ public class SyntacticAnalyzer {
 					}
 
 					lookahead = lex.getToken();
-//
-//					while (lookahead.getType() != Type.DASH) {
-//						relationInfo = relationInfo + lookahead.getLexema();
-//						lookahead = lex.getToken();
-//					}
-//					qsRelation.setContent(relationInfo);
 
 					String relationEnd = lookahead.getLexema();
 					lookahead = lex.getToken();
@@ -230,11 +226,10 @@ public class SyntacticAnalyzer {
 						lookahead = lex.getToken();
 					}
 					qsRelation.setEnd(relationEnd);
-					qsRelation.generateReationInfo();
+					qsRelation.generateRelationInfo();
 				}
 
 				queryStructure.addEntity(clauseToken, qsRelation);
-				System.out.println("--> Add relation");
 			}
 		}
 
@@ -244,6 +239,11 @@ public class SyntacticAnalyzer {
 		}
 	}
 
+	/**
+	 * This function is focused in the processing of clauses that are formed by conditions (e.g. WHERE clause).
+	 * @param queryStructure query structure where the information of the clause will be stored.
+	 * @param clauseToken the token processed that defines the clause.
+	 */
 	private void processClauseConditions(QueryStructure queryStructure, Token clauseToken) {
 		lookahead = lex.getToken();
 
@@ -263,6 +263,12 @@ public class SyntacticAnalyzer {
 		}
 	}
 
+	/**
+	 * This function is focused in the DETACH processing clause. Analyze and model, in the data structures, the nodes and
+	 * relations from the DETACH clause.
+	 * @param queryStructure query structure where the information of the clause DETACH will be stored.
+	 * @param clauseToken the token processed that defines the clause.
+	 */
 	private void processClauseDetach(QueryStructure queryStructure, Token clauseToken) {
 		queryStructure.addEntity(clauseToken, null);
 
@@ -272,6 +278,12 @@ public class SyntacticAnalyzer {
 		}
 	}
 
+	/**
+	 * This function is focused in the SET processing clause. Analyze and model, in the data structures, the nodes and
+	 * relations from the SET clause.
+	 * @param queryStructure query structure where the information of the clause SET will be stored.
+	 * @param clauseToken the token processed that defines the clause.
+	 */
 	private void processClauseSet(QueryStructure queryStructure, Token clauseToken) {
 		QSSet qsSet;
 		lookahead = lex.getToken();
@@ -279,9 +291,8 @@ public class SyntacticAnalyzer {
 		while (!clausesTypes.contains(lookahead.getType())) {
 			qsSet = new QSSet();
 
-			System.out.println("Entra en set");
 
-			if (lookahead.getType() == Type.COMA)lookahead = lex.getToken();
+			if (lookahead.getType() == Type.COMA) lookahead = lex.getToken();
 
 			// var
 			qsSet.setVar(lookahead.getLexema());
@@ -294,7 +305,6 @@ public class SyntacticAnalyzer {
 			lookahead = lex.getToken();
 
 			if (lookahead.getType() == Type.EQUAL) {
-				System.out.println("Entra en equal");
 				lookahead = lex.getToken();
 				qsSet.setNewValue(lookahead.getLexema());
 

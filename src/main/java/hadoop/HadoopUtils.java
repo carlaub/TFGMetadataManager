@@ -1,4 +1,4 @@
-package utils;
+package hadoop;
 
 import application.MetadataManager;
 import constants.GenericConstants;
@@ -17,16 +17,20 @@ import java.util.Map;
 /**
  * Created by Carla Urrea Blázquez on 26/04/2018.
  *
- * HadoopUtils.java
+ * This class contains the methods and resources used for manage the Hadoop framework from the application.
  */
 public class HadoopUtils {
 	private static HadoopUtils instance;
 	private FileSystem fs;
 
-	public HadoopUtils() {
+	private HadoopUtils() {
 		configureHadoop();
 	}
 
+	/**
+	 * Get the Hadoop instance.
+	 * @return Hadoop instance.
+	 */
 	public static HadoopUtils getInstance() {
 		if (instance == null) {
 			instance = new HadoopUtils();
@@ -35,6 +39,9 @@ public class HadoopUtils {
 		return instance;
 	}
 
+	/**
+	 * Configure the Hadoops parameters according to the requirements of this project.
+	 */
 	private void configureHadoop() {
 		Configuration configuration = new Configuration();
 		//Required by Maven
@@ -50,10 +57,10 @@ public class HadoopUtils {
 	}
 
 	/**
-	 * Return the BufferReader of the HDFS file following the path *filePath*
+	 * Return the BufferReader of the HDFS file following the path *filePath*.
 	 * @param filePath Complete file's path/url into HDFS with
-	 *                 Ex format: hdfs://node1-master:9000/user/hadoop/people.txt
-	 * @return
+	 *                 e.g. hdfs://node1-master:9000/user/hadoop/people.txt
+	 * @return the BufferedReader.
 	 */
 	public BufferedReader getBufferReaderHFDSFile(String filePath) {
 		Path path = new Path(filePath);
@@ -72,7 +79,6 @@ public class HadoopUtils {
 	 * Create new file in the working directory of HDFS. If the file exists, it is delete and re-create.
 	 * @param fileName name of the file
 	 * @return Buffered Output; "null" if the process was unsuccessful
-	 * @throws IOException
 	 */
 	public BufferedOutputStream createHDFSFile(String fileName) throws IOException {
 		Path path = new Path(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + fileName);
@@ -90,21 +96,13 @@ public class HadoopUtils {
 		bos.write(content.getBytes("UTF-8"));
 	}
 
-//	public void writeHDFSFile() {
-//		Path path = new Path("/user/hadoop/hola.txt");
-//		try {
-//			if (fs.exists(path)) {
-//				fs.delete(path, true);
-//			}
-//			FSDataOutputStream fsout = fs.create(path);
-//			BufferedOutputStream bos = new BufferedOutputStream(fsout);
-//			bos.write("Works! :)".getBytes("UTF-8"));
-//			bos.close();
-//		} catch(IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-
+	/**
+	 * Update filed stored in Hadoop.
+	 * @param fileName the name of the file name that will be updated.
+	 * @param nodesToRemove list of all the nodes to be removed.
+	 * @param nodesToUpdate list of all the nodes and properties to be updated.
+	 * @param elementsToAdd list of the new elements to insert in the file.
+	 */
 	public List<Integer> updateGraphFile(String fileName, List<Integer> nodesToRemove, Map<Integer, Map<String, String>> nodesToUpdate, List<String> elementsToAdd) {
 		BufferedOutputStream bos;
 		BufferedReader br;
@@ -140,17 +138,14 @@ public class HadoopUtils {
 						// Check nodes to update
 						partsLenght = parts.length;
 						nodeID = Integer.valueOf(parts[0]);
-						System.out.println("nod ID: " + nodeID );
 
 						if (nodesToUpdate.containsKey(nodeID)) {
-							System.out.println("\n-> Entra");
 
 							int numLabels = Integer.valueOf(parts[1]);
 							int i = numLabels + 2;
 
 							while (i < partsLenght) {
 								if (nodesToUpdate.get(nodeID).containsKey(parts[i])) {
-									System.out.println("-> Entra en un update");
 									parts[i + 1] = nodesToUpdate.get(nodeID).get(parts[i]).replace("\"", "");
 
 								}
@@ -158,7 +153,6 @@ public class HadoopUtils {
 							}
 
 							line = StringUtils.join(parts, '\t');
-							System.out.println("Cur line: " + line);
 						}
 						bos.write((line + "\n").getBytes("UTF-8"));
 					} else {
@@ -200,24 +194,9 @@ public class HadoopUtils {
 		return null;
 	}
 
-
-	public void writeLineHDFSFile(String fileName, String content) {
-		Path path = new Path("/user/hadoop/" + fileName);
-		System.out.println("PATH: " + path.toString());
-
-		try {
-			FSDataOutputStream fsout = fs.append(path);
-			PrintWriter pw = new PrintWriter(fsout);
-			pw.append(content);
-			pw.flush();
-			fsout.hflush();
-			pw.close();
-			fsout.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * This function manage the resources to close when the system shuts down.
+	 */
 	public void closeResources() {
 		try {
 			if (fs != null) fs.close();

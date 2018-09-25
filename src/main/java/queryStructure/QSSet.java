@@ -2,6 +2,9 @@ package queryStructure;
 
 /**
  * Created by Carla Urrea Blázquez on 07/08/2018.
+ *
+ * This class represents a pair of key-value (property) related with a variable. This object is useful tu model the
+ * SET clause.
  */
 public class QSSet extends QSEntity {
 	private String property;

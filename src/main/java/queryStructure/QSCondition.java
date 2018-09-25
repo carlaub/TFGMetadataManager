@@ -3,17 +3,18 @@ package queryStructure;
 /**
  * Created by Carla Urrea Blázquez on 27/06/2018.
  *
+ * This class represents a condition inside the QueryStructure.
  */
 public class QSCondition extends QSEntity {
-	String condition;
+	private String condition;
 
 	public QSCondition() { }
 
-	public QSCondition(String condition) {
+	QSCondition(String condition) {
 		this.condition = condition;
 	}
 
-	public String getConditions() {
+	String getConditions() {
 		return condition;
 	}
 

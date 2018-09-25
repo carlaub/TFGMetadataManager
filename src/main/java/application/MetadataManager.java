@@ -1,8 +1,8 @@
 package application;
 
-import data.MapBorderNodes;
+import dataStructures.MapBorderNodes;
 import network.SlaveNodeObject;
-import relationsTable.RelationshipsTable;
+import dataStructures.relationsTable.RelationshipsTable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,10 +11,8 @@ import java.util.Map;
 /**
  * Created by Carla Urrea Blázquez on 01/05/2018.
  *
- * MetadataManager.java
- *
  * Singleton class that contains basic information needed by the MetadataManager
- * during the execution
+ * during the execution.
  */
 public class MetadataManager {
 
@@ -74,22 +72,30 @@ public class MetadataManager {
 		return relationshipsTable;
 	}
 
+	/**
+	 * The value of the bigger index assigned until now.
+	 * @return the bigger node ID assigned until now.
+	 */
 	public int getMaxNodeId() {
 		maxNodeId ++;
 		return maxNodeId;
 	}
 
+	/**
+	 * Set the value of the bigger index assigned until now.
+	 * @param maxNodeId bigger node ID assigned until now.
+	 */
 	public void setMaxNodeId(int maxNodeId) {
 		this.maxNodeId = maxNodeId;
 	}
 
+	/**
+	 * This function is used to implement the FIFO policy.
+	 * @return the ID of the next partition that must be fed.
+	 */
 	public int getLastPartitionFed() {
 		int partition = lastPartitionFed;
 		lastPartitionFed = ((lastPartitionFed >= snConnected.size()) ? 0 : (lastPartitionFed + 1));
 		return partition;
-	}
-
-	public ArrayList<SlaveNodeObject> getSnConnected() {
-		return snConnected;
 	}
 }

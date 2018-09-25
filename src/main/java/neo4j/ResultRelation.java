@@ -7,22 +7,21 @@ import java.util.Map;
 /**
  * Created by Carla Urrea Blázquez on 25/06/2018.
  *
- * ResultRelation.java
  * Class used to return a relation from the query result.
  */
 public class ResultRelation extends ResultEntity {
 
 	private long startNodeId;
 	private long endNodeId;
-	protected HashMap<String, Object> properties;
+	private HashMap<String, Object> properties;
 
 
-	public ResultRelation() {
+	ResultRelation() {
 		super();
 		this.properties = new HashMap<>();
 	}
 
-	public void addProperty(String propertyKey, Object value) {
+	void addProperty(String propertyKey, Object value) {
 		properties.put(propertyKey, value);
 	}
 
@@ -34,7 +33,7 @@ public class ResultRelation extends ResultEntity {
 		return startNodeId;
 	}
 
-	public void setStartNodeId(long startNodeId) {
+	void setStartNodeId(long startNodeId) {
 		this.startNodeId = startNodeId;
 	}
 
@@ -42,7 +41,7 @@ public class ResultRelation extends ResultEntity {
 		return endNodeId;
 	}
 
-	public void setEndNodeId(long endNodeId) {
+	void setEndNodeId(long endNodeId) {
 		this.endNodeId = endNodeId;
 	}
 

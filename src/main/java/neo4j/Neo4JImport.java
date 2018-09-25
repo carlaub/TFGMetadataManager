@@ -7,7 +7,7 @@ import constants.GenericConstants;
 import constants.MsgConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.neo4j.graphdb.*;
-import utils.HadoopUtils;
+import hadoop.HadoopUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -24,13 +24,16 @@ import java.util.Map;
  */
 public class Neo4JImport {
 	private GraphDatabaseService graphDb;
-	Map<Integer, Node> nodeCache;
+	private Map<Integer, Node> nodeCache;
 
 	public Neo4JImport() {
 		nodeCache = new HashMap<>();
 	}
 
-	public boolean startPartitionDBImport() {
+	/**
+	 * Start the import from the Hadoop partition's files to the instance hosted in the machine.
+	 */
+	public void startPartitionDBImport() {
 		// Init Neo4j batchinserter
 		if (!getNeo4jDB()) {
 			System.out.println(ErrorConstants.ERR_INIT_BATCHINSERTER);
@@ -46,20 +49,23 @@ public class Neo4JImport {
 		// Process partition file of nodes
 		if (!processNodesPartitionFile()) {
 			System.out.println(ErrorConstants.ERR_PARSE_NODE_PARTITION_FILE);
-			return false;
+			return;
 		}
 
 		// Process partition file of edges
 		if (!processEdgesPartitionFile()) {
 			System.out.println(ErrorConstants.ERR_PARSE_NODE_PARTITION_FILE);
-			return false;
+			return;
 		}
 
 		System.out.println(MsgConstants.MSG_FIN_IMPORT_NEO4J);
 
-		return true;
 	}
 
+	/**
+	 * This function obtains the Database Graph Service.
+	 * @return true if the Database Graph Service has been obtained successfully.
+	 */
 	private boolean getNeo4jDB() {
 		graphDb = GraphDatabase.getInstance().getDataBaseGraphService();
 		return graphDb != null;
@@ -68,8 +74,7 @@ public class Neo4JImport {
 	/**
 	 * Node line format:
 	 * [id	labelsNum	label1	labelN	Attribute1Name	Attribute1Value	AttributeNName	AttributeNValue]
-	 * @param line
-	 * @return
+	 * @param line is a string with the node information.
 	 */
 	private void createNode(String line) {
 		int labelsNum;
@@ -78,11 +83,6 @@ public class Neo4JImport {
 		Label[] labels;
 
 		String[] parts = line.split("\t");
-
-		// DEBUG
-		for(String part : parts) {
-			System.out.println("PART: " + part);
-		}
 
 		int totalParts = parts.length;
 
@@ -99,8 +99,6 @@ public class Neo4JImport {
 			labels[i] = DynamicLabel.label(parts[index]);
 			index++;
 		}
-
-		// TODO: CAMBIAR ID, UTILIZAR INDEX MANAGER  index() (https://neo4j.com/docs/java-reference/current/javadocs/org/neo4j/graphdb/GraphDatabaseService.html#createNode--)
 
 		// Attributes processing
 		String property;
@@ -125,7 +123,6 @@ public class Neo4JImport {
 
 			for (Map.Entry<String, Object> entry : properties.entrySet()) {
 				n.setProperty(entry.getKey(), entry.getValue());
-				System.out.println("Entry: " + entry.getKey() + " - " + entry.getValue().getClass().toString());
 			}
 			nodeCache.put(id, n);
 
@@ -133,16 +130,18 @@ public class Neo4JImport {
 		}
 	}
 
+	/**
+	 * Analyze and process the node's file.
+	 * @return true if the file has been processed successfully.
+	 */
 	private boolean processNodesPartitionFile() {
 		String line;
 		BufferedReader br = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + ".txt");
 
 		if (br == null) return false;
 
-		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_NODES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + "\n\n");
 		try {
 			while((line = br.readLine()) != null) {
-				System.out.println(line);
 				createNode(line);
 			}
 
@@ -154,6 +153,10 @@ public class Neo4JImport {
 		return true;
 	}
 
+	/**
+	 * This function creates a new relation inside the Neo4j's instance.
+	 * @param line string that represents the relation information in the Hadoop's file format.
+	 */
 	private void createRelation(String line) {
 		int fromNode;
 		int toNode;
@@ -189,16 +192,18 @@ public class Neo4JImport {
 		}
 	}
 
+	/**
+	 * Analyze and process the edges's file.
+	 * @return true if the file has been processed successfully.
+	 */
 	private boolean processEdgesPartitionFile() {
 		String line;
 		BufferedReader br = HadoopUtils.getInstance().getBufferReaderHFDSFile(MetadataManager.getInstance().getMMInformation().getHDFSWorkingDirectory() + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + ".txt");
 
 		if (br == null) return false;
 
-		System.out.println(MsgConstants.MSG_READING_FILE + ": " + GenericConstants.FILE_NAME_EDGES_PARTITION_BASE + GenericConstants.MM_SLAVE_NODE_ID + "\n\n");
 		try {
 			while((line = br.readLine()) != null) {
-				System.out.println(line);
 				createRelation(line);
 			}
 

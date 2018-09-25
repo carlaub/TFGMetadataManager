@@ -8,20 +8,20 @@ import java.util.*;
 /**
  * Created by Carla Urrea Blázquez on 25/06/2018.
  *
- *
+ * Represents a Node inside the ResultQuery structure.
  */
 public class ResultNode extends ResultEntity implements Serializable {
 	private List<String> labels;
-	protected HashMap<String, Object> properties;
+	private HashMap<String, Object> properties;
 
 
-	public ResultNode() {
+	ResultNode() {
 		super();
 		this.labels = new ArrayList<>();
 		this.properties = new HashMap<>();
 	}
 
-	public void addProperty(String propertyKey, Object value) {
+	void addProperty(String propertyKey, Object value) {
 		properties.put(propertyKey, value);
 	}
 
@@ -34,7 +34,7 @@ public class ResultNode extends ResultEntity implements Serializable {
 	}
 
 
-	public void addLabel(String label) {
+	void addLabel(String label) {
 		labels.add(label);
 	}
 
@@ -46,6 +46,15 @@ public class ResultNode extends ResultEntity implements Serializable {
 		this.labels = labels;
 	}
 
+	public int getNodeId() {
+		if (properties.containsKey("id")) return (int) properties.get("id");
+		return -1;
+	}
+
+	/**
+	 * Check if the node is border or not.
+	 * @return true if the node is border.
+	 */
 	public boolean isBorderNode() {
 		for (String label : labels) {
 			if (label.equalsIgnoreCase(GenericConstants.BORDER_NODE_LABEL)) {
@@ -56,13 +65,13 @@ public class ResultNode extends ResultEntity implements Serializable {
 		return false;
 	}
 
-	public int getNodeId() {
-		if (properties.containsKey("id")) return (int)properties.get("id");
-		return -1;
-	}
 
+	/**
+	 * If the node is border, extract the foreign partition that it represents.
+	 * @return the partition that the node represents that is stored in the "partition" property.
+	 */
 	public int getForeignPartitionId() {
-		if (properties.containsKey("partition")) return (int)properties.get("partition");
+		if (properties.containsKey("partition")) return (int) properties.get("partition");
 		return -1;
 	}
 
@@ -73,26 +82,24 @@ public class ResultNode extends ResultEntity implements Serializable {
 		strBuilder.append("[");
 		// Labels
 		if (!labels.isEmpty()) {
-			int labelsListSize = labels.size();
 
-			for (int i = 0; i < labelsListSize; i++) {
+			for (String label : labels) {
 				strBuilder.append(":");
-				strBuilder.append(labels.get(i));
+				strBuilder.append(label);
 			}
 			strBuilder.append("{");
 		}
 
 		// Properties
 		Iterator propertiesIterator = getProperties().entrySet().iterator();
-		while(propertiesIterator.hasNext()) {
-			Map.Entry entry = (Map.Entry)propertiesIterator.next();
+		while (propertiesIterator.hasNext()) {
+			Map.Entry entry = (Map.Entry) propertiesIterator.next();
 			strBuilder.append(entry.getKey());
 			strBuilder.append(":");
 			strBuilder.append(entry.getValue());
 			if (propertiesIterator.hasNext()) strBuilder.append(",");
 		}
 		strBuilder.append("}]");
-
 
 		return strBuilder.toString();
 	}

@@ -15,16 +15,13 @@ import java.util.List;
 
 /**
  * Created by Carla Urrea Blázquez on 05/05/2018.
- * <p>
- * MMServer.java
- * <p>
- * Manage the communication between MetadadataManager and SlavesNodes
+ *
+ * Manage the communication between MetadadataManager and SlavesNodes.
  */
 public class MMServer {
 	private static MMServer instance;
 	private DatagramPacket request;
 	private List<DatagramSocket> dSockets;
-	byte[] buff;
 
 	public static MMServer getInstance() {
 		if (instance == null) {
@@ -35,10 +32,9 @@ public class MMServer {
 
 	private MMServer() {
 
-		buff = new byte[65535];
+		byte[] buff = new byte[65535];
 		try {
 			dSockets = new ArrayList<>();
-			// TODO: Hacer dinámico, no hardcoded
 			dSockets.add(0, new DatagramSocket(3456));
 			dSockets.add(1, new DatagramSocket(3457));
 
@@ -48,15 +44,14 @@ public class MMServer {
 		request = new DatagramPacket(buff, buff.length);
 
 		// Wait node's connections to the MetadataManager Server
-		// TODO: Descomentar
 		waitConnections();
 	}
 
 	/**
 	 * Before start the process, MetadataManager must be connected with all the
-	 * SlaveNodes. The numbers of slavesNodes is specified in the configuration file
+	 * SlaveNodes. The numbers of slavesNodes is specified in the configuration file.
 	 */
-	public void waitConnections() {
+	private void waitConnections() {
 		int SNConnected = 0;
 		int totalSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
 
@@ -82,13 +77,15 @@ public class MMServer {
 				sendToSlaveNode(SNConnected, NetworkConstants.PCK_CODE_ID, String.valueOf(SNConnected));
 			}
 
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
+		} catch (ClassNotFoundException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * Sent the packet to start de DBs instances in each partition.
+	 * @return true if the action was successful.
+	 */
 	public boolean sendStartDB() {
 		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
 		boolean status;
@@ -114,6 +111,10 @@ public class MMServer {
 		return true;
 	}
 
+	/**
+	 * Sent the packet through the network to notify all the slave nodes about the system's shutdown.
+	 * @return true if the action is executed successfully.
+	 */
 	public boolean sendStopDB() {
 		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
 		boolean status;
@@ -131,7 +132,6 @@ public class MMServer {
 	 *
 	 * @param SNDestId: Slave node ID
 	 * @param query:    Query in string format which will be execute in the slave node
-	 * @return Neo4J Result obj
 	 */
 	public void sendQuery(int SNDestId, QueryStructure query, QueriesController queriesController, boolean trackingMode) {
 		boolean sent;
@@ -147,6 +147,12 @@ public class MMServer {
 		}
 	}
 
+	/**
+	 * This function send to a SlaveNode a query in String format
+	 * @param SNDestId ID of the destination SlaveNode
+	 * @param query String that contains the query.
+	 * @return the result of the query.
+	 */
 	public ResultQuery sendStringQuery(int SNDestId, String query) {
 		boolean sent;
 		sent = sendToSlaveNode(SNDestId, NetworkConstants.PCK_QUERY, query);
@@ -164,6 +170,8 @@ public class MMServer {
 
 	/**
 	 * Send query to all nodes. Queries without relation in the match clause.
+	 * @param queryStructure structure that contains que query's entities in the internal format of the application.
+	 * @param queriesController the controller of the queryStructure.
 	 */
 	public void sendQueryBroadcast(QueryStructure queryStructure, QueriesController queriesController) {
 		int numSN = MetadataManager.getInstance().getMMInformation().getNumberSlaves();
@@ -173,7 +181,13 @@ public class MMServer {
 		}
 	}
 
-
+	/**
+	 * Sent data to an specific SlaveNode.
+	 * @param id of the SlaveNode.
+	 * @param code of the packet to send.
+	 * @param data of the packet to send.
+	 * @return true if the packet was send successfully.
+	 */
 	private boolean sendToSlaveNode(int id, int code, String data) {
 		SlaveNodeObject sn = MetadataManager.getInstance().getSNConnected(id);
 
@@ -197,6 +211,11 @@ public class MMServer {
 		return true;
 	}
 
+	/**
+	 * This function manage the socket waiting for the query response from the SlaveNode.
+	 * @param SNDestId ID of the SlaveNode.
+	 * @return the message with the response from the SlaveNode.
+	 */
 	private Msg waitResponseFromSlaveNode(int SNDestId) {
 		DatagramSocket dSocket = dSockets.get(SNDestId - 1);
 

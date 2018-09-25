@@ -5,19 +5,21 @@ import java.io.Serializable;
 /**
  * Created by Carla Urrea Blázquez on 05/05/2018.
  *
- * Msg.java
+ * Message structure of the packets send through the network.
+ * The code is a numeric frame identifier.
+ * The data is the content that wants to be transferred.
  */
 public class Msg implements Serializable {
 
 	private int code;
 	private Object data;
 
-	public Msg(int code, Object data) {
+	Msg(int code, Object data) {
 		this.code = code;
 		this.data = data;
 	}
 
-	public int getCode() {
+	int getCode() {
 		return code;
 	}
 
@@ -25,7 +27,7 @@ public class Msg implements Serializable {
 		this.code = code;
 	}
 
-	public String getDataAsString() {
+	String getDataAsString() {
 		return data.toString();
 	}
 

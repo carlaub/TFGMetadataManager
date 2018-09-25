@@ -5,8 +5,6 @@ import java.net.InetAddress;
 /**
  * Created by Carla Urrea Blázquez on 06/05/2018.
  *
- * SlaveNodeObject.java
- *
  * This class holds the information that the MetadataManager needs from each SlaveNode
  * connected
  */
@@ -15,7 +13,7 @@ public class SlaveNodeObject {
 	private int port;
 	private InetAddress ip;
 
-	public SlaveNodeObject(int id, int port, InetAddress ip) {
+	SlaveNodeObject(int id, int port, InetAddress ip) {
 		this.id = id;
 		this.port = port;
 		this.ip = ip;
@@ -29,7 +27,7 @@ public class SlaveNodeObject {
 		this.id = id;
 	}
 
-	public int getPort() {
+	int getPort() {
 		return port;
 	}
 
@@ -37,7 +35,7 @@ public class SlaveNodeObject {
 		this.port = port;
 	}
 
-	public InetAddress getIp() {
+	InetAddress getIp() {
 		return ip;
 	}
 

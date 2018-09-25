@@ -10,7 +10,6 @@ import java.io.IOException;
 /**
  * Created by Carla Urrea Blázquez on 01/05/2018.
  *
- * ParserConf.java
  *
  * This class is a parser for the config file of the MetadataManager
  *
@@ -24,13 +23,14 @@ import java.io.IOException;
  * 	| Number of graph partitions 																	|
  * 	| Total number of SlaveNodes in the system														|
  * 	| IPs @ of slaves nodes																			|
+ * 	| Path to Neo4j DB																				|
+ * 	| File name of queries document																	|
  *	|_______________________________________________________________________________________________|
  */
 public class ParserConf {
-	BufferedReader brConfFile;
+	private BufferedReader brConfFile;
 
 	public ParserConf() {
-
 		try {
 			brConfFile = new BufferedReader(new FileReader(System.getProperty("user.dir") + "/src/main/resources/files/MetadataManager.conf"));
 		} catch (FileNotFoundException e) {
@@ -38,10 +38,14 @@ public class ParserConf {
 		}
 	}
 
+	/**
+	 * This function reads the configuration file and stores the information into a MMInformation object
+	 * @return MMInformation object
+	 * @throws IOException related with the file management
+	 */
 	public MMInformation getConfiguration() throws IOException {
 		MMInformation mmInformation = new MMInformation();
 		int numSlavesNodes;
-		String slaveIP;
 
 		// Read default FS
 		mmInformation.setDefaultFS(brConfFile.readLine());
@@ -73,11 +77,13 @@ public class ParserConf {
 		// Queries filename
 		mmInformation.setQueriesFile(brConfFile.readLine());
 
-		printConfigurationInformation(mmInformation);
-
 		return mmInformation;
 	}
 
+	/**
+	 * Debug function to print the MM configuration established
+	 * @param mmInformation with the configuration params
+	 */
 	private void printConfigurationInformation(MMInformation mmInformation) {
 		System.out.println("Nodes HDFS path: " + mmInformation.getHDFSPathNodesFile());
 		System.out.println("Edges HDFS path: " + mmInformation.getHDFSPathEdgesFile());

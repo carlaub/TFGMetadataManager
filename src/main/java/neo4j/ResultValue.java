@@ -4,11 +4,13 @@ import java.io.Serializable;
 
 /**
  * Created by Carla Urrea Blázquez on 07/08/2018.
+ *
+ * Represents a result value.
  */
 public class ResultValue extends ResultEntity implements Serializable {
-	Object value;
+	private Object value;
 
-	public ResultValue(Object value) {
+	ResultValue(Object value) {
 		this.value = value;
 	}
 

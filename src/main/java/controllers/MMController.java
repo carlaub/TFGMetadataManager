@@ -6,27 +6,25 @@ import constants.GenericConstants;
 import managers.GraphAlterationsManager;
 import neo4j.GraphDatabase;
 import neo4j.Neo4JImport;
-import neo4j.QueryExecutor;
 import network.MMServer;
 import parser.SyntacticAnalyzer;
-import utils.HadoopUtils;
+import hadoop.HadoopUtils;
 
 /**
  * Created by Carla Urrea Blázquez on 04/06/2018.
- * <p>
- * MMController.java
+ *
+ * Main controller of the MetadataManager activity.
  */
 public class MMController {
 
 	private MMServer mmServer;
+
 
 	public MMController() {
 		this.mmServer = MMServer.getInstance();
 	}
 
 	// MAIN FEATURES Metadata Manager
-
-	// TODO: Ejecutar el comando de METIS directamente desde el codigo java
 
 	/**
 	 * Transform the output from METIS command into the format that the node MetadataManager
@@ -40,12 +38,12 @@ public class MMController {
 	 */
 	public void exportMetisFormat() {
 		MetisAdapter metisAdapter = new MetisAdapter();
-		// TODO: No tener pre-generado el output de METIS en el proyecto
+
 		metisAdapter.beginExport(System.getProperty("user.dir") + GenericConstants.FILE_PATH_METIS,
 				MetadataManager.getInstance().getMMInformation().getNumberPartitions());
 
-		// TODO: Borrar debug
-		MetadataManager.getInstance().getRelationshipsTable().print();
+		// DEBUG
+		// MetadataManager.getInstance().getRelationshipsTable().print();
 
 	}
 
