@@ -57,7 +57,6 @@ public class QueriesController {
 
 	private void sendById(QueryStructure queryStructure, int idRootNode, boolean trackingMode) {
 		int partitionID = MetadataManager.getInstance().getMapGraphNodes().get(idRootNode);
-		System.out.println("\nSend to partition: " + partitionID);
 		sendByPartitionID(queryStructure, partitionID, trackingMode);
 	}
 
@@ -89,6 +88,7 @@ public class QueriesController {
 		int idRootNode;
 
 		originalQueryStructure = queryStructure;
+		System.out.println("-> Query: \n\t" + originalQueryStructure);
 
 		switch (queryType) {
 			case QueryStructure.QUERY_TYPE_CREATE:
@@ -284,7 +284,7 @@ public class QueriesController {
 	 */
 	private void defaultQueryResult(ResultQuery resultQuery, QueryStructure queryStructure, boolean trackingMode) {
 		Iterator it;
-		int indexOrgColumn = 0;
+		int indexOrgColumn;
 		int columnsCount = resultQuery.getColumnsCount();
 		ResultNode resultNode = null;
 
