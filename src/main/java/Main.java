@@ -36,11 +36,13 @@ public class Main {
 
         MMController mmController = new MMController();
 
-
+        System.out.println("-> Processing files...\n\n");
         mmController.exportMetisFormat();
 
+        System.out.println("-> Creating database instances...");
         mmController.createGraphDBInTheNodes();
 
+        System.out.println("-> Processing queries...");
         System.out.println(MsgConstants.MSG_PROC_QUERIES);
         mmController.queriesFileExecution();
         System.out.println(MsgConstants.MSG_END_PROC_QUERIES);
