@@ -11,7 +11,7 @@ public class MsgConstants {
 	public static final String MSG_READING_FILE = "Reading file";
 
 	// MetadataManager Server
-	public static final String MSG_MMSERVER_WAIT_CON = "Waiting connection...";
+	public static final String MSG_MMSERVER_WAIT_CON = "-> Waiting connections...";
 
 	//Menu
 	public static final String MSG_MENU_TITLE = "\n\n-- MENU --\n";

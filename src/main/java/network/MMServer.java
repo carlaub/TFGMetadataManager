@@ -65,19 +65,18 @@ public class MMServer {
 				ByteArrayInputStream bais = new ByteArrayInputStream(data);
 				ObjectInputStream ois = new ObjectInputStream(bais);
 
-
-				Msg msg = (Msg) ois.readObject();
-				System.out.println(request.getAddress() + " - " + request.getPort());
-				System.out.println("MSG code: " + msg.getCode() + totalSN);
-				System.out.println("MSG data: " + msg.getDataAsString());
+				//DEBUG
+//				Msg msg = (Msg) ois.readObject();
+//				System.out.println(request.getAddress() + " - " + request.getPort());
+//				System.out.println("MSG code: " + msg.getCode() + totalSN);
+//				System.out.println("MSG data: " + msg.getDataAsString());
 
 				SNConnected++;
 
 				MetadataManager.getInstance().addSNConnected(new SlaveNodeObject(SNConnected, request.getPort(), request.getAddress()));
 				sendToSlaveNode(SNConnected, NetworkConstants.PCK_CODE_ID, String.valueOf(SNConnected));
 			}
-
-		} catch (ClassNotFoundException | IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
