@@ -88,7 +88,7 @@ public class QueriesController {
 		int idRootNode;
 
 		originalQueryStructure = queryStructure;
-		System.out.println("-> Query: \n\t" + originalQueryStructure);
+		System.out.println("-> Query: \n" + originalQueryStructure);
 
 		switch (queryType) {
 			case QueryStructure.QUERY_TYPE_CREATE:
@@ -360,7 +360,6 @@ public class QueriesController {
 						while (it.hasNext()) {
 							Map.Entry entry = (Map.Entry) it.next();
 						}
-						System.out.println("\n");
 
 						// If one of the nodes is border, delete the property related with the foreign node.
 						if (resultRelation.getProperties().containsKey("idRelForeignNode"))
@@ -369,7 +368,8 @@ public class QueriesController {
 					}
 				} else {
 					// Value
-					resultQuery.addEntity(indexOrgColumn, colResult);
+					initialResultQuery.addEntity(indexOrgColumn, colResult);
+					System.out.println("VALUE!");
 				}
 			}
 
