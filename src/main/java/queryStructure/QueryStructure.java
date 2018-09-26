@@ -597,8 +597,9 @@ public class QueryStructure {
             }
         }
 
-        System.out.println("\n\n-> Query modified: ");
-        System.out.println(queryStructureModified.toString());
+//      DEBUG
+//      System.out.println("\n\n-> Query modified: ");
+//      System.out.println(queryStructureModified.toString());
 
         return queryStructureModified;
     }
